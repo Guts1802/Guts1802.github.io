@@ -180,9 +180,44 @@
 </head>
 <body>
 
+<div id="profileGate" class="modal" style="z-index:500;">
+  <div class="modal-inner" style="max-width:420px;">
+    <h3 class="sec-title" style="margin-bottom:0.25rem;">Who's picking?</h3>
+    <p style="font-size:0.7rem;color:#64748b;margin-bottom:1rem;">Each person logs in with their own PIN so your watchlists stay separate - you won't see what the other person added.</p>
+    <div id="profileList" style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;"></div>
+
+    <div id="profileLoginForm" class="hidden">
+      <label class="field-lbl">PIN</label>
+      <input id="profilePinInput" type="password" inputmode="numeric" placeholder="Enter your PIN" onkeydown="if(event.key==='Enter')attemptProfileLogin()">
+      <div class="row">
+        <button onclick="attemptProfileLogin()">Log In</button>
+        <button class="btn-sm" onclick="cancelProfileLogin()">Back</button>
+      </div>
+    </div>
+
+    <div id="profileCreateForm" class="hidden">
+      <label class="field-lbl">Your Name</label>
+      <input id="newProfileName" placeholder="e.g., Alex">
+      <label class="field-lbl">Choose a PIN (4+ digits)</label>
+      <input id="newProfilePin" type="password" inputmode="numeric" placeholder="e.g., 1234">
+      <div class="row">
+        <button onclick="createNewProfile()">Create Profile</button>
+        <button class="btn-sm" id="cancelCreateBtn" onclick="cancelProfileCreate()">Back</button>
+      </div>
+    </div>
+
+    <button class="btn-sm" id="addProfileBtn" onclick="showProfileCreateForm()" style="width:auto;margin-top:0.25rem;">+ Add a New Person</button>
+    <p style="font-size:0.62rem;color:#64748b;margin-top:0.9rem;">A PIN just keeps things separate on a shared device - it's not meant to be strong security, so don't reuse a real password.</p>
+  </div>
+</div>
+
 <div class="header">
   <h1 class="title">K-Drama Cast Checker</h1>
   <p class="subtitle" id="spaceSubtitle">Track actors across your last 10 dramas</p>
+  <div id="hdrProfileBar" style="display:flex;justify-content:center;align-items:center;gap:0.5rem;margin-top:0.6rem;font-size:0.75rem;color:#94a3b8;">
+    <span>&#128100; <b id="hdrProfileName" style="color:#c084fc;"></b>'s watchlist</span>
+    <button class="btn-sm" onclick="switchUser()" style="width:auto;margin:0;padding:0.25rem 0.6rem;font-size:0.65rem;">Switch User</button>
+  </div>
   <div id="banner" style="display:none;"></div>
 
   <div id="hdrButtonsMain" class="hdr-btns">
@@ -985,9 +1020,103 @@ function loadLocal() {
 function saveLocal(data) { try { localStorage.setItem('kdc_d', JSON.stringify(data)); } catch(e) { alert('Save failed: ' + e.message); } }
 
 function loadLocalWatchlist() {
-  try { var d = localStorage.getItem('kdc_watchlist'); var p = d ? JSON.parse(d) : null; return Array.isArray(p) ? p : []; } catch(e) { return []; }
+  var pid = getActiveProfileId();
+  try { var d = localStorage.getItem('kdc_watchlist_' + pid); var p = d ? JSON.parse(d) : null; return Array.isArray(p) ? p : []; } catch(e) { return []; }
 }
-function saveLocalWatchlist(data) { try { localStorage.setItem('kdc_watchlist', JSON.stringify(data)); } catch(e) {} }
+function saveLocalWatchlist(data) {
+  var pid = getActiveProfileId();
+  try { localStorage.setItem('kdc_watchlist_' + pid, JSON.stringify(data)); } catch(e) {}
+}
+
+// --- Profiles ---
+// Lets two (or more) people share this one page/device while keeping their own private
+// watchlist, so neither person can see what the other has picked. PINs are only meant to
+// keep casual peeking out on a shared device - they are not real security.
+function getProfiles() { try { var p = JSON.parse(localStorage.getItem('kdc_profiles') || '[]'); return Array.isArray(p) ? p : []; } catch(e) { return []; } }
+function saveProfiles(list) { try { localStorage.setItem('kdc_profiles', JSON.stringify(list)); } catch(e) {} }
+function getActiveProfileId() { try { return localStorage.getItem('kdc_active_profile') || ''; } catch(e) { return ''; } }
+function setActiveProfileId(id) { try { if (id) localStorage.setItem('kdc_active_profile', id); else localStorage.removeItem('kdc_active_profile'); } catch(e) {} }
+function currentProfile() { var id = getActiveProfileId(); return getProfiles().find(function(p) { return p.id === id; }) || null; }
+function simpleHash(str) { var h = 0; for (var i = 0; i < str.length; i++) { h = ((h << 5) - h + str.charCodeAt(i)) | 0; } return String(h); }
+
+function renderProfileGate() {
+  var list = document.getElementById('profileList');
+  var profiles = getProfiles();
+  list.innerHTML = '';
+  document.getElementById('profileLoginForm').classList.add('hidden');
+  if (!profiles.length) {
+    document.getElementById('profileCreateForm').classList.remove('hidden');
+    document.getElementById('addProfileBtn').classList.add('hidden');
+    document.getElementById('cancelCreateBtn').classList.add('hidden');
+    var msg = document.createElement('p');
+    msg.style.cssText = 'font-size:0.75rem;color:#64748b;';
+    msg.textContent = 'No profiles yet - create one for each person sharing this watchlist.';
+    list.appendChild(msg);
+    return;
+  }
+  document.getElementById('profileCreateForm').classList.add('hidden');
+  document.getElementById('addProfileBtn').classList.remove('hidden');
+  document.getElementById('cancelCreateBtn').classList.remove('hidden');
+  profiles.forEach(function(p) {
+    var btn = document.createElement('button');
+    btn.textContent = p.name;
+    btn.style.cssText = 'width:auto;margin:0;';
+    btn.onclick = function() { showProfileLoginForm(p.id); };
+    list.appendChild(btn);
+  });
+}
+var pendingLoginProfileId = null;
+function showProfileLoginForm(id) {
+  pendingLoginProfileId = id;
+  document.getElementById('profileLoginForm').classList.remove('hidden');
+  document.getElementById('profileCreateForm').classList.add('hidden');
+  document.getElementById('profilePinInput').value = '';
+  document.getElementById('profilePinInput').focus();
+}
+function cancelProfileLogin() {
+  pendingLoginProfileId = null;
+  document.getElementById('profileLoginForm').classList.add('hidden');
+}
+function showProfileCreateForm() {
+  document.getElementById('profileCreateForm').classList.remove('hidden');
+  document.getElementById('profileLoginForm').classList.add('hidden');
+  document.getElementById('newProfileName').value = '';
+  document.getElementById('newProfilePin').value = '';
+}
+function cancelProfileCreate() {
+  document.getElementById('profileCreateForm').classList.add('hidden');
+  renderProfileGate();
+}
+function attemptProfileLogin() {
+  var pin = document.getElementById('profilePinInput').value.trim();
+  var profiles = getProfiles();
+  var p = profiles.find(function(x) { return x.id === pendingLoginProfileId; });
+  if (!p) return;
+  if (simpleHash(pin) !== p.pinHash) { alert('Wrong PIN.'); return; }
+  setActiveProfileId(p.id);
+  document.getElementById('profileGate').classList.remove('open');
+  initApp();
+}
+function createNewProfile() {
+  var name = document.getElementById('newProfileName').value.trim();
+  var pin = document.getElementById('newProfilePin').value.trim();
+  if (!name) { alert('Enter a name.'); return; }
+  if (pin.length < 4) { alert('PIN should be at least 4 digits.'); return; }
+  var profiles = getProfiles();
+  if (profiles.some(function(p) { return p.name.toLowerCase() === name.toLowerCase(); })) { alert('That name is already taken - pick another.'); return; }
+  var id = 'p_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+  profiles.push({ id: id, name: name, pinHash: simpleHash(pin) });
+  saveProfiles(profiles);
+  setActiveProfileId(id);
+  document.getElementById('profileGate').classList.remove('open');
+  initApp();
+}
+function switchUser() {
+  setActiveProfileId('');
+  watchlist = [];
+  document.getElementById('profileGate').classList.add('open');
+  renderProfileGate();
+}
 
 // --- GitHub Gist Sync ---
 function gistUrl() { var c = getGistCreds(); return 'https://api.github.com/gists/' + c.gistId; }
@@ -1005,15 +1134,36 @@ function syncableSettingsPayload() {
   };
 }
 
+// The Gist only has one 'kdrama-watchlist.json' slot, but each profile needs its own private
+// list within it. This fetches the current cloud object so we can update just our own profile's
+// key without erasing anyone else's - the other profile's list is never read into anything that
+// gets rendered or stored beyond this single merge step.
+async function fetchAllWatchlistsFromGist() {
+  var c = getGistCreds(); if (!c.token || !c.gistId) return {};
+  try {
+    var r = await fetch(gistUrl(), { headers: gistHdrs(), cache: 'no-store' });
+    if (!r.ok) return {};
+    var j = await r.json();
+    var wf = j.files && j.files['kdrama-watchlist.json'] ? j.files['kdrama-watchlist.json'].content : null;
+    if (!wf) return {};
+    var parsed = JSON.parse(wf);
+    if (Array.isArray(parsed)) return { _legacy_shared: parsed }; // pre-profile format, kept aside
+    return (parsed && typeof parsed === 'object') ? parsed : {};
+  } catch(e) { return {}; }
+}
+
 async function pushGist() {
   var c = getGistCreds(); if (!c.token || !c.gistId) return false;
   try {
+    var allWatchlists = await fetchAllWatchlistsFromGist();
+    var pid = getActiveProfileId();
+    if (pid) allWatchlists[pid] = watchlist;
     var r = await fetch(gistUrl(), {
       method: 'PATCH', headers: gistHdrs(), cache: 'no-store',
       body: JSON.stringify({ files: {
         'kdrama.json': { content: JSON.stringify(dramas) },
         'kdrama-settings.json': { content: JSON.stringify(syncableSettingsPayload()) },
-        'kdrama-watchlist.json': { content: JSON.stringify(watchlist) }
+        'kdrama-watchlist.json': { content: JSON.stringify(allWatchlists) }
       } })
     });
     return r.ok;
@@ -1042,12 +1192,17 @@ async function pullGist() {
       } catch(e) {}
     }
 
-    // Also pull the synced watchlist, if present
+    // Also pull the synced watchlist, if present - but only OUR profile's slice of it, so we
+    // never load the other person's picks into memory or onto the screen.
     var wf = j.files && j.files['kdrama-watchlist.json'] ? j.files['kdrama-watchlist.json'].content : null;
     if (wf) {
       try {
-        var syncedWatchlist = JSON.parse(wf);
-        if (Array.isArray(syncedWatchlist)) { watchlist = syncedWatchlist; saveLocalWatchlist(watchlist); }
+        var parsedW = JSON.parse(wf);
+        var pid = getActiveProfileId();
+        if (pid && parsedW && !Array.isArray(parsedW) && Array.isArray(parsedW[pid])) {
+          watchlist = parsedW[pid];
+          saveLocalWatchlist(watchlist);
+        }
       } catch(e) {}
     }
 
@@ -2077,6 +2232,17 @@ var optimizerSelected = new Set(); // keys like "rec-123" or "similar-456"
 var watchlistSelectedShow = null; // currently-selected TMDB show in the Add to Watchlist modal
 
 async function initApp() {
+  var profiles = getProfiles();
+  var activeProfile = profiles.find(function(p) { return p.id === getActiveProfileId(); });
+  if (!activeProfile) {
+    document.getElementById('profileGate').classList.add('open');
+    renderProfileGate();
+    return;
+  }
+  document.getElementById('profileGate').classList.remove('open');
+  var nameEl = document.getElementById('hdrProfileName');
+  if (nameEl) nameEl.textContent = activeProfile.name;
+
   showBanner('Loading...', '#fbbf24', 'rgba(251,191,36,0.1)');
   openTab('dramas');
   watchlist = loadLocalWatchlist(); // local fallback; pullGist() below will refresh this if synced
