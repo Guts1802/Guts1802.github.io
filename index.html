@@ -265,7 +265,12 @@
     <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Made a mistake with the order you watched things? Use "More recent" / "Older" on each card to fix it - this changes which dramas count as your last 10.</p>
     <p style="font-size:0.7rem;color:#64748b;margin-bottom:0.75rem;font-style:italic;">Adding a drama via TMDB now automatically checks if any tracked actors also appear in your other dramas. Use "Scan My Library" once to backfill this check across dramas you added before this feature existed.</p>
     <input id="dramaSearch" placeholder="Search your dramas by title..." oninput="render()" style="margin-bottom:0.75rem;">
+    <div id="favActorsBox" class="box hidden" style="margin-bottom:1rem;">
+      <h4 style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:#f43f5e;margin-bottom:0.5rem;">&#9829; Your Favorite Actors</h4>
+      <div id="favActorsGrid" style="display:flex;flex-wrap:wrap;gap:0.4rem;"></div>
+    </div>
     <div id="dramaList" class="drama-list"></div>
+    <p class="note">Tap the &#9825; on any actor's card to mark them as one of your favorites. Favorites are just for you - your co-watcher won't see the same ones marked.</p>
     <p class="note">Red actors = in last 10 dramas &nbsp; Green actors = only in older dramas (safe)</p>
   </div>
 
@@ -1009,15 +1014,23 @@ function switchSpace(space) {
 // --- Local Storage ---
 var KEYS = ['kdc_d','kdcv3','kdramas','kdcv2'];
 function loadLocal() {
+  var pid = getActiveProfileId();
+  var ownKey = 'kdc_d_' + pid;
+  try {
+    var own = localStorage.getItem(ownKey);
+    if (own) { var op = JSON.parse(own); if (Array.isArray(op)) return op; }
+  } catch(e) {}
+  // First time this profile has ever loaded "My Dramas": seed it with a copy of whatever
+  // shared/legacy list already exists on this device, then this profile can diverge freely.
   for (var i = 0; i < KEYS.length; i++) {
     try {
       var d = localStorage.getItem(KEYS[i]);
-      if (d) { var p = JSON.parse(d); if (Array.isArray(p) && p.length > 0) { localStorage.setItem('kdc_d', d); return p; } }
+      if (d) { var p = JSON.parse(d); if (Array.isArray(p) && p.length > 0) { saveLocal(p); return p; } }
     } catch(e) {}
   }
   return null;
 }
-function saveLocal(data) { try { localStorage.setItem('kdc_d', JSON.stringify(data)); } catch(e) { alert('Save failed: ' + e.message); } }
+function saveLocal(data) { var pid = getActiveProfileId(); try { localStorage.setItem('kdc_d_' + pid, JSON.stringify(data)); } catch(e) { alert('Save failed: ' + e.message); } }
 
 function loadLocalWatchlist() {
   var pid = getActiveProfileId();
@@ -1118,6 +1131,76 @@ function switchUser() {
   renderProfileGate();
 }
 
+// --- Favorite Actors (per profile) ---
+// Each person can privately mark actors they personally like, even though both of you watched
+// the same shows. Stored per profile, same pattern as the watchlist - just local, not synced
+// to the shared drama data itself.
+function getFavoriteActors() {
+  var pid = getActiveProfileId();
+  try { var d = JSON.parse(localStorage.getItem('kdc_fav_actors_' + pid) || '[]'); return Array.isArray(d) ? d : []; } catch(e) { return []; }
+}
+function saveFavoriteActors(list) {
+  var pid = getActiveProfileId();
+  try { localStorage.setItem('kdc_fav_actors_' + pid, JSON.stringify(list)); } catch(e) {}
+}
+function isFavoriteActor(name) {
+  return getFavoriteActors().indexOf(name.toLowerCase().trim()) !== -1;
+}
+function toggleFavoriteActor(name) {
+  if (!getActiveProfileId()) return;
+  var key = name.toLowerCase().trim();
+  var favs = getFavoriteActors();
+  var idx = favs.indexOf(key);
+  if (idx === -1) favs.push(key); else favs.splice(idx, 1);
+  saveFavoriteActors(favs);
+}
+// Small heart toggle used on actor chips throughout the app (My Dramas cast rows, Directory).
+function makeFavActorBtn(displayName) {
+  var isFav = isFavoriteActor(displayName);
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'fav-actor-btn';
+  btn.textContent = isFav ? '\u2665' : '\u2661';
+  btn.title = isFav ? 'Remove from your favorite actors' : 'Mark as one of your favorite actors';
+  btn.style.cssText = 'position:absolute;top:0.25rem;right:0.25rem;background:rgba(10,10,20,0.55);border:none;border-radius:50%;width:22px;height:22px;font-size:0.75rem;line-height:22px;padding:0;cursor:pointer;color:' + (isFav ? '#f43f5e' : '#94a3b8') + ';z-index:2;';
+  btn.onclick = function(e) {
+    e.stopPropagation();
+    toggleFavoriteActor(displayName);
+    var nowFav = isFavoriteActor(displayName);
+    btn.textContent = nowFav ? '\u2665' : '\u2661';
+    btn.style.color = nowFav ? '#f43f5e' : '#94a3b8';
+    btn.title = nowFav ? 'Remove from your favorite actors' : 'Mark as one of your favorite actors';
+    var card = btn.closest('.actor-card, .dir-card');
+    if (card) card.style.boxShadow = nowFav ? '0 0 0 2px #f43f5e' : '';
+    if (typeof renderFavActorsStrip === 'function') renderFavActorsStrip();
+  };
+  return btn;
+}
+function renderFavActorsStrip() {
+  var box = document.getElementById('favActorsBox'), grid = document.getElementById('favActorsGrid');
+  if (!box || !grid) return;
+  var favs = getFavoriteActors();
+  if (!favs.length) { box.classList.add('hidden'); grid.innerHTML = ''; return; }
+  box.classList.remove('hidden');
+  grid.innerHTML = '';
+  var byName = allActorsMap();
+  favs.forEach(function(favKey) {
+    var actor = byName.find(function(a) { return a.name.toLowerCase().trim() === favKey; });
+    var chip = document.createElement('div');
+    chip.style.cssText = 'display:flex;align-items:center;gap:0.35rem;background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.3);border-radius:999px;padding:0.2rem 0.6rem 0.2rem 0.25rem;font-size:0.72rem;';
+    var img = document.createElement('img');
+    img.src = ph(actor ? actor.name : favKey, actor ? actor.photo : '');
+    img.style.cssText = 'width:20px;height:20px;border-radius:50%;object-fit:cover;';
+    img.onerror = function() { this.src = ph(actor ? actor.name : favKey, ''); };
+    var lbl = document.createElement('span'); lbl.textContent = actor ? actor.name : favKey;
+    var rm = document.createElement('button'); rm.textContent = '\u00d7';
+    rm.style.cssText = 'background:none;border:none;color:#f43f5e;cursor:pointer;font-size:0.85rem;padding:0;';
+    rm.onclick = (function(name) { return function() { toggleFavoriteActor(name); renderFavActorsStrip(); render(); }; })(actor ? actor.name : favKey);
+    chip.appendChild(img); chip.appendChild(lbl); chip.appendChild(rm);
+    grid.appendChild(chip);
+  });
+}
+
 // --- GitHub Gist Sync ---
 function gistUrl() { var c = getGistCreds(); return 'https://api.github.com/gists/' + c.gistId; }
 function gistHdrs() { var c = getGistCreds(); return { 'Authorization': 'Bearer ' + c.token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }; }
@@ -1152,16 +1235,33 @@ async function fetchAllWatchlistsFromGist() {
   } catch(e) { return {}; }
 }
 
+// Same idea as fetchAllWatchlistsFromGist, but for "My Dramas" - each profile gets its own
+// slice of 'kdrama.json' so the two lists can diverge after starting from the same seed.
+async function fetchAllDramasFromGist() {
+  var c = getGistCreds(); if (!c.token || !c.gistId) return {};
+  try {
+    var r = await fetch(gistUrl(), { headers: gistHdrs(), cache: 'no-store' });
+    if (!r.ok) return {};
+    var j = await r.json();
+    var f = j.files && j.files['kdrama.json'] ? j.files['kdrama.json'].content : null;
+    if (!f) return {};
+    var parsed = JSON.parse(f);
+    if (Array.isArray(parsed)) return { _legacy_shared: parsed }; // pre-profile format, kept aside
+    return (parsed && typeof parsed === 'object') ? parsed : {};
+  } catch(e) { return {}; }
+}
+
 async function pushGist() {
   var c = getGistCreds(); if (!c.token || !c.gistId) return false;
   try {
     var allWatchlists = await fetchAllWatchlistsFromGist();
+    var allDramas = await fetchAllDramasFromGist();
     var pid = getActiveProfileId();
-    if (pid) allWatchlists[pid] = watchlist;
+    if (pid) { allWatchlists[pid] = watchlist; allDramas[pid] = dramas; }
     var r = await fetch(gistUrl(), {
       method: 'PATCH', headers: gistHdrs(), cache: 'no-store',
       body: JSON.stringify({ files: {
-        'kdrama.json': { content: JSON.stringify(dramas) },
+        'kdrama.json': { content: JSON.stringify(allDramas) },
         'kdrama-settings.json': { content: JSON.stringify(syncableSettingsPayload()) },
         'kdrama-watchlist.json': { content: JSON.stringify(allWatchlists) }
       } })
@@ -1176,7 +1276,16 @@ async function pullGist() {
     if (!r.ok) return null;
     var j = await r.json();
     var f = j.files && j.files['kdrama.json'] ? j.files['kdrama.json'].content : null;
-    var data = f ? JSON.parse(f) : null;
+    var parsedD = f ? JSON.parse(f) : null;
+    var pidD = getActiveProfileId();
+    var data = null;
+    if (Array.isArray(parsedD)) {
+      // Pre-profile shared format still in the cloud - adopt it as this profile's starting
+      // point (matches what happened locally), then future pushes split it out per profile.
+      data = parsedD;
+    } else if (parsedD && pidD && Array.isArray(parsedD[pidD])) {
+      data = parsedD[pidD];
+    }
 
     // Also pull synced settings (API keys, toggles, exclusions) if present. This is what makes
     // connecting on a new device feel like "logging in" - you only ever type your API keys once,
@@ -2543,6 +2652,7 @@ function editDrama(id) { var d = dramas.find(function(x) { return x.id === id; }
 
 // --- Render Dramas ---
 function render() {
+  renderFavActorsStrip();
   var r10ids = new Set(recent10().map(function(d) { return d.id; }));
   var r10names = recent10Names();
   // Crew is always shown/highlighted in My Dramas regardless of the Check Cast/Recommendations avoidance toggle
@@ -2596,11 +2706,13 @@ function render() {
     drama.cast.forEach(function(a) {
       var inR10 = r10names.has(a.name.toLowerCase().trim());
       var ac = document.createElement('div'); ac.className = 'actor-card ' + (inR10 ? 'red' : 'green');
+      ac.style.position = 'relative';
+      if (isFavoriteActor(a.name)) ac.style.boxShadow = '0 0 0 2px #f43f5e';
       var ai = document.createElement('img'); ai.className = 'actor-photo'; ai.src = ph(a.name, a.photo); ai.alt = a.name;
       ai.onerror = function() { this.src = ph(a.name, ''); };
       var an = document.createElement('div'); an.className = 'actor-lbl'; an.textContent = a.name;
       var ar = document.createElement('div'); ar.className = 'role-pill ' + (a.role === 'Lead' ? 'lead' : 'supp'); ar.textContent = a.role;
-      ac.appendChild(ai); ac.appendChild(an); ac.appendChild(ar); scroll.appendChild(ac);
+      ac.appendChild(ai); ac.appendChild(an); ac.appendChild(ar); ac.appendChild(makeFavActorBtn(a.name)); scroll.appendChild(ac);
     });
     card.appendChild(top); card.appendChild(scroll);
 
@@ -2707,12 +2819,14 @@ function renderDir() {
     var ago = dramas.length - 1 - a.lastIdx;
     var label = a.inRecent10 ? 'In last 10' : (ago <= 0 ? 'Available' : ago + ' drama' + (ago > 1 ? 's' : '') + ' ago');
     var card = document.createElement('div'); card.className = 'dir-card ' + (a.inRecent10 ? 'bad' : 'good');
+    card.style.position = 'relative';
+    if (isFavoriteActor(a.name)) card.style.boxShadow = '0 0 0 2px #f43f5e';
     var img = document.createElement('img'); img.className = 'dir-photo'; img.src = ph(a.name, a.photo); img.alt = a.name;
     img.onerror = function() { this.src = ph(a.name, ''); };
     var name = document.createElement('div'); name.className = 'dir-name'; name.textContent = a.name;
     var status = document.createElement('div'); status.style.cssText = 'font-size:0.65rem;color:' + (a.inRecent10 ? '#f43f5e' : '#10b981') + ';'; status.textContent = label;
     var count = document.createElement('div'); count.style.cssText = 'font-size:0.62rem;color:#64748b;margin-top:0.15rem;'; count.textContent = a.dramas.length + ' drama' + (a.dramas.length > 1 ? 's' : '');
-    card.appendChild(img); card.appendChild(name); card.appendChild(status); card.appendChild(count);
+    card.appendChild(img); card.appendChild(name); card.appendChild(status); card.appendChild(count); card.appendChild(makeFavActorBtn(a.name));
 
     var completionSlot = document.createElement('div'); completionSlot.style.width = '100%';
     var cachedCompletion = completionCacheGet(a.name);
