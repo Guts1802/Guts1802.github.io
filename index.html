@@ -417,6 +417,17 @@
 
         <div class="toggle-row">
           <div>
+            <div class="toggle-label">Only my favorite actors</div>
+            <div class="toggle-sub">Off by default. Restricts results to shows starring an actor you've hearted (My Dramas or Actor Directory). This toggle is shared across every recommendation tab.</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="recFavOnlyToggle" onchange="onFavOnlyToggleChange(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div>
             <div class="toggle-label">Check full cast for last-10 overlap</div>
             <div class="toggle-sub">Off by default. This only searches by actors you haven't seen in a while, but candidates can still co-star someone from your last 10. Turning this on fetches each candidate's full cast and excludes any with a hidden overlap - slower, more thorough.</div>
           </div>
@@ -459,6 +470,17 @@
           </div>
           <label class="toggle-switch">
             <input type="checkbox" id="similarHiddenGemsToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Only my favorite actors</div>
+            <div class="toggle-sub">Off by default. Restricts results to shows starring an actor you've hearted (My Dramas or Actor Directory). This toggle is shared across every recommendation tab.</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="similarFavOnlyToggle" onchange="onFavOnlyToggleChange(this.checked)">
             <span class="toggle-slider"></span>
           </label>
         </div>
@@ -592,6 +614,17 @@
 
       <div class="toggle-row">
         <div>
+          <div class="toggle-label">Only my favorite actors</div>
+          <div class="toggle-sub">Off by default. Restricts results to shows starring an actor you've hearted (My Dramas or Actor Directory). This toggle is shared across every recommendation tab.</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="moodFavOnlyToggle" onchange="onFavOnlyToggleChange(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div>
           <div class="toggle-label">Check full cast for last-10 overlap</div>
           <div class="toggle-sub">Off by default. Gemini only softly avoids your last-10 actors when picking. Turning this on fetches each verified show's full cast from TMDB and excludes any with a hidden overlap - slower, more thorough.</div>
         </div>
@@ -622,6 +655,17 @@
       <label class="field-lbl">How many shows do you want?</label>
       <input id="airecCount" type="number" min="1" max="24" value="5" inputmode="numeric" style="max-width:120px;">
 
+      <div class="toggle-row" style="margin-top:0.75rem;">
+        <div>
+          <div class="toggle-label">Only my favorite actors</div>
+          <div class="toggle-sub">Off by default. Restricts results to shows starring an actor you've hearted (My Dramas or Actor Directory). This toggle is shared across every recommendation tab.</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="airecFavOnlyToggle" onchange="onFavOnlyToggleChange(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
       <button onclick="runAiPicks()" id="airecBtn" style="background:linear-gradient(135deg,#38bdf8,#818cf8);">Let AI Pick My Next Shows</button>
       <div id="airecResults" style="margin-top:1rem;"></div>
     </div>
@@ -644,6 +688,17 @@
       <input id="aiSimilarSourceSearch" placeholder="Search to filter the list below..." oninput="renderAiSimilarSourcePicker()">
       <div id="aiSimilarSourceGrid" class="cast-select-grid" style="max-height:280px;overflow-y:auto;margin-bottom:0.5rem;"></div>
       <p style="font-size:0.65rem;color:#64748b;margin-bottom:1rem;font-style:italic;">Tap one or more dramas to base the search on.</p>
+
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Only my favorite actors</div>
+          <div class="toggle-sub">Off by default. Restricts results to shows starring an actor you've hearted (My Dramas or Actor Directory). This toggle is shared across every recommendation tab.</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="aisimilarFavOnlyToggle" onchange="onFavOnlyToggleChange(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
 
       <button onclick="runAiSimilar()" id="aisimilarBtn" style="background:linear-gradient(135deg,#38bdf8,#818cf8);">Find Similar Dramas with AI</button>
       <div id="aisimilarResults" style="margin-top:1rem;"></div>
@@ -1176,6 +1231,27 @@ function makeFavActorBtn(displayName) {
   };
   return btn;
 }
+// "Only my favorite actors" is one shared setting (per profile) used by every recommendation
+// tab - Recommendations, Similar Shows, AI Mood Search, AI Picks, AI Similar Shows. Toggling it
+// in any one tab updates the others too, so it stays consistent wherever you look.
+function getFavOnlyOn() {
+  var pid = getActiveProfileId();
+  try { return localStorage.getItem('kdc_fav_only_' + pid) === '1'; } catch(e) { return false; }
+}
+function setFavOnlyOn(on) {
+  var pid = getActiveProfileId();
+  try { localStorage.setItem('kdc_fav_only_' + pid, on ? '1' : '0'); } catch(e) {}
+}
+var FAV_ONLY_TOGGLE_IDS = ['recFavOnlyToggle', 'similarFavOnlyToggle', 'moodFavOnlyToggle', 'airecFavOnlyToggle', 'aisimilarFavOnlyToggle'];
+function syncFavOnlyToggles() {
+  var on = getFavOnlyOn();
+  FAV_ONLY_TOGGLE_IDS.forEach(function(id) { var el = document.getElementById(id); if (el) el.checked = on; });
+}
+function onFavOnlyToggleChange(checked) {
+  setFavOnlyOn(checked);
+  syncFavOnlyToggles();
+}
+
 function renderFavActorsStrip() {
   var box = document.getElementById('favActorsBox'), grid = document.getElementById('favActorsGrid');
   if (!box || !grid) return;
@@ -2006,6 +2082,17 @@ async function getRecommendations() {
     recs = await filterOutLast10CastOverlap(recs, function(done, total) { btn.textContent = 'Checking full cast (' + done + '/' + total + ')...'; });
   }
 
+  var recFavOnlyOn = document.getElementById('recFavOnlyToggle').checked;
+  if (recFavOnlyOn) {
+    if (!getFavoriteActors().length) {
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
+      btn.textContent = 'Find Dramas I Can Watch';
+      btn.disabled = false;
+      return;
+    }
+    if (recs.length) recs = await filterToFavoriteActorsOnly(recs, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
+  }
+
   if (!recs.length) {
     var noRecFilters = [];
     if (actorFilterRaw) noRecFilters.push('Actor name filter: "' + actorFilterRaw + '"');
@@ -2013,6 +2100,7 @@ async function getRecommendations() {
     if (yearFrom || yearTo) noRecFilters.push('Year range: ' + (yearFrom || 'any') + '\u2013' + (yearTo || 'any'));
     if (!smartMode && isTrackCrewOn()) noRecFilters.push('"Avoid Recent Directors/Writers" is on - some candidates may have been excluded for a crew overlap');
     if (recFullCastOn) noRecFilters.push('"Check full cast for last-10 overlap" is on - some candidates may have been excluded for a hidden co-star');
+    if (recFavOnlyOn) noRecFilters.push('"Only my favorite actors" is on - some candidates may have been excluded for not featuring one of your favorites');
     container.innerHTML = explainEmptyResults(noRecFilters);
     btn.textContent = 'Find Dramas I Can Watch';
     btn.disabled = false;
@@ -2235,9 +2323,21 @@ async function getSimilarShows() {
     results = await filterOutLast10CastOverlap(results, function(done, total) { btn.textContent = 'Checking full cast (' + done + '/' + total + ')...'; });
   }
 
+  var similarFavOnlyOn = document.getElementById('similarFavOnlyToggle').checked;
+  if (similarFavOnlyOn) {
+    if (!getFavoriteActors().length) {
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
+      btn.textContent = 'Find Similar Dramas';
+      btn.disabled = false;
+      return;
+    }
+    if (results.length) results = await filterToFavoriteActorsOnly(results, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
+  }
+
   if (!results.length) {
     var noSimFilters = ['Sources selected: ' + sources.length + ' drama(s) - TMDB found no unwatched Korean drama matches for these'];
     if (similarFullCastOn) noSimFilters.push('"Check full cast for last-10 overlap" is on - some candidates may have been excluded for a hidden co-star');
+    if (similarFavOnlyOn) noSimFilters.push('"Only my favorite actors" is on - some candidates may have been excluded for not featuring one of your favorites');
     container.innerHTML = explainEmptyResults(noSimFilters);
     btn.textContent = 'Find Similar Dramas';
     btn.disabled = false;
@@ -2351,6 +2451,7 @@ async function initApp() {
   document.getElementById('profileGate').classList.remove('open');
   var nameEl = document.getElementById('hdrProfileName');
   if (nameEl) nameEl.textContent = activeProfile.name;
+  syncFavOnlyToggles();
 
   showBanner('Loading...', '#fbbf24', 'rgba(251,191,36,0.1)');
   openTab('dramas');
@@ -3616,6 +3717,17 @@ async function runMoodSearch() {
     verified = await filterOutLast10CastOverlap(verified, function(done, total) { btn.textContent = 'Checking full cast (' + done + '/' + total + ')...'; });
   }
 
+  var moodFavOnlyOn = document.getElementById('moodFavOnlyToggle').checked;
+  if (moodFavOnlyOn) {
+    if (!getFavoriteActors().length) {
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
+      btn.textContent = 'Find Shows for This Mood';
+      btn.disabled = false;
+      return;
+    }
+    if (verified.length) verified = await filterToFavoriteActorsOnly(verified, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
+  }
+
   if (getOmdbKey() && verified.length) {
     btn.textContent = 'Fetching IMDb ratings...';
     await Promise.all(verified.map(function(rec) {
@@ -3631,6 +3743,7 @@ async function runMoodSearch() {
   if (!verified.length) {
     var noMoodFilters = ['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off'];
     if (moodFullCastOn) noMoodFilters.push('"Check full cast for last-10 overlap" is on - some may have been excluded for a hidden co-star');
+    if (moodFavOnlyOn) noMoodFilters.push('"Only my favorite actors" is on - some may have been excluded for not featuring one of your favorites');
     container.innerHTML = explainEmptyResults(noMoodFilters) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try rephrasing your mood description, or try again - Gemini\'s wording can vary between attempts.</p>';
     btn.textContent = 'Find Shows for This Mood'; btn.disabled = false;
     return;
@@ -3826,6 +3939,21 @@ async function runAiPicks() {
     btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
     return;
   }
+  var airecFavOnlyOn = document.getElementById('airecFavOnlyToggle').checked;
+  if (airecFavOnlyOn) {
+    if (!getFavoriteActors().length) {
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
+      btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
+      return;
+    }
+    btn.textContent = 'Checking favorite actors...';
+    verified = await filterToFavoriteActorsOnly(verified, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
+    if (!verified.length) {
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - none of Gemini\'s suggestions featured one of your favorites']) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try again, or turn the filter off.</p>';
+      btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
+      return;
+    }
+  }
   renderAiRecCards(container, verified, 'Found ' + verified.length + ' AI-picked show' + (verified.length > 1 ? 's' : '') + ', verified on TMDB. Click a drama to add it to My Dramas.');
   btn.textContent = 'Refresh AI Picks'; btn.disabled = false;
 }
@@ -3900,6 +4028,21 @@ async function runAiSimilar() {
     btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
     return;
   }
+  var aisimilarFavOnlyOn = document.getElementById('aisimilarFavOnlyToggle').checked;
+  if (aisimilarFavOnlyOn) {
+    if (!getFavoriteActors().length) {
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
+      btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
+      return;
+    }
+    btn.textContent = 'Checking favorite actors...';
+    verified = await filterToFavoriteActorsOnly(verified, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
+    if (!verified.length) {
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - none of Gemini\'s suggestions featured one of your favorites']) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try again, or turn the filter off.</p>';
+      btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
+      return;
+    }
+  }
   renderAiRecCards(container, verified, 'Found ' + verified.length + ' similar show' + (verified.length > 1 ? 's' : '') + ', verified on TMDB. Click a drama to add it to My Dramas.');
   btn.textContent = 'Refresh Similar Dramas'; btn.disabled = false;
 }
@@ -3921,6 +4064,22 @@ async function filterOutLast10CastOverlap(items, onProgress) {
     var names = await fetchTopCastNames(items[i].id, 50);
     var hasOverlap = names.some(function(n) { return r10Names.has(n); });
     if (!hasOverlap) kept.push(items[i]);
+  }
+  return kept;
+}
+
+// Keeps only candidates whose full cast includes at least one of this profile's favorite
+// actors. Reuses fetchTopCastNames (backed by the shared tmdbGet cache), so if "Check full cast
+// for last-10 overlap" already ran for the same candidates in this session, this costs nothing extra.
+async function filterToFavoriteActorsOnly(items, onProgress) {
+  var favs = new Set(getFavoriteActors());
+  if (!favs.size) return items;
+  var kept = [];
+  for (var i = 0; i < items.length; i++) {
+    if (onProgress) onProgress(i + 1, items.length);
+    var names = await fetchTopCastNames(items[i].id, 50);
+    var hasFav = names.some(function(n) { return favs.has(n); });
+    if (hasFav) kept.push(items[i]);
   }
   return kept;
 }
