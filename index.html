@@ -40,6 +40,8 @@
     .actor-lbl { font-size:0.72rem; font-weight:bold; margin-bottom:0.2rem; word-break:break-word; line-height:1.3; }
     .actor-card.red .actor-lbl { color:#f43f5e; }
     .actor-card.green .actor-lbl { color:#10b981; }
+    .fav-chip { display:flex; align-items:center; gap:0.35rem; background:rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.3); border-radius:999px; padding:0.2rem 0.6rem 0.2rem 0.25rem; font-size:0.72rem; max-width:100%; }
+    .fav-chip-photo { width:20px; height:20px; border-radius:50%; object-fit:cover; flex-shrink:0; }
     .role-pill { font-size:0.6rem; padding:0.1rem 0.4rem; border-radius:999px; white-space:nowrap; }
     .lead { background:rgba(251,191,36,0.15); color:#fbbf24; }
     .supp { background:rgba(99,102,241,0.15); color:#818cf8; }
@@ -97,6 +99,33 @@
       margin-bottom:0.3rem; margin-right:0.3rem; cursor:pointer;
     }
     .watchlist-add-badge:hover { background:rgba(168,85,247,0.28); }
+    .trailer-badge {
+      display:inline-flex; align-items:center; gap:0.25rem; font-size:0.65rem; font-weight:bold;
+      padding:0.15rem 0.5rem; border-radius:999px; background:rgba(239,68,68,0.15);
+      border:1px solid rgba(239,68,68,0.35); color:#ef4444; text-decoration:none;
+      margin-bottom:0.3rem; margin-right:0.3rem; cursor:pointer;
+    }
+    .trailer-badge:hover { background:rgba(239,68,68,0.28); }
+    .skip-badge {
+      display:inline-flex; align-items:center; gap:0.25rem; font-size:0.65rem; font-weight:bold;
+      padding:0.15rem 0.5rem; border-radius:999px; background:rgba(100,116,139,0.15);
+      border:1px solid rgba(100,116,139,0.35); color:#94a3b8;
+      margin-bottom:0.3rem; margin-right:0.3rem; cursor:pointer;
+    }
+    .skip-badge:hover { background:rgba(100,116,139,0.28); }
+    .undo-toast {
+      position:fixed; bottom:1.25rem; left:50%; transform:translateX(-50%);
+      background:#181828; border:1px solid #2a2a45; border-radius:999px;
+      padding:0.55rem 0.5rem 0.55rem 1rem; display:flex; align-items:center; gap:0.75rem;
+      box-shadow:0 8px 28px rgba(0,0,0,0.5); z-index:700; font-size:0.78rem; color:#e2e8f0;
+      max-width:92vw;
+    }
+    .undo-toast span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .undo-toast button {
+      width:auto; margin:0; padding:0.35rem 0.9rem; font-size:0.72rem; font-weight:bold;
+      background:linear-gradient(135deg,#a855f7,#6366f1); border:none; border-radius:999px;
+      color:white; cursor:pointer; flex-shrink:0;
+    }
     .actor-tip { position:relative; border-bottom:1px dotted #38bdf8; color:#38bdf8; cursor:help; }
     .actor-tip .tip-card {
       position:absolute; bottom:135%; left:50%; transform:translateX(-50%);
@@ -144,6 +173,8 @@
       .actor-photo { width:85px; height:85px; }
       .actor-card { min-width:110px; padding:0.85rem 0.6rem; }
       .actor-lbl { font-size:0.82rem; }
+      .fav-chip { font-size:0.8rem; padding:0.3rem 0.8rem 0.3rem 0.3rem; gap:0.45rem; }
+      .fav-chip-photo { width:26px; height:26px; }
       .dir-grid { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1rem; }
       .dir-photo { width:80px; height:80px; }
       .modal-inner { padding:2rem; max-width:640px; }
@@ -169,6 +200,7 @@
       .box { padding:1.75rem; }
       .drama-poster { width:110px; height:158px; }
       .actor-photo { width:90px; height:90px; }
+      .fav-chip-photo { width:30px; height:30px; }
     }
 
     /* Ultra-wide / very large monitors (~2000px+ logical width) */
@@ -208,6 +240,11 @@
     <button class="btn-sm" id="addProfileBtn" onclick="showProfileCreateForm()" style="width:auto;margin-top:0.75rem;">+ Add a New Person</button>
     <p style="font-size:0.62rem;color:#64748b;margin-top:0.9rem;">A password just keeps things separate on a shared device - it's not meant to be strong security, so don't reuse a real password you use elsewhere.</p>
   </div>
+</div>
+
+<div id="undoToast" class="undo-toast hidden">
+  <span id="undoToastMsg"></span>
+  <button onclick="performUndo()">Undo</button>
 </div>
 
 <div class="header">
@@ -854,6 +891,11 @@
     <div id="profileManageList" style="margin-bottom:0.5rem;"></div>
 
     <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
+    <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">Backup &amp; Export</p>
+    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Download everything for your current profile - My Dramas, Watchlist, Favorite Actors, and Skipped Shows - as a JSON file. Useful as a local backup, or if Gist sync ever breaks.</p>
+    <button onclick="exportMyData()" class="btn-sm" style="width:auto;">Download My Data as JSON</button>
+
+    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
     <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">GitHub Gist Sync (optional)</p>
     <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Connecting this syncs your dramas and preferences (toggles, excluded actors) across devices. Your API keys are NOT synced this way for security - Gists are public, so keys stay local to each device and need entering once per device.</p>
 
@@ -1174,6 +1216,34 @@ function createNewProfile() {
   document.getElementById('profileGate').classList.remove('open');
   initApp();
 }
+// --- Backup / Export ---
+// One-click "download everything for this profile as JSON" - a plain local backup in case
+// Gist sync ever breaks, or you just want a copy on your own computer.
+function exportMyData() {
+  var profile = currentProfile();
+  var data = {
+    exportedAt: new Date().toISOString(),
+    app: 'K-Drama Cast Checker',
+    profileName: profile ? profile.name : '',
+    dramas: dramas,
+    watchlist: watchlist,
+    favoriteActors: getFavoriteActorDisplayNames(),
+    skippedShowIds: getSkippedShows()
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  var datePart = new Date().toISOString().slice(0, 10);
+  var namePart = (profile ? profile.name : 'profile').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  a.href = url;
+  a.download = 'kdrama-backup-' + namePart + '-' + datePart + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  showBanner('Backup downloaded (' + dramas.length + ' dramas, ' + watchlist.length + ' watchlist items)', '#10b981', 'rgba(16,185,129,0.1)');
+}
+
 function switchUser() {
   setActiveProfileId('');
   watchlist = [];
@@ -1224,23 +1294,36 @@ function renameProfile(id, newName) {
   showBanner('Renamed to ' + newName, '#10b981', 'rgba(16,185,129,0.1)');
 }
 function deleteProfile(id, name) {
-  if (!confirm('Delete "' + name + '"? This permanently removes their My Dramas, Watchlist, and Favorite Actors from this device. This cannot be undone.')) return;
-  var profiles = getProfiles().filter(function(p) { return p.id !== id; });
+  if (!confirm('Delete "' + name + '"? This removes their My Dramas, Watchlist, and Favorite Actors from this device - you\'ll have a few seconds to undo right after.')) return;
+  var profiles = getProfiles();
+  var idx = profiles.findIndex(function(p) { return p.id === id; });
+  if (idx === -1) return;
+  var removedProfile = profiles[idx];
+  var wasActive = getActiveProfileId() === id;
+
+  // Snapshot everything tied to this profile so it can be fully restored on undo.
+  var dataKeys = ['kdc_d_' + id, 'kdc_watchlist_' + id, 'kdc_fav_actors_' + id, 'kdc_fav_only_' + id, 'kdc_skipped_' + id];
+  var snapshot = {};
+  dataKeys.forEach(function(k) { try { snapshot[k] = localStorage.getItem(k); } catch(e) { snapshot[k] = null; } });
+
+  profiles.splice(idx, 1);
   saveProfiles(profiles);
-  // Clean up this profile's local data
-  try {
-    localStorage.removeItem('kdc_d_' + id);
-    localStorage.removeItem('kdc_watchlist_' + id);
-    localStorage.removeItem('kdc_fav_actors_' + id);
-    localStorage.removeItem('kdc_fav_only_' + id);
-  } catch(e) {}
-  showBanner('Profile "' + name + '" deleted', '#f43f5e', 'rgba(244,63,94,0.1)');
-  if (getActiveProfileId() === id) {
+  try { dataKeys.forEach(function(k) { localStorage.removeItem(k); }); } catch(e) {}
+
+  if (wasActive) {
     // You just deleted yourself while logged in - log out immediately.
     switchUser();
   } else {
     renderProfileManageList();
   }
+
+  showUndoToast('Deleted profile "' + name + '"', function() {
+    var current = getProfiles();
+    current.splice(idx, 0, removedProfile);
+    saveProfiles(current);
+    try { dataKeys.forEach(function(k) { if (snapshot[k] !== null) localStorage.setItem(k, snapshot[k]); }); } catch(e) {}
+    if (wasActive) renderProfileGate(); else renderProfileManageList();
+  }, 8);
 }
 
 
@@ -1330,10 +1413,10 @@ function renderFavActorsStrip() {
   favs.forEach(function(favKey) {
     var actor = byName.find(function(a) { return a.name.toLowerCase().trim() === favKey; });
     var chip = document.createElement('div');
-    chip.style.cssText = 'display:flex;align-items:center;gap:0.35rem;background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.3);border-radius:999px;padding:0.2rem 0.6rem 0.2rem 0.25rem;font-size:0.72rem;';
+    chip.className = 'fav-chip';
     var img = document.createElement('img');
+    img.className = 'fav-chip-photo';
     img.src = ph(actor ? actor.name : favKey, actor ? actor.photo : '');
-    img.style.cssText = 'width:20px;height:20px;border-radius:50%;object-fit:cover;';
     img.onerror = function() { this.src = ph(actor ? actor.name : favKey, ''); };
     var lbl = document.createElement('span'); lbl.textContent = actor ? actor.name : favKey;
     var rm = document.createElement('button'); rm.textContent = '\u00d7';
@@ -2167,6 +2250,10 @@ async function getRecommendations() {
 
   var recFavOnlyOn = document.getElementById('recFavOnlyToggle').checked; // read earlier already; kept for the empty-state message below
 
+  var recSkippedCount = recs.length;
+  recs = filterOutSkipped(recs);
+  recSkippedCount -= recs.length;
+
   if (!recs.length) {
     var noRecFilters = [];
     if (actorFilterRaw) noRecFilters.push('Actor name filter: "' + actorFilterRaw + '"');
@@ -2175,6 +2262,7 @@ async function getRecommendations() {
     if (!smartMode && isTrackCrewOn()) noRecFilters.push('"Avoid Recent Directors/Writers" is on - some candidates may have been excluded for a crew overlap');
     if (recFullCastOn) noRecFilters.push('"Check full cast for last-10 overlap" is on - some candidates may have been excluded for a hidden co-star');
     if (recFavOnlyOn) noRecFilters.push('"Only my favorite actors" is on - no unwatched shows were found for your favorited actors within these filters');
+    if (recSkippedCount) noRecFilters.push('You previously skipped ' + recSkippedCount + ' of the candidates found this time');
     container.innerHTML = explainEmptyResults(noRecFilters);
     btn.textContent = 'Find Dramas I Can Watch';
     btn.disabled = false;
@@ -2269,7 +2357,9 @@ async function getRecommendations() {
     if (genreRow.textContent) info.appendChild(genreRow);
     info.appendChild(agoLbl); info.appendChild(actors);
     info.appendChild(createTmdbLinkBadge(rec.id));
+    info.appendChild(createTrailerBadge(rec.id));
     info.appendChild(createWatchlistAddBadge(rec));
+    info.appendChild(createSkipBadge(rec, card));
     card.appendChild(img); card.appendChild(info);
     card.onclick = (function(r) {
       return function() {
@@ -2408,10 +2498,15 @@ async function getSimilarShows() {
     if (results.length) results = await filterToFavoriteActorsOnly(results, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
   }
 
+  var simSkippedCount = results.length;
+  results = filterOutSkipped(results);
+  simSkippedCount -= results.length;
+
   if (!results.length) {
     var noSimFilters = ['Sources selected: ' + sources.length + ' drama(s) - TMDB found no unwatched Korean drama matches for these'];
     if (similarFullCastOn) noSimFilters.push('"Check full cast for last-10 overlap" is on - some candidates may have been excluded for a hidden co-star');
     if (similarFavOnlyOn) noSimFilters.push('"Only my favorite actors" is on - some candidates may have been excluded for not featuring one of your favorites');
+    if (simSkippedCount) noSimFilters.push('You previously skipped ' + simSkippedCount + ' of the candidates found this time');
     container.innerHTML = explainEmptyResults(noSimFilters);
     btn.textContent = 'Find Similar Dramas';
     btn.disabled = false;
@@ -2484,7 +2579,9 @@ async function getSimilarShows() {
     if (genreRow.textContent) info.appendChild(genreRow);
     info.appendChild(srcLbl);
     info.appendChild(createTmdbLinkBadge(rec.id));
+    info.appendChild(createTrailerBadge(rec.id));
     info.appendChild(createWatchlistAddBadge(rec));
+    info.appendChild(createSkipBadge(rec, card));
     card.appendChild(img); card.appendChild(info);
     card.onclick = (function(r) {
       return function() {
@@ -2644,7 +2741,96 @@ function createWatchlistAddBadge(rec) {
   return b;
 }
 
+// --- Undo Toast ---
+// Generic "action happened, here's a few seconds to undo it" toast, used for deleting a
+// drama, a watchlist item, a profile, or skipping a recommendation.
+var _undoRestoreFn = null;
+function showUndoToast(message, restoreFn, seconds) {
+  var el = document.getElementById('undoToast');
+  document.getElementById('undoToastMsg').textContent = message;
+  el.classList.remove('hidden');
+  clearTimeout(el._t);
+  _undoRestoreFn = restoreFn;
+  el._t = setTimeout(function() { el.classList.add('hidden'); _undoRestoreFn = null; }, (seconds || 6) * 1000);
+}
+function performUndo() {
+  var el = document.getElementById('undoToast');
+  clearTimeout(el._t);
+  el.classList.add('hidden');
+  var fn = _undoRestoreFn;
+  _undoRestoreFn = null;
+  if (fn) fn();
+}
+
+// --- Skipped Shows (per profile) ---
+// "Skip this suggestion" so a dismissed show stops resurfacing in Recommendations, Similar
+// Shows, AI Mood Search, AI Picks, and AI Similar Shows.
+function getSkippedShows() {
+  var pid = getActiveProfileId();
+  try { var d = JSON.parse(localStorage.getItem('kdc_skipped_' + pid) || '[]'); return Array.isArray(d) ? d : []; } catch(e) { return []; }
+}
+function saveSkippedShows(list) {
+  var pid = getActiveProfileId();
+  try { localStorage.setItem('kdc_skipped_' + pid, JSON.stringify(list)); } catch(e) {}
+}
+function isSkippedShow(id) { return getSkippedShows().indexOf(id) !== -1; }
+function skipShow(id) {
+  var list = getSkippedShows();
+  if (list.indexOf(id) === -1) { list.push(id); saveSkippedShows(list); }
+}
+function unskipShow(id) {
+  var list = getSkippedShows().filter(function(x) { return x !== id; });
+  saveSkippedShows(list);
+}
+function filterOutSkipped(items) {
+  var skipped = new Set(getSkippedShows());
+  if (!skipped.size) return items;
+  return items.filter(function(item) { return !skipped.has(item.id); });
+}
+
+// Small "Skip" badge for recommendation cards. Removes the card from view immediately and
+// remembers not to suggest that show again, with a few seconds to undo.
+function createSkipBadge(rec, card) {
+  var b = document.createElement('button');
+  b.className = 'skip-badge';
+  b.textContent = '\u2715 Skip';
+  b.title = 'Don\'t suggest this show again';
+  b.onclick = function(e) {
+    e.stopPropagation();
+    skipShow(rec.id);
+    var parent = card.parentNode, next = card.nextSibling;
+    if (parent) parent.removeChild(card);
+    showUndoToast('Skipped "' + rec.name + '" - won\'t be suggested again', function() {
+      unskipShow(rec.id);
+      if (parent) { if (next && next.parentNode === parent) parent.insertBefore(card, next); else parent.appendChild(card); }
+    });
+  };
+  return b;
+}
+
+// Small "Trailer" badge for recommendation cards. Fetches TMDB's videos for the show and links
+// to the best YouTube trailer/teaser it finds; stays hidden if TMDB has none on file.
+function createTrailerBadge(tmdbId) {
+  var a = document.createElement('a');
+  a.className = 'trailer-badge hidden';
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.textContent = '\u25B6 Trailer';
+  a.onclick = function(e) { e.stopPropagation(); };
+  tmdbGet('/tv/' + tmdbId + '/videos').then(function(data) {
+    if (!data || !data.results || !data.results.length) return;
+    var vids = data.results.filter(function(v) { return v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'); });
+    if (!vids.length) return;
+    var best = vids.find(function(v) { return v.type === 'Trailer' && v.official; }) ||
+               vids.find(function(v) { return v.type === 'Trailer'; }) || vids[0];
+    a.href = 'https://www.youtube.com/watch?v=' + best.key;
+    a.classList.remove('hidden');
+  }).catch(function() {});
+  return a;
+}
+
 function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
 
 // Renders text into a container, wrapping any substring that matches a known actor's name
 // with a hover tooltip showing their photo - so you don't need to remember every name.
@@ -2819,9 +3005,15 @@ function saveDrama() {
   checkRetroactiveMatches([obj]); // see if this drama's tracked actors appear untracked elsewhere (or vice versa)
 }
 function deleteDrama(id) {
-  if (!confirm('Delete this drama?')) return;
-  dramas = dramas.filter(function(d) { return d.id !== id; });
+  var idx = dramas.findIndex(function(d) { return d.id === id; });
+  if (idx === -1) return;
+  var removed = dramas[idx];
+  dramas.splice(idx, 1);
   saveData(); render();
+  showUndoToast('Deleted "' + removed.title + '"', function() {
+    dramas.splice(idx, 0, removed);
+    saveData(); render();
+  });
 }
 function editDrama(id) { var d = dramas.find(function(x) { return x.id === id; }); if (d) openModal(d); }
 
@@ -3815,10 +4007,15 @@ async function runMoodSearch() {
     }));
   }
 
+  var moodSkippedCount = verified.length;
+  verified = filterOutSkipped(verified);
+  moodSkippedCount -= verified.length;
+
   if (!verified.length) {
     var noMoodFilters = ['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off'];
     if (moodFullCastOn) noMoodFilters.push('"Check full cast for last-10 overlap" is on - some may have been excluded for a hidden co-star');
     if (moodFavOnlyOn) noMoodFilters.push('"Only my favorite actors" is on - some may have been excluded for not featuring one of your favorites');
+    if (moodSkippedCount) noMoodFilters.push('You previously skipped ' + moodSkippedCount + ' of the shows Gemini suggested this time');
     container.innerHTML = explainEmptyResults(noMoodFilters) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try rephrasing your mood description, or try again - Gemini\'s wording can vary between attempts.</p>';
     btn.textContent = 'Find Shows for This Mood'; btn.disabled = false;
     return;
@@ -3856,7 +4053,9 @@ async function runMoodSearch() {
     if (genreRow.textContent) info.appendChild(genreRow);
     if (rec.reason) info.appendChild(reasonRow);
     info.appendChild(createTmdbLinkBadge(rec.id));
+    info.appendChild(createTrailerBadge(rec.id));
     info.appendChild(createWatchlistAddBadge(rec));
+    info.appendChild(createSkipBadge(rec, card));
     card.appendChild(img); card.appendChild(info);
     card.onclick = (function(r) {
       return function() {
@@ -3909,6 +4108,9 @@ function renderAiRecCards(container, verified, introText) {
     if (genreRow.textContent) info.appendChild(genreRow);
     if (rec.reason) info.appendChild(reasonRow);
     info.appendChild(createTmdbLinkBadge(rec.id));
+    info.appendChild(createTrailerBadge(rec.id));
+    info.appendChild(createWatchlistAddBadge(rec));
+    info.appendChild(createSkipBadge(rec, card));
     card.appendChild(img); card.appendChild(info);
     card.onclick = (function(r) {
       return function() {
@@ -4041,6 +4243,15 @@ async function runAiPicks() {
       return;
     }
   }
+  var airecSkippedCount = verified.length;
+  verified = filterOutSkipped(verified);
+  airecSkippedCount -= verified.length;
+  if (!verified.length) {
+    var noAirecFilters = ['Gemini suggested ' + suggestions.length + ' show(s), but you previously skipped all of them'];
+    container.innerHTML = explainEmptyResults(noAirecFilters);
+    btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
+    return;
+  }
   renderAiRecCards(container, verified, 'Found ' + verified.length + ' AI-picked show' + (verified.length > 1 ? 's' : '') + ', verified on TMDB. Click a drama to add it to My Dramas.');
   btn.textContent = 'Refresh AI Picks'; btn.disabled = false;
 }
@@ -4129,6 +4340,14 @@ async function runAiSimilar() {
       btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
       return;
     }
+  }
+  var aisimilarSkippedCount = verified.length;
+  verified = filterOutSkipped(verified);
+  aisimilarSkippedCount -= verified.length;
+  if (!verified.length) {
+    container.innerHTML = explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but you previously skipped all of them']);
+    btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
+    return;
   }
   renderAiRecCards(container, verified, 'Found ' + verified.length + ' similar show' + (verified.length > 1 ? 's' : '') + ', verified on TMDB. Click a drama to add it to My Dramas.');
   btn.textContent = 'Refresh Similar Dramas'; btn.disabled = false;
@@ -4562,10 +4781,17 @@ async function addRecToWatchlist(rec, btnEl) {
 }
 
 function removeFromWatchlist(id) {
-  if (!confirm('Remove this drama from your watchlist?')) return;
-  watchlist = watchlist.filter(function(w) { return w.id !== id; });
+  var idx = watchlist.findIndex(function(w) { return w.id === id; });
+  if (idx === -1) return;
+  var removed = watchlist[idx];
+  watchlist.splice(idx, 1);
   saveWatchlistData();
   renderWatchlist();
+  showUndoToast('Removed "' + removed.title + '" from watchlist', function() {
+    watchlist.splice(idx, 0, removed);
+    saveWatchlistData();
+    renderWatchlist();
+  });
 }
 
 function markWatchlistItemWatched(id) {
@@ -4696,6 +4922,11 @@ function renderWatchlist() {
   });
 }
 
+// Every fresh visit/reload should ask "who's picking + password" again - the site should never
+// silently reopen straight into whoever was last logged in. (Logging in during a session still
+// works normally, since attemptProfileLogin/createNewProfile set the active profile again right
+// before calling initApp().)
+setActiveProfileId('');
 initApp();
 </script>
 </body>
