@@ -182,32 +182,31 @@
 
 <div id="profileGate" class="modal" style="z-index:500;">
   <div class="modal-inner" style="max-width:420px;">
-    <h3 class="sec-title" style="margin-bottom:0.25rem;">Who's picking?</h3>
-    <p style="font-size:0.7rem;color:#64748b;margin-bottom:1rem;">Each person logs in with their own PIN so your watchlists stay separate - you won't see what the other person added.</p>
-    <div id="profileList" style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;"></div>
+    <h3 class="sec-title" style="margin-bottom:0.25rem;">Welcome back</h3>
+    <p style="font-size:0.7rem;color:#64748b;margin-bottom:1rem;">Select your profile and enter your password to keep your watchlist and favorites separate - your co-watcher won't see what you've picked.</p>
 
     <div id="profileLoginForm" class="hidden">
-      <label class="field-lbl">PIN</label>
-      <input id="profilePinInput" type="password" inputmode="numeric" placeholder="Enter your PIN" onkeydown="if(event.key==='Enter')attemptProfileLogin()">
-      <div class="row">
-        <button onclick="attemptProfileLogin()">Log In</button>
-        <button class="btn-sm" onclick="cancelProfileLogin()">Back</button>
-      </div>
+      <label class="field-lbl">Who's picking?</label>
+      <select id="profileSelect" onchange="document.getElementById('profilePinInput').value=''; document.getElementById('profileLoginError').classList.add('hidden');"></select>
+      <label class="field-lbl">Password</label>
+      <input id="profilePinInput" type="password" placeholder="Enter your password" onkeydown="if(event.key==='Enter')attemptProfileLogin()">
+      <p id="profileLoginError" class="hidden" style="font-size:0.7rem;color:#f43f5e;margin:-0.25rem 0 0.5rem;">Wrong password - try again.</p>
+      <button onclick="attemptProfileLogin()">Log In</button>
     </div>
 
     <div id="profileCreateForm" class="hidden">
       <label class="field-lbl">Your Name</label>
       <input id="newProfileName" placeholder="e.g., Alex">
-      <label class="field-lbl">Choose a PIN (4+ digits)</label>
-      <input id="newProfilePin" type="password" inputmode="numeric" placeholder="e.g., 1234">
+      <label class="field-lbl">Choose a Password (4+ characters)</label>
+      <input id="newProfilePin" type="password" placeholder="e.g., mypassword">
       <div class="row">
         <button onclick="createNewProfile()">Create Profile</button>
         <button class="btn-sm" id="cancelCreateBtn" onclick="cancelProfileCreate()">Back</button>
       </div>
     </div>
 
-    <button class="btn-sm" id="addProfileBtn" onclick="showProfileCreateForm()" style="width:auto;margin-top:0.25rem;">+ Add a New Person</button>
-    <p style="font-size:0.62rem;color:#64748b;margin-top:0.9rem;">A PIN just keeps things separate on a shared device - it's not meant to be strong security, so don't reuse a real password.</p>
+    <button class="btn-sm" id="addProfileBtn" onclick="showProfileCreateForm()" style="width:auto;margin-top:0.75rem;">+ Add a New Person</button>
+    <p style="font-size:0.62rem;color:#64748b;margin-top:0.9rem;">A password just keeps things separate on a shared device - it's not meant to be strong security, so don't reuse a real password you use elsewhere.</p>
   </div>
 </div>
 
@@ -850,6 +849,11 @@
     </div>
 
     <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
+    <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">Manage Profiles</p>
+    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Rename a profile, or delete one entirely. Deleting removes that person's My Dramas, Watchlist, and Favorite Actors from this device - it cannot be undone.</p>
+    <div id="profileManageList" style="margin-bottom:0.5rem;"></div>
+
+    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
     <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">GitHub Gist Sync (optional)</p>
     <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Connecting this syncs your dramas and preferences (toggles, excluded actors) across devices. Your API keys are NOT synced this way for security - Gists are public, so keys stay local to each device and need entering once per device.</p>
 
@@ -1108,42 +1112,27 @@ function currentProfile() { var id = getActiveProfileId(); return getProfiles().
 function simpleHash(str) { var h = 0; for (var i = 0; i < str.length; i++) { h = ((h << 5) - h + str.charCodeAt(i)) | 0; } return String(h); }
 
 function renderProfileGate() {
-  var list = document.getElementById('profileList');
   var profiles = getProfiles();
-  list.innerHTML = '';
-  document.getElementById('profileLoginForm').classList.add('hidden');
+  document.getElementById('profileLoginError').classList.add('hidden');
   if (!profiles.length) {
+    document.getElementById('profileLoginForm').classList.add('hidden');
     document.getElementById('profileCreateForm').classList.remove('hidden');
     document.getElementById('addProfileBtn').classList.add('hidden');
     document.getElementById('cancelCreateBtn').classList.add('hidden');
-    var msg = document.createElement('p');
-    msg.style.cssText = 'font-size:0.75rem;color:#64748b;';
-    msg.textContent = 'No profiles yet - create one for each person sharing this watchlist.';
-    list.appendChild(msg);
     return;
   }
   document.getElementById('profileCreateForm').classList.add('hidden');
   document.getElementById('addProfileBtn').classList.remove('hidden');
   document.getElementById('cancelCreateBtn').classList.remove('hidden');
-  profiles.forEach(function(p) {
-    var btn = document.createElement('button');
-    btn.textContent = p.name;
-    btn.style.cssText = 'width:auto;margin:0;';
-    btn.onclick = function() { showProfileLoginForm(p.id); };
-    list.appendChild(btn);
-  });
-}
-var pendingLoginProfileId = null;
-function showProfileLoginForm(id) {
-  pendingLoginProfileId = id;
   document.getElementById('profileLoginForm').classList.remove('hidden');
-  document.getElementById('profileCreateForm').classList.add('hidden');
+  var sel = document.getElementById('profileSelect');
+  sel.innerHTML = '';
+  profiles.forEach(function(p) {
+    var opt = document.createElement('option');
+    opt.value = p.id; opt.textContent = p.name;
+    sel.appendChild(opt);
+  });
   document.getElementById('profilePinInput').value = '';
-  document.getElementById('profilePinInput').focus();
-}
-function cancelProfileLogin() {
-  pendingLoginProfileId = null;
-  document.getElementById('profileLoginForm').classList.add('hidden');
 }
 function showProfileCreateForm() {
   document.getElementById('profileCreateForm').classList.remove('hidden');
@@ -1157,10 +1146,16 @@ function cancelProfileCreate() {
 }
 function attemptProfileLogin() {
   var pin = document.getElementById('profilePinInput').value.trim();
+  var selId = document.getElementById('profileSelect').value;
   var profiles = getProfiles();
-  var p = profiles.find(function(x) { return x.id === pendingLoginProfileId; });
+  var p = profiles.find(function(x) { return x.id === selId; });
   if (!p) return;
-  if (simpleHash(pin) !== p.pinHash) { alert('Wrong PIN.'); return; }
+  if (simpleHash(pin) !== p.pinHash) {
+    document.getElementById('profileLoginError').classList.remove('hidden');
+    document.getElementById('profilePinInput').value = '';
+    document.getElementById('profilePinInput').focus();
+    return;
+  }
   setActiveProfileId(p.id);
   document.getElementById('profileGate').classList.remove('open');
   initApp();
@@ -1169,7 +1164,7 @@ function createNewProfile() {
   var name = document.getElementById('newProfileName').value.trim();
   var pin = document.getElementById('newProfilePin').value.trim();
   if (!name) { alert('Enter a name.'); return; }
-  if (pin.length < 4) { alert('PIN should be at least 4 digits.'); return; }
+  if (pin.length < 4) { alert('Password should be at least 4 characters.'); return; }
   var profiles = getProfiles();
   if (profiles.some(function(p) { return p.name.toLowerCase() === name.toLowerCase(); })) { alert('That name is already taken - pick another.'); return; }
   var id = 'p_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
@@ -1186,6 +1181,69 @@ function switchUser() {
   renderProfileGate();
 }
 
+// --- Profile management (Settings) ---
+function renderProfileManageList() {
+  var box = document.getElementById('profileManageList');
+  if (!box) return;
+  var profiles = getProfiles();
+  box.innerHTML = '';
+  if (!profiles.length) {
+    box.innerHTML = '<p style="font-size:0.75rem;color:#64748b;">No profiles yet.</p>';
+    return;
+  }
+  profiles.forEach(function(p) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;';
+    var input = document.createElement('input');
+    input.value = p.name;
+    input.style.cssText = 'flex:1;margin:0;';
+    input.dataset.profileId = p.id;
+    var saveBtn = document.createElement('button');
+    saveBtn.className = 'btn-sm'; saveBtn.textContent = 'Rename'; saveBtn.style.cssText = 'width:auto;margin:0;';
+    saveBtn.onclick = function() { renameProfile(p.id, input.value); };
+    var delBtn = document.createElement('button');
+    delBtn.className = 'btn-sm'; delBtn.textContent = 'Delete'; delBtn.style.cssText = 'width:auto;margin:0;background:rgba(244,63,94,0.15);border-color:rgba(244,63,94,0.4);color:#f43f5e;';
+    delBtn.onclick = function() { deleteProfile(p.id, p.name); };
+    row.appendChild(input); row.appendChild(saveBtn); row.appendChild(delBtn);
+    box.appendChild(row);
+  });
+}
+function renameProfile(id, newName) {
+  newName = (newName || '').trim();
+  if (!newName) { alert('Name cannot be empty.'); renderProfileManageList(); return; }
+  var profiles = getProfiles();
+  if (profiles.some(function(p) { return p.id !== id && p.name.toLowerCase() === newName.toLowerCase(); })) { alert('That name is already taken - pick another.'); renderProfileManageList(); return; }
+  var p = profiles.find(function(x) { return x.id === id; });
+  if (!p) return;
+  p.name = newName;
+  saveProfiles(profiles);
+  if (getActiveProfileId() === id) {
+    var nameEl = document.getElementById('hdrProfileName');
+    if (nameEl) nameEl.textContent = newName;
+  }
+  showBanner('Renamed to ' + newName, '#10b981', 'rgba(16,185,129,0.1)');
+}
+function deleteProfile(id, name) {
+  if (!confirm('Delete "' + name + '"? This permanently removes their My Dramas, Watchlist, and Favorite Actors from this device. This cannot be undone.')) return;
+  var profiles = getProfiles().filter(function(p) { return p.id !== id; });
+  saveProfiles(profiles);
+  // Clean up this profile's local data
+  try {
+    localStorage.removeItem('kdc_d_' + id);
+    localStorage.removeItem('kdc_watchlist_' + id);
+    localStorage.removeItem('kdc_fav_actors_' + id);
+    localStorage.removeItem('kdc_fav_only_' + id);
+  } catch(e) {}
+  showBanner('Profile "' + name + '" deleted', '#f43f5e', 'rgba(244,63,94,0.1)');
+  if (getActiveProfileId() === id) {
+    // You just deleted yourself while logged in - log out immediately.
+    switchUser();
+  } else {
+    renderProfileManageList();
+  }
+}
+
+
 // --- Favorite Actors (per profile) ---
 // Each person can privately mark actors they personally like, even though both of you watched
 // the same shows. Stored per profile, same pattern as the watchlist - just local, not synced
@@ -1200,6 +1258,15 @@ function saveFavoriteActors(list) {
 }
 function isFavoriteActor(name) {
   return getFavoriteActors().indexOf(name.toLowerCase().trim()) !== -1;
+}
+function getFavoriteActorDisplayNames() {
+  var favs = getFavoriteActors();
+  if (!favs.length) return [];
+  var byName = allActorsMap();
+  return favs.map(function(key) {
+    var match = byName.find(function(a) { return a.name.toLowerCase().trim() === key; });
+    return match ? match.name : key;
+  });
 }
 function toggleFavoriteActor(name) {
   if (!getActiveProfileId()) return;
@@ -1956,10 +2023,26 @@ async function getRecommendations() {
   if (actorFilterRaw) available = available.filter(function(a) { return a.name.toLowerCase().indexOf(actorFilterRaw) !== -1; });
   if (excludeList.length) available = available.filter(function(a) { return excludeList.indexOf(a.name.toLowerCase()) === -1; });
 
+  // "Only my favorite actors": this has to restrict WHICH actors we search by, not just filter
+  // the results afterward - otherwise we only ever search your 10 longest-unseen actors and a
+  // favorite outside that group never gets looked up at all, silently returning nothing.
+  var recFavOnlyOn = document.getElementById('recFavOnlyToggle').checked;
+  if (recFavOnlyOn) {
+    if (!getFavoriteActors().length) {
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
+      btn.textContent = 'Find Dramas I Can Watch';
+      btn.disabled = false;
+      return;
+    }
+    var favSet0 = new Set(getFavoriteActors());
+    available = available.filter(function(a) { return favSet0.has(a.name.toLowerCase().trim()); });
+  }
+
   if (!available.length) {
     var noActorFilters = [];
     if (actorFilterRaw) noActorFilters.push('Actor name filter: "' + actorFilterRaw + '"');
     if (excludeList.length) noActorFilters.push('Excluded actors: ' + excludeList.length + ' actor(s) excluded');
+    if (recFavOnlyOn) noActorFilters.push('"Only my favorite actors" is on - none of your favorited actors are currently available (they\'re all in your last 10, or filtered out above)');
     if (!noActorFilters.length) noActorFilters.push('No actors are currently "available" - everyone tracked is in your last 10 watched dramas, or you have not added any dramas yet.');
     container.innerHTML = explainEmptyResults(noActorFilters);
     btn.textContent = 'Find Dramas I Can Watch';
@@ -2002,7 +2085,7 @@ async function getRecommendations() {
 
   // Search TMDB for each available actor and collect their dramas
   var dramaMap = {};
-  var toSearch = sortedAvailable.slice(0, 10); // limit to 10 actors to avoid rate limits
+  var toSearch = sortedAvailable.slice(0, recFavOnlyOn ? 25 : 10); // limit to avoid rate limits; favorites pool is usually small anyway
 
   for (var i = 0; i < toSearch.length; i++) {
     var actor = toSearch[i];
@@ -2082,16 +2165,7 @@ async function getRecommendations() {
     recs = await filterOutLast10CastOverlap(recs, function(done, total) { btn.textContent = 'Checking full cast (' + done + '/' + total + ')...'; });
   }
 
-  var recFavOnlyOn = document.getElementById('recFavOnlyToggle').checked;
-  if (recFavOnlyOn) {
-    if (!getFavoriteActors().length) {
-      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
-      btn.textContent = 'Find Dramas I Can Watch';
-      btn.disabled = false;
-      return;
-    }
-    if (recs.length) recs = await filterToFavoriteActorsOnly(recs, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
-  }
+  var recFavOnlyOn = document.getElementById('recFavOnlyToggle').checked; // read earlier already; kept for the empty-state message below
 
   if (!recs.length) {
     var noRecFilters = [];
@@ -2100,7 +2174,7 @@ async function getRecommendations() {
     if (yearFrom || yearTo) noRecFilters.push('Year range: ' + (yearFrom || 'any') + '\u2013' + (yearTo || 'any'));
     if (!smartMode && isTrackCrewOn()) noRecFilters.push('"Avoid Recent Directors/Writers" is on - some candidates may have been excluded for a crew overlap');
     if (recFullCastOn) noRecFilters.push('"Check full cast for last-10 overlap" is on - some candidates may have been excluded for a hidden co-star');
-    if (recFavOnlyOn) noRecFilters.push('"Only my favorite actors" is on - some candidates may have been excluded for not featuring one of your favorites');
+    if (recFavOnlyOn) noRecFilters.push('"Only my favorite actors" is on - no unwatched shows were found for your favorited actors within these filters');
     container.innerHTML = explainEmptyResults(noRecFilters);
     btn.textContent = 'Find Dramas I Can Watch';
     btn.disabled = false;
@@ -3332,6 +3406,7 @@ function openSettings() {
     '<div class="sync-box sync-ok">Sync connected via GitHub Gist</div>' :
     '<div class="sync-box sync-info">Not synced. Enter GitHub credentials below to sync across devices.</div>';
   document.getElementById('settingsModal').classList.add('open');
+  renderProfileManageList();
 }
 function closeSettings() { document.getElementById('settingsModal').classList.remove('open'); }
 document.getElementById('settingsModal').onclick = function(e) { if (e.target === this) closeSettings(); };
@@ -3650,6 +3725,11 @@ async function runMoodSearch() {
   if (!moodText) { container.innerHTML = '<p style="color:#64748b;">Describe what you are in the mood for first.</p>'; return; }
   if (!getGeminiKey()) { document.getElementById('geminiKeyWarning').classList.remove('hidden'); return; }
   if (!getTmdbKey()) { container.innerHTML = '<p style="color:#64748b;">A TMDB API key is also needed to verify and show results with posters/ratings. Add one in Settings.</p>'; return; }
+  var moodFavOnlyOn = document.getElementById('moodFavOnlyToggle').checked;
+  if (moodFavOnlyOn && !getFavoriteActors().length) {
+    container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
+    return;
+  }
 
   var howMany = Math.max(1, Math.min(24, parseInt(document.getElementById('moodCount').value, 10) || 8));
   btn.textContent = 'Asking Gemini...';
@@ -3662,7 +3742,9 @@ async function runMoodSearch() {
 
   var prompt = 'You are a Korean drama recommendation assistant. The user wants Korean dramas (TV series only, no movies, no reality/variety shows) matching this mood or description:\n"' + moodText + '"\n\n' +
     'Do NOT suggest any of these titles the user has already watched: ' + (watchedTitles.length ? watchedTitles.join(', ') : '(none yet)') + '.\n' +
-    (recentActorNames.length ? ('If possible, prefer dramas that do NOT star these actors the user watched very recently: ' + recentActorNames.slice(0, 15).join(', ') + '. This is a soft preference, not a hard rule.\n') : '') +
+    (moodFavOnlyOn
+      ? ('HARD REQUIREMENT: every single suggestion MUST star at least one of these actors: ' + getFavoriteActorDisplayNames().join(', ') + '. Do not suggest anything outside this list of actors, even if it fits the mood better.\n')
+      : (recentActorNames.length ? ('If possible, prefer dramas that do NOT star these actors the user watched very recently: ' + recentActorNames.slice(0, 15).join(', ') + '. This is a soft preference, not a hard rule.\n') : '')) +
     '\nRespond with ONLY a raw JSON array (no markdown, no code fences, no extra text) of exactly ' + howMany + ' objects, each with exactly these fields: "title" (the official English or romanized title as listed on TMDB), "year" (release year as a number, or null if unsure), "reason" (one short sentence, under 20 words, explaining why it fits the mood). Example format:\n[{"title":"Show Name","year":2021,"reason":"..."}]';
 
   var res = await callGemini(prompt);
@@ -3717,15 +3799,8 @@ async function runMoodSearch() {
     verified = await filterOutLast10CastOverlap(verified, function(done, total) { btn.textContent = 'Checking full cast (' + done + '/' + total + ')...'; });
   }
 
-  var moodFavOnlyOn = document.getElementById('moodFavOnlyToggle').checked;
-  if (moodFavOnlyOn) {
-    if (!getFavoriteActors().length) {
-      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
-      btn.textContent = 'Find Shows for This Mood';
-      btn.disabled = false;
-      return;
-    }
-    if (verified.length) verified = await filterToFavoriteActorsOnly(verified, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
+  if (moodFavOnlyOn && verified.length) {
+    verified = await filterToFavoriteActorsOnly(verified, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
   }
 
   if (getOmdbKey() && verified.length) {
@@ -3904,18 +3979,36 @@ async function runAiPicks() {
   if (!getGeminiKey()) { document.getElementById('airecKeyWarning').classList.remove('hidden'); return; }
   if (!getTmdbKey()) { container.innerHTML = '<p style="color:#64748b;">A TMDB API key is also needed to verify results. Add one in Settings.</p>'; return; }
 
+  var airecFavOnlyOn = document.getElementById('airecFavOnlyToggle').checked;
+  if (airecFavOnlyOn && !getFavoriteActors().length) {
+    container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
+    return;
+  }
+
   var howMany = Math.max(1, Math.min(24, parseInt(document.getElementById('airecCount').value, 10) || 5));
   btn.textContent = 'Asking Gemini...'; btn.disabled = true;
   container.innerHTML = '<p style="color:#64748b;font-size:0.85rem;">Analyzing your Actor Directory...</p>';
 
-  var available = allActorsMap().filter(function(a) { return !a.inRecent10; }).sort(function(a, b) { return a.lastIdx - b.lastIdx; }).slice(0, 15);
+  var available = allActorsMap().filter(function(a) { return !a.inRecent10; }).sort(function(a, b) { return a.lastIdx - b.lastIdx; });
+  if (airecFavOnlyOn) {
+    var favSet1 = new Set(getFavoriteActors());
+    available = available.filter(function(a) { return favSet1.has(a.name.toLowerCase().trim()); });
+    if (!available.length) {
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - none of your favorited actors are currently available (they\'re all in your last 10 watched dramas)']);
+      btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
+      return;
+    }
+  }
+  available = available.slice(0, airecFavOnlyOn ? 25 : 15);
   var genreCounts = {};
   dramas.forEach(function(d) { (d.genreIds || []).forEach(function(gid) { genreCounts[gid] = (genreCounts[gid] || 0) + 1; }); });
   var topGenres = Object.keys(genreCounts).sort(function(a, b) { return genreCounts[b] - genreCounts[a]; }).slice(0, 5).map(function(gid) { return TMDB_TV_GENRES[gid]; }).filter(Boolean);
   var watchedTitles = dramas.map(function(d) { return d.title; });
 
   var prompt = 'You are a Korean drama recommendation assistant. Suggest exactly ' + howMany + ' Korean dramas (TV series only, no movies, no reality/variety shows) for this user.\n\n' +
-    'Actors the user has NOT seen in a while (prefer suggesting dramas starring these, most-overdue first): ' + (available.length ? available.map(function(a) { return a.name; }).join(', ') : '(none available - use your judgment)') + '.\n' +
+    (airecFavOnlyOn
+      ? ('HARD REQUIREMENT: every single suggestion MUST star at least one of these actors: ' + available.map(function(a) { return a.name; }).join(', ') + '. Do not suggest anything outside this list of actors.\n')
+      : ('Actors the user has NOT seen in a while (prefer suggesting dramas starring these, most-overdue first): ' + (available.length ? available.map(function(a) { return a.name; }).join(', ') : '(none available - use your judgment)') + '.\n')) +
     (topGenres.length ? ('Their most-watched genres, which they seem to enjoy: ' + topGenres.join(', ') + '.\n') : '') +
     'Do NOT suggest any of these already-watched titles: ' + (watchedTitles.length ? watchedTitles.join(', ') : '(none yet)') + '.\n\n' +
     'Respond with ONLY a raw JSON array (no markdown, no code fences, no extra text) of exactly ' + howMany + ' objects, each with fields "title", "year" (number or null), and "reason" (one short sentence under 20 words, ideally naming which actor or genre motivated the pick). Example: [{"title":"Show Name","year":2021,"reason":"..."}]';
@@ -3939,17 +4032,11 @@ async function runAiPicks() {
     btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
     return;
   }
-  var airecFavOnlyOn = document.getElementById('airecFavOnlyToggle').checked;
   if (airecFavOnlyOn) {
-    if (!getFavoriteActors().length) {
-      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
-      btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
-      return;
-    }
     btn.textContent = 'Checking favorite actors...';
     verified = await filterToFavoriteActorsOnly(verified, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
     if (!verified.length) {
-      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - none of Gemini\'s suggestions featured one of your favorites']) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try again, or turn the filter off.</p>';
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - Gemini\'s suggestions did not actually feature one of your favorites this time']) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try again - Gemini sometimes drifts from the instruction.</p>';
       btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
       return;
     }
@@ -4000,14 +4087,20 @@ async function runAiSimilar() {
 
   var sources = dramas.filter(function(d) { return selectedAiSimilarSources.has(d.id); });
   if (!sources.length) { container.innerHTML = '<p style="color:#64748b;">Pick at least one drama above first.</p>'; return; }
+  var aisimilarFavOnlyOn = document.getElementById('aisimilarFavOnlyToggle').checked;
+  if (aisimilarFavOnlyOn && !getFavoriteActors().length) {
+    container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
+    return;
+  }
 
   btn.textContent = 'Asking Gemini...'; btn.disabled = true;
   container.innerHTML = '<p style="color:#64748b;font-size:0.85rem;">Thinking of similar dramas...</p>';
 
   var watchedTitles = dramas.map(function(d) { return d.title; });
   var prompt = 'You are a Korean drama recommendation assistant. The user enjoyed these Korean dramas: ' + sources.map(function(s) { return s.title + (s.year ? ' (' + s.year + ')' : ''); }).join(', ') + '.\n\n' +
-    'Suggest up to 8 similar Korean dramas (TV series only, no movies, no reality/variety shows) they have not seen yet. Do NOT suggest any of these already-watched titles: ' + (watchedTitles.length ? watchedTitles.join(', ') : '(none yet)') + '.\n\n' +
-    'Respond with ONLY a raw JSON array (no markdown, no code fences, no extra text) of objects with fields "title", "year" (number or null), and "reason" (one short sentence under 20 words explaining the similarity). Example: [{"title":"Show Name","year":2021,"reason":"..."}]';
+    'Suggest up to 8 similar Korean dramas (TV series only, no movies, no reality/variety shows) they have not seen yet. Do NOT suggest any of these already-watched titles: ' + (watchedTitles.length ? watchedTitles.join(', ') : '(none yet)') + '.\n' +
+    (aisimilarFavOnlyOn ? ('HARD REQUIREMENT: every single suggestion MUST star at least one of these actors: ' + getFavoriteActorDisplayNames().join(', ') + '. Do not suggest anything outside this list of actors, even if it seems more similar otherwise.\n') : '') +
+    '\nRespond with ONLY a raw JSON array (no markdown, no code fences, no extra text) of objects with fields "title", "year" (number or null), and "reason" (one short sentence under 20 words explaining the similarity). Example: [{"title":"Show Name","year":2021,"reason":"..."}]';
 
   var res = await callGemini(prompt);
   if (!res.ok) {
@@ -4028,17 +4121,11 @@ async function runAiSimilar() {
     btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
     return;
   }
-  var aisimilarFavOnlyOn = document.getElementById('aisimilarFavOnlyToggle').checked;
-  if (aisimilarFavOnlyOn) {
-    if (!getFavoriteActors().length) {
-      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
-      btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
-      return;
-    }
+  if (aisimilarFavOnlyOn && verified.length) {
     btn.textContent = 'Checking favorite actors...';
     verified = await filterToFavoriteActorsOnly(verified, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
     if (!verified.length) {
-      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - none of Gemini\'s suggestions featured one of your favorites']) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try again, or turn the filter off.</p>';
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - Gemini\'s suggestions did not actually feature one of your favorites this time']) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try again, or try different source dramas.</p>';
       btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
       return;
     }
