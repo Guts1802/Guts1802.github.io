@@ -106,6 +106,8 @@
       margin-bottom:0.3rem; margin-right:0.3rem; cursor:pointer;
     }
     .trailer-badge:hover { background:rgba(239,68,68,0.28); }
+    .trailer-badge.unverified { background:rgba(100,116,139,0.15); border-color:rgba(100,116,139,0.35); color:#94a3b8; }
+    .trailer-badge.unverified:hover { background:rgba(100,116,139,0.28); }
     .skip-badge {
       display:inline-flex; align-items:center; gap:0.25rem; font-size:0.65rem; font-weight:bold;
       padding:0.15rem 0.5rem; border-radius:999px; background:rgba(100,116,139,0.15);
@@ -896,6 +898,11 @@
     <button onclick="exportMyData()" class="btn-sm" style="width:auto;">Download My Data as JSON</button>
 
     <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
+    <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">Skipped Shows</p>
+    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Shows you've dismissed with "Skip" on a recommendation card. Restore any of these to let them be suggested again.</p>
+    <div id="skippedShowsList" style="display:flex;flex-direction:column;gap:0.5rem;max-height:280px;overflow-y:auto;margin-bottom:0.5rem;"></div>
+
+    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
     <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">GitHub Gist Sync (optional)</p>
     <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Connecting this syncs your dramas and preferences (toggles, excluded actors) across devices. Your API keys are NOT synced this way for security - Gists are public, so keys stay local to each device and need entering once per device.</p>
 
@@ -1228,7 +1235,7 @@ function exportMyData() {
     dramas: dramas,
     watchlist: watchlist,
     favoriteActors: getFavoriteActorDisplayNames(),
-    skippedShowIds: getSkippedShows()
+    skippedShows: getSkippedShows()
   };
   var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   var url = URL.createObjectURL(blob);
@@ -2764,7 +2771,8 @@ function performUndo() {
 
 // --- Skipped Shows (per profile) ---
 // "Skip this suggestion" so a dismissed show stops resurfacing in Recommendations, Similar
-// Shows, AI Mood Search, AI Picks, and AI Similar Shows.
+// Shows, AI Mood Search, AI Picks, and AI Similar Shows. Stores enough info (name/poster/year)
+// to show a "Skipped Shows" list later without needing to re-fetch from TMDB.
 function getSkippedShows() {
   var pid = getActiveProfileId();
   try { var d = JSON.parse(localStorage.getItem('kdc_skipped_' + pid) || '[]'); return Array.isArray(d) ? d : []; } catch(e) { return []; }
@@ -2773,19 +2781,51 @@ function saveSkippedShows(list) {
   var pid = getActiveProfileId();
   try { localStorage.setItem('kdc_skipped_' + pid, JSON.stringify(list)); } catch(e) {}
 }
-function isSkippedShow(id) { return getSkippedShows().indexOf(id) !== -1; }
-function skipShow(id) {
+function isSkippedShow(id) { return getSkippedShows().some(function(s) { return s.id === id; }); }
+function skipShow(rec) {
   var list = getSkippedShows();
-  if (list.indexOf(id) === -1) { list.push(id); saveSkippedShows(list); }
+  if (!list.some(function(s) { return s.id === rec.id; })) {
+    list.push({ id: rec.id, name: rec.name, poster: rec.poster || '', year: rec.year || '' });
+    saveSkippedShows(list);
+  }
 }
 function unskipShow(id) {
-  var list = getSkippedShows().filter(function(x) { return x !== id; });
+  var list = getSkippedShows().filter(function(s) { return s.id !== id; });
   saveSkippedShows(list);
 }
 function filterOutSkipped(items) {
-  var skipped = new Set(getSkippedShows());
-  if (!skipped.size) return items;
-  return items.filter(function(item) { return !skipped.has(item.id); });
+  var skippedIds = new Set(getSkippedShows().map(function(s) { return s.id; }));
+  if (!skippedIds.size) return items;
+  return items.filter(function(item) { return !skippedIds.has(item.id); });
+}
+
+// Renders the "Skipped Shows" list in Settings, with a Restore button on each.
+function renderSkippedShowsList() {
+  var box = document.getElementById('skippedShowsList');
+  if (!box) return;
+  var skipped = getSkippedShows();
+  if (!skipped.length) { box.innerHTML = '<p style="font-size:0.75rem;color:#64748b;">No skipped shows - anything you skip from a recommendation card will show up here.</p>'; return; }
+  box.innerHTML = '';
+  skipped.forEach(function(s) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:0.6rem;background:#13131f;border:1px solid #2a2a45;border-radius:8px;padding:0.5rem;';
+    var img = document.createElement('img');
+    img.src = s.poster || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(s.name) + '&background=1a1a2e&color=c084fc&size=100');
+    img.onerror = function() { this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(s.name) + '&background=1a1a2e&color=c084fc&size=100'; };
+    img.style.cssText = 'width:36px;height:52px;object-fit:cover;border-radius:4px;flex-shrink:0;';
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'flex:1;font-size:0.78rem;';
+    lbl.textContent = s.name + (s.year ? ' (' + s.year + ')' : '');
+    var restoreBtn = document.createElement('button');
+    restoreBtn.className = 'btn-sm'; restoreBtn.textContent = 'Restore'; restoreBtn.style.cssText = 'width:auto;margin:0;';
+    restoreBtn.onclick = function() {
+      unskipShow(s.id);
+      renderSkippedShowsList();
+      showBanner('Restored "' + s.name + '" - it can be suggested again', '#10b981', 'rgba(16,185,129,0.1)');
+    };
+    row.appendChild(img); row.appendChild(lbl); row.appendChild(restoreBtn);
+    box.appendChild(row);
+  });
 }
 
 // Small "Skip" badge for recommendation cards. Removes the card from view immediately and
@@ -2797,7 +2837,7 @@ function createSkipBadge(rec, card) {
   b.title = 'Don\'t suggest this show again';
   b.onclick = function(e) {
     e.stopPropagation();
-    skipShow(rec.id);
+    skipShow(rec);
     var parent = card.parentNode, next = card.nextSibling;
     if (parent) parent.removeChild(card);
     showUndoToast('Skipped "' + rec.name + '" - won\'t be suggested again', function() {
@@ -2808,22 +2848,45 @@ function createSkipBadge(rec, card) {
   return b;
 }
 
-// Small "Trailer" badge for recommendation cards. Fetches TMDB's videos for the show and links
-// to the best YouTube trailer/teaser it finds; stays hidden if TMDB has none on file.
+// Small "Trailer" badge for recommendation cards. Fetches TMDB's videos for the show in both
+// its default language and Korean (many K-drama trailers are only tagged ko-KR, which TMDB's
+// default/English query misses entirely - this was why some shows showed no trailer at all).
+// Prefers videos TMDB marks "official"; if only an unofficial upload is found, it's still shown
+// but clearly labeled so you know it may be a reupload rather than the studio's own channel.
 function createTrailerBadge(tmdbId) {
   var a = document.createElement('a');
   a.className = 'trailer-badge hidden';
   a.target = '_blank';
   a.rel = 'noopener noreferrer';
-  a.textContent = '\u25B6 Trailer';
   a.onclick = function(e) { e.stopPropagation(); };
-  tmdbGet('/tv/' + tmdbId + '/videos').then(function(data) {
-    if (!data || !data.results || !data.results.length) return;
-    var vids = data.results.filter(function(v) { return v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'); });
+  Promise.all([
+    tmdbGet('/tv/' + tmdbId + '/videos'),
+    tmdbGet('/tv/' + tmdbId + '/videos?language=ko-KR')
+  ]).then(function(resultsArr) {
+    var all = [];
+    resultsArr.forEach(function(data) { if (data && data.results) all = all.concat(data.results); });
+    var seenKeys = {};
+    var vids = all.filter(function(v) {
+      if (!v || v.site !== 'YouTube') return false;
+      if (v.type !== 'Trailer' && v.type !== 'Teaser') return false;
+      if (seenKeys[v.key]) return false;
+      seenKeys[v.key] = true;
+      return true;
+    });
     if (!vids.length) return;
-    var best = vids.find(function(v) { return v.type === 'Trailer' && v.official; }) ||
-               vids.find(function(v) { return v.type === 'Trailer'; }) || vids[0];
+    function score(v) {
+      var s = 0;
+      if (v.official) s += 10;
+      if (/official/i.test(v.name || '')) s += 4;
+      if (v.type === 'Trailer') s += 2;
+      return s;
+    }
+    vids.sort(function(x, y) { return score(y) - score(x); });
+    var best = vids[0];
+    var isOfficial = !!best.official || /official/i.test(best.name || '');
     a.href = 'https://www.youtube.com/watch?v=' + best.key;
+    a.textContent = isOfficial ? '\u25B6 Trailer' : '\u25B6 Trailer (unverified)';
+    if (!isOfficial) { a.classList.add('unverified'); a.title = 'TMDB doesn\'t mark this as an official upload - it may be a reupload rather than the studio/network\'s own channel.'; }
     a.classList.remove('hidden');
   }).catch(function() {});
   return a;
@@ -3599,6 +3662,7 @@ function openSettings() {
     '<div class="sync-box sync-info">Not synced. Enter GitHub credentials below to sync across devices.</div>';
   document.getElementById('settingsModal').classList.add('open');
   renderProfileManageList();
+  renderSkippedShowsList();
 }
 function closeSettings() { document.getElementById('settingsModal').classList.remove('open'); }
 document.getElementById('settingsModal').onclick = function(e) { if (e.target === this) closeSettings(); };
