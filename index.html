@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>K-Drama Cast Checker</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0d0d14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="K-Drama Checker">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" href="icon-192.png" type="image/png">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Georgia, serif; background: #0d0d14; color: #e2e8f0; min-height: 100vh; }
@@ -256,11 +263,16 @@
     <span>&#128100; <b id="hdrProfileName" style="color:#c084fc;"></b>'s watchlist</span>
     <button class="btn-sm" onclick="switchUser()" style="width:auto;margin:0;padding:0.25rem 0.6rem;font-size:0.65rem;">Switch User</button>
   </div>
+  <div id="turnWidget" class="hidden" style="text-align:center;margin-top:0.5rem;">
+    <span id="turnWidgetText" style="font-size:0.8rem;color:#fbbf24;font-weight:bold;"></span>
+    <button class="btn-sm" onclick="advanceTurn()" style="width:auto;margin:0 0 0 0.5rem;padding:0.25rem 0.6rem;font-size:0.65rem;">I Picked - Pass Turn</button>
+  </div>
   <div id="banner" style="display:none;"></div>
 
   <div id="hdrButtonsMain" class="hdr-btns">
     <button onclick="openTab('dramas')" id="tab-dramas" class="btn-sm" style="width:auto;margin:0;">My Dramas</button>
     <button onclick="openTab('watchlist')" id="tab-watchlist" class="btn-sm" style="width:auto;margin:0;">Watchlist</button>
+    <button onclick="openTab('skipped')" id="tab-skipped" class="btn-sm" style="width:auto;margin:0;">Skipped Shows</button>
     <button onclick="openTab('dir')" id="tab-dir" class="btn-sm" style="width:auto;margin:0;">Actor Directory</button>
     <button onclick="openTab('check')" id="tab-check" class="btn-sm" style="width:auto;margin:0;">Check Cast</button>
     <button onclick="openTab('rec')" id="tab-rec" class="btn-gold" style="width:auto;margin:0;">Recommendations</button>
@@ -276,6 +288,7 @@
   <div id="hdrButtonsAI" class="hdr-btns hidden">
     <button onclick="openTab('dramas')" id="tab-dramas-ai" class="btn-sm" style="width:auto;margin:0;">My Dramas</button>
     <button onclick="openTab('watchlist')" id="tab-watchlist-ai" class="btn-sm" style="width:auto;margin:0;">Watchlist</button>
+    <button onclick="openTab('skipped')" id="tab-skipped-ai" class="btn-sm" style="width:auto;margin:0;">Skipped Shows</button>
     <button onclick="openTab('dir')" id="tab-dir-ai" class="btn-sm" style="width:auto;margin:0;">Actor Directory</button>
     <button onclick="openTab('check')" id="tab-check-ai" class="btn-sm" style="width:auto;margin:0;">Check Cast</button>
     <button onclick="openTab('stats')" id="tab-stats-ai" class="btn-green" style="width:auto;margin:0;">Stats</button>
@@ -290,6 +303,11 @@
 </div>
 
 <div class="container">
+  <div id="backupReminder" class="hidden" style="max-width:700px;margin:0 auto 1.25rem;background:#181828;border:1px solid #2a2a45;border-radius:10px;padding:0.7rem 1rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+    <span id="backupReminderText" style="flex:1;font-size:0.78rem;color:#c084fc;min-width:200px;"></span>
+    <button class="btn-sm" onclick="exportMyData()" style="width:auto;margin:0;">Export Now</button>
+    <button class="btn-sm" onclick="dismissBackupReminder(false)" style="width:auto;margin:0;">Remind Me Later</button>
+  </div>
   <!-- Dramas Tab -->
   <div id="page-dramas">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
@@ -347,6 +365,17 @@
     </div>
 
     <div id="watchlistGrid" class="rec-grid"></div>
+  </div>
+
+  <!-- Skipped Shows Tab -->
+  <div id="page-skipped" class="hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#c084fc;">Skipped Shows</h3>
+      <span id="skippedCount" style="background:#1a1a2e;border:1px solid #2a2a45;border-radius:999px;padding:0.2rem 0.6rem;font-size:0.7rem;color:#64748b;"></span>
+    </div>
+    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Shows you've dismissed with "Skip" on a recommendation card, across Recommendations, Similar Shows, AI Mood Search, AI Picks, and AI Similar Shows. Restore any of these to let them be suggested again.</p>
+    <input id="skippedSearch" placeholder="Search skipped shows by title..." oninput="renderSkippedShowsPage()" style="margin-bottom:0.75rem;">
+    <div id="skippedGrid" class="rec-grid"></div>
   </div>
 
   <!-- Actor Directory Tab -->
@@ -893,14 +922,26 @@
     <div id="profileManageList" style="margin-bottom:0.5rem;"></div>
 
     <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
+    <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">Whose Turn to Pick?</p>
+    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Unlike everything else here, this is shared between profiles on purpose - you should both see the same answer. Reorder the rotation, or jump straight to whoever's turn it actually is right now.</p>
+    <div id="turnOrderList" style="margin-bottom:0.75rem;"></div>
+    <label class="field-lbl">It's currently...</label>
+    <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;">
+      <select id="turnCurrentSelect" style="flex:1;margin:0;"></select>
+      <button class="btn-sm" onclick="applyTurnCurrentSelect()" style="width:auto;margin:0;">Set</button>
+    </div>
+    <p id="turnHistoryNote" style="font-size:0.65rem;color:#64748b;"></p>
+
+    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
     <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">Backup &amp; Export</p>
     <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Download everything for your current profile - My Dramas, Watchlist, Favorite Actors, and Skipped Shows - as a JSON file. Useful as a local backup, or if Gist sync ever breaks.</p>
     <button onclick="exportMyData()" class="btn-sm" style="width:auto;">Download My Data as JSON</button>
 
-    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
-    <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">Skipped Shows</p>
-    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Shows you've dismissed with "Skip" on a recommendation card. Restore any of these to let them be suggested again.</p>
-    <div id="skippedShowsList" style="display:flex;flex-direction:column;gap:0.5rem;max-height:280px;overflow-y:auto;margin-bottom:0.5rem;"></div>
+    <div style="margin-top:0.9rem;">
+      <label class="field-lbl">Restore from a backup file</label>
+      <input type="file" id="importFileInput" accept="application/json" onchange="handleImportFile(this)">
+      <p style="font-size:0.65rem;color:#64748b;margin-top:0.35rem;">Merges into your current profile - adds anything from the file you don't already have (matched by TMDB ID), without deleting anything you currently have.</p>
+    </div>
 
     <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
     <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">GitHub Gist Sync (optional)</p>
@@ -1036,6 +1077,7 @@ function buttonIdsForPage(name) {
   var sharedMap = {
     dramas: ['tab-dramas', 'tab-dramas-ai'],
     watchlist: ['tab-watchlist', 'tab-watchlist-ai'],
+    skipped: ['tab-skipped', 'tab-skipped-ai'],
     dir: ['tab-dir', 'tab-dir-ai'],
     check: ['tab-check', 'tab-check-ai'],
     stats: ['tab-stats', 'tab-stats-ai'],
@@ -1045,7 +1087,7 @@ function buttonIdsForPage(name) {
 }
 
 function openTab(name) {
-  var pages = ['dramas','watchlist','dir','rec','check','similar','stats','optimizer','mood','airec','aisimilar','aioptimizer'];
+  var pages = ['dramas','watchlist','skipped','dir','rec','check','similar','stats','optimizer','mood','airec','aisimilar','aioptimizer'];
   pages.forEach(function(p) {
     var el = document.getElementById('page-' + p);
     if (el) el.classList.add('hidden');
@@ -1080,6 +1122,7 @@ function openTab(name) {
     renderSimilarSourcePicker();
   }
   if (name === 'watchlist') renderWatchlist();
+  if (name === 'skipped') renderSkippedShowsPage();
   if (name === 'stats') renderStats();
   if (name === 'optimizer') renderOptimizerPickers();
   if (name === 'mood') {
@@ -1248,7 +1291,232 @@ function exportMyData() {
   a.click();
   document.body.removeChild(a);
   setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  setLastExportDate();
+  dismissBackupReminder(true);
   showBanner('Backup downloaded (' + dramas.length + ' dramas, ' + watchlist.length + ' watchlist items)', '#10b981', 'rgba(16,185,129,0.1)');
+}
+
+// --- Auto-Backup Reminder ---
+// A gentle nudge if it's been a while since the last export - not urgent, just easy to miss.
+function getLastExportDate() {
+  var pid = getActiveProfileId();
+  try { return localStorage.getItem('kdc_last_export_' + pid); } catch(e) { return null; }
+}
+function setLastExportDate() {
+  var pid = getActiveProfileId();
+  try { localStorage.setItem('kdc_last_export_' + pid, new Date().toISOString()); } catch(e) {}
+}
+function getBackupSnoozeUntil() {
+  var pid = getActiveProfileId();
+  try { return localStorage.getItem('kdc_backup_snooze_' + pid); } catch(e) { return null; }
+}
+function setBackupSnooze(days) {
+  var pid = getActiveProfileId();
+  var until = new Date(Date.now() + days * 86400000).toISOString();
+  try { localStorage.setItem('kdc_backup_snooze_' + pid, until); } catch(e) {}
+}
+function checkBackupReminder() {
+  var el = document.getElementById('backupReminder');
+  var textEl = document.getElementById('backupReminderText');
+  if (!el || !textEl) return;
+  var snoozeUntil = getBackupSnoozeUntil();
+  if (snoozeUntil && new Date(snoozeUntil) > new Date()) { el.classList.add('hidden'); return; }
+  if (!dramas.length && !watchlist.length) { el.classList.add('hidden'); return; } // nothing worth backing up yet
+  var last = getLastExportDate();
+  if (!last) {
+    textEl.textContent = "You haven't downloaded a backup yet - takes one click in Settings.";
+    el.classList.remove('hidden');
+    return;
+  }
+  var daysSince = Math.floor((Date.now() - new Date(last).getTime()) / 86400000);
+  if (daysSince >= 30) {
+    textEl.textContent = "It's been " + daysSince + ' days since your last backup - want a fresh one?';
+    el.classList.remove('hidden');
+  } else {
+    el.classList.add('hidden');
+  }
+}
+function dismissBackupReminder(justExported) {
+  var el = document.getElementById('backupReminder');
+  if (el) el.classList.add('hidden');
+  if (!justExported) setBackupSnooze(7); // ask again in a week if they said "later"
+}
+
+// --- Import from JSON ---
+// The counterpart to exportMyData - restores a backup, or brings data over from another device/
+// profile. Always a non-destructive MERGE (matched by TMDB id) so it can never wipe out anything
+// already here.
+function handleImportFile(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var data;
+    try { data = JSON.parse(e.target.result); } catch(err) { alert('That file is not valid JSON.'); input.value = ''; return; }
+    importBackupData(data);
+    input.value = '';
+  };
+  reader.onerror = function() { alert('Could not read that file.'); input.value = ''; };
+  reader.readAsText(file);
+}
+function importBackupData(data) {
+  if (!data || typeof data !== 'object') { alert("That doesn't look like a valid K-Drama Cast Checker backup file."); return; }
+  var dImport = Array.isArray(data.dramas) ? data.dramas : [];
+  var wImport = Array.isArray(data.watchlist) ? data.watchlist : [];
+  var fImport = Array.isArray(data.favoriteActors) ? data.favoriteActors : [];
+  var sImport = Array.isArray(data.skippedShows) ? data.skippedShows : [];
+  if (!dImport.length && !wImport.length && !fImport.length && !sImport.length) { alert('This file does not contain any recognizable data to import.'); return; }
+
+  var msg = 'This backup has ' + dImport.length + ' drama(s), ' + wImport.length + ' watchlist item(s), ' + fImport.length + ' favorite actor(s), and ' + sImport.length + ' skipped show(s).\n\n' +
+    'This will MERGE into your current profile (' + (currentProfile() ? currentProfile().name : '') + ') - adding anything you don\'t already have, without deleting anything you currently have. Continue?';
+  if (!confirm(msg)) return;
+
+  var addedDramas = 0, addedWatchlist = 0, addedFavorites = 0, addedSkipped = 0;
+
+  var existingDramaIds = new Set(dramas.map(function(d) { return d.id; }));
+  dImport.forEach(function(d) { if (d && typeof d.id !== 'undefined' && !existingDramaIds.has(d.id)) { dramas.push(d); existingDramaIds.add(d.id); addedDramas++; } });
+
+  var existingWlIds = new Set(watchlist.map(function(w) { return w.id; }));
+  wImport.forEach(function(w) { if (w && typeof w.id !== 'undefined' && !existingWlIds.has(w.id)) { watchlist.push(w); existingWlIds.add(w.id); addedWatchlist++; } });
+
+  var favs = getFavoriteActors();
+  fImport.forEach(function(name) { var key = String(name).toLowerCase().trim(); if (key && favs.indexOf(key) === -1) { favs.push(key); addedFavorites++; } });
+  saveFavoriteActors(favs);
+
+  var skipped = getSkippedShows();
+  var existingSkipIds = new Set(skipped.map(function(s) { return s.id; }));
+  sImport.forEach(function(s) { if (s && typeof s.id !== 'undefined' && !existingSkipIds.has(s.id)) { skipped.push(s); existingSkipIds.add(s.id); addedSkipped++; } });
+  saveSkippedShows(skipped);
+
+  saveData(); saveWatchlistData(); render(); renderWatchlist();
+  showBanner('Imported: +' + addedDramas + ' dramas, +' + addedWatchlist + ' watchlist, +' + addedFavorites + ' favorite actors, +' + addedSkipped + ' skipped shows', '#10b981', 'rgba(16,185,129,0.1)');
+}
+
+// --- Whose Turn to Pick? ---
+// Unlike watchlist/dramas/favorites, this is intentionally SHARED (not private per profile) -
+// both of you should see the same answer. Stored in the same non-sensitive settings object that
+// already syncs via Gist (trackCrew, smartScore, etc.), so it stays in sync across devices too.
+function getTurnState() {
+  var s = getSettings();
+  var profiles = getProfiles();
+  var order = Array.isArray(s.turnOrder) ? s.turnOrder.filter(function(id) { return profiles.some(function(p) { return p.id === id; }); }) : [];
+  // Any profile not yet in the rotation (e.g. just created) gets appended at the end automatically.
+  profiles.forEach(function(p) { if (order.indexOf(p.id) === -1) order.push(p.id); });
+  var idx = typeof s.turnIndex === 'number' ? s.turnIndex : 0;
+  if (order.length) idx = ((idx % order.length) + order.length) % order.length; else idx = 0;
+  return { order: order, index: idx, history: Array.isArray(s.turnHistory) ? s.turnHistory : [] };
+}
+function saveTurnState(order, index, history) {
+  var s = getSettings();
+  s.turnOrder = order;
+  s.turnIndex = index;
+  s.turnHistory = (history || []).slice(-10);
+  saveSettings2(s);
+  pushGist(); // best-effort - silently does nothing if Gist sync isn't set up
+}
+function renderTurnWidget() {
+  var el = document.getElementById('turnWidget');
+  var textEl = document.getElementById('turnWidgetText');
+  if (!el || !textEl) return;
+  var t = getTurnState();
+  if (t.order.length < 2) { el.classList.add('hidden'); return; }
+  var turnId = t.order[t.index];
+  var turnProfile = getProfiles().find(function(p) { return p.id === turnId; });
+  var myProfile = currentProfile();
+  var isMine = myProfile && turnProfile && myProfile.id === turnProfile.id;
+  textEl.textContent = isMine ? '\uD83C\uDFAF It\'s your turn to pick!' : ('\uD83C\uDFAF It\'s ' + (turnProfile ? turnProfile.name : 'someone') + '\'s turn to pick.');
+  el.classList.remove('hidden');
+}
+function advanceTurn() {
+  var t = getTurnState();
+  if (!t.order.length) return;
+  var pickerId = t.order[t.index];
+  var picker = getProfiles().find(function(p) { return p.id === pickerId; });
+  var newHistory = t.history.concat([{ profileId: pickerId, name: picker ? picker.name : 'Someone', date: new Date().toISOString() }]);
+  var newIndex = (t.index + 1) % t.order.length;
+  saveTurnState(t.order, newIndex, newHistory);
+  renderTurnWidget();
+  renderTurnSettingsSection();
+  var nextProfile = getProfiles().find(function(p) { return p.id === t.order[newIndex]; });
+  showBanner('Marked as picked' + (picker ? ' by ' + picker.name : '') + ' - ' + (nextProfile ? nextProfile.name + "'s" : 'the next person\'s') + ' turn now', '#10b981', 'rgba(16,185,129,0.1)');
+}
+function setCurrentTurn(profileId) {
+  var t = getTurnState();
+  var idx = t.order.indexOf(profileId);
+  if (idx === -1) idx = 0;
+  saveTurnState(t.order, idx, t.history);
+  renderTurnWidget();
+}
+function moveTurnOrder(i, dir) {
+  var t = getTurnState();
+  var j = i + dir;
+  if (j < 0 || j >= t.order.length) return;
+  var currentTurnId = t.order[t.index];
+  var newOrder = t.order.slice();
+  var tmp = newOrder[i]; newOrder[i] = newOrder[j]; newOrder[j] = tmp;
+  var newIndex = newOrder.indexOf(currentTurnId);
+  saveTurnState(newOrder, newIndex, t.history);
+  renderTurnSettingsSection();
+  renderTurnWidget();
+}
+function applyTurnCurrentSelect() {
+  var sel = document.getElementById('turnCurrentSelect');
+  if (!sel || !sel.value) return;
+  setCurrentTurn(sel.value);
+  renderTurnSettingsSection();
+  showBanner('Turn updated', '#10b981', 'rgba(16,185,129,0.1)');
+}
+function renderTurnSettingsSection() {
+  var t = getTurnState();
+  var profiles = getProfiles();
+  var box = document.getElementById('turnOrderList');
+  if (box) {
+    box.innerHTML = '';
+    if (t.order.length < 2) {
+      box.innerHTML = '<p style="font-size:0.75rem;color:#64748b;">Add a second profile to set up a pick rotation.</p>';
+    } else {
+      t.order.forEach(function(id, i) {
+        var p = profiles.find(function(x) { return x.id === id; });
+        if (!p) return;
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;font-size:0.78rem;';
+        var lbl = document.createElement('span');
+        lbl.style.flex = '1';
+        lbl.textContent = (i + 1) + '. ' + p.name + (i === t.index ? ' \u2190 current turn' : '');
+        if (i === t.index) lbl.style.color = '#fbbf24';
+        var upBtn = document.createElement('button'); upBtn.className = 'btn-sm'; upBtn.textContent = '\u2191';
+        upBtn.style.cssText = 'width:auto;margin:0;padding:0.2rem 0.5rem;';
+        upBtn.disabled = i === 0;
+        upBtn.onclick = function() { moveTurnOrder(i, -1); };
+        var downBtn = document.createElement('button'); downBtn.className = 'btn-sm'; downBtn.textContent = '\u2193';
+        downBtn.style.cssText = 'width:auto;margin:0;padding:0.2rem 0.5rem;';
+        downBtn.disabled = i === t.order.length - 1;
+        downBtn.onclick = function() { moveTurnOrder(i, 1); };
+        row.appendChild(lbl); row.appendChild(upBtn); row.appendChild(downBtn);
+        box.appendChild(row);
+      });
+    }
+  }
+  var sel = document.getElementById('turnCurrentSelect');
+  if (sel) {
+    sel.innerHTML = '';
+    t.order.forEach(function(id) {
+      var p = profiles.find(function(x) { return x.id === id; });
+      if (!p) return;
+      var opt = document.createElement('option'); opt.value = id; opt.textContent = p.name;
+      sel.appendChild(opt);
+    });
+    sel.value = t.order[t.index] || '';
+  }
+  var note = document.getElementById('turnHistoryNote');
+  if (note) {
+    if (t.history.length) {
+      var last = t.history[t.history.length - 1];
+      note.textContent = 'Last picked by ' + last.name + ' on ' + new Date(last.date).toLocaleDateString();
+    } else {
+      note.textContent = 'No picks logged yet.';
+    }
+  }
 }
 
 function switchUser() {
@@ -1446,7 +1714,8 @@ function gistHdrs() { var c = getGistCreds(); return { 'Authorization': 'Bearer 
 function syncableSettingsPayload() {
   var s = getSettings();
   return {
-    trackCrew: !!s.trackCrew, smartScore: !!s.smartScore, excludedActors: s.excludedActors || []
+    trackCrew: !!s.trackCrew, smartScore: !!s.smartScore, excludedActors: s.excludedActors || [],
+    turnOrder: s.turnOrder || [], turnIndex: typeof s.turnIndex === 'number' ? s.turnIndex : 0, turnHistory: s.turnHistory || []
   };
 }
 
@@ -2630,6 +2899,7 @@ async function initApp() {
   var nameEl = document.getElementById('hdrProfileName');
   if (nameEl) nameEl.textContent = activeProfile.name;
   syncFavOnlyToggles();
+  renderTurnWidget();
 
   showBanner('Loading...', '#fbbf24', 'rgba(251,191,36,0.1)');
   openTab('dramas');
@@ -2653,6 +2923,7 @@ async function initApp() {
   var s = getSettings();
   if (s.ghToken && s.ghGistId) setSyncBadge(false);
   render();
+  checkBackupReminder();
 }
 
 // --- Data Helpers ---
@@ -2799,32 +3070,49 @@ function filterOutSkipped(items) {
   return items.filter(function(item) { return !skippedIds.has(item.id); });
 }
 
-// Renders the "Skipped Shows" list in Settings, with a Restore button on each.
-function renderSkippedShowsList() {
-  var box = document.getElementById('skippedShowsList');
-  if (!box) return;
+// Renders the Skipped Shows tab: a searchable grid (same card style as Watchlist/Recommendations),
+// each with a Restore button. Lives in its own tab instead of Settings so it doesn't get
+// crowded out as the list grows.
+function renderSkippedShowsPage() {
+  var countEl = document.getElementById('skippedCount');
   var skipped = getSkippedShows();
-  if (!skipped.length) { box.innerHTML = '<p style="font-size:0.75rem;color:#64748b;">No skipped shows - anything you skip from a recommendation card will show up here.</p>'; return; }
-  box.innerHTML = '';
-  skipped.forEach(function(s) {
-    var row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:0.6rem;background:#13131f;border:1px solid #2a2a45;border-radius:8px;padding:0.5rem;';
-    var img = document.createElement('img');
-    img.src = s.poster || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(s.name) + '&background=1a1a2e&color=c084fc&size=100');
-    img.onerror = function() { this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(s.name) + '&background=1a1a2e&color=c084fc&size=100'; };
-    img.style.cssText = 'width:36px;height:52px;object-fit:cover;border-radius:4px;flex-shrink:0;';
-    var lbl = document.createElement('div');
-    lbl.style.cssText = 'flex:1;font-size:0.78rem;';
-    lbl.textContent = s.name + (s.year ? ' (' + s.year + ')' : '');
+  if (countEl) countEl.textContent = skipped.length + ' skipped';
+
+  var searchEl = document.getElementById('skippedSearch');
+  var search = searchEl ? searchEl.value.trim().toLowerCase() : '';
+  var filtered = search ? skipped.filter(function(s) { return s.name.toLowerCase().indexOf(search) !== -1; }) : skipped;
+
+  var grid = document.getElementById('skippedGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  if (!skipped.length) {
+    grid.innerHTML = '<p style="text-align:center;color:#64748b;padding:2rem;grid-column:1/-1;">Nothing skipped yet. Tap "\u2715 Skip" on any recommendation card to hide it from future suggestions - it\'ll show up here so you can bring it back anytime.</p>';
+    return;
+  }
+  if (!filtered.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;">' + explainEmptyResults(['Search: "' + search + '"']) + '</div>';
+    return;
+  }
+  filtered.forEach(function(s) {
+    var card = document.createElement('div'); card.className = 'rec-card';
+    var img = document.createElement('img'); img.className = 'rec-poster';
+    img.src = s.poster || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(s.name) + '&background=1a1a2e&color=c084fc&size=200');
+    img.onerror = function() { this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(s.name) + '&background=1a1a2e&color=c084fc&size=200'; };
+    var info = document.createElement('div'); info.className = 'rec-info';
+    var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = s.name + (s.year ? ' (' + s.year + ')' : '');
+    info.appendChild(title);
+    info.appendChild(createTmdbLinkBadge(s.id));
     var restoreBtn = document.createElement('button');
-    restoreBtn.className = 'btn-sm'; restoreBtn.textContent = 'Restore'; restoreBtn.style.cssText = 'width:auto;margin:0;';
-    restoreBtn.onclick = function() {
+    restoreBtn.className = 'btn-sm'; restoreBtn.textContent = 'Restore'; restoreBtn.style.cssText = 'width:auto;margin-top:0.4rem;';
+    restoreBtn.onclick = function(e) {
+      e.stopPropagation();
       unskipShow(s.id);
-      renderSkippedShowsList();
+      renderSkippedShowsPage();
       showBanner('Restored "' + s.name + '" - it can be suggested again', '#10b981', 'rgba(16,185,129,0.1)');
     };
-    row.appendChild(img); row.appendChild(lbl); row.appendChild(restoreBtn);
-    box.appendChild(row);
+    info.appendChild(restoreBtn);
+    card.appendChild(img); card.appendChild(info);
+    grid.appendChild(card);
   });
 }
 
@@ -3662,7 +3950,7 @@ function openSettings() {
     '<div class="sync-box sync-info">Not synced. Enter GitHub credentials below to sync across devices.</div>';
   document.getElementById('settingsModal').classList.add('open');
   renderProfileManageList();
-  renderSkippedShowsList();
+  renderTurnSettingsSection();
 }
 function closeSettings() { document.getElementById('settingsModal').classList.remove('open'); }
 document.getElementById('settingsModal').onclick = function(e) { if (e.target === this) closeSettings(); };
@@ -4992,6 +5280,16 @@ function renderWatchlist() {
 // before calling initApp().)
 setActiveProfileId('');
 initApp();
+
+// PWA: enables "Add to Home Screen" on iPhone/Mac and offline viewing of your lists (all your
+// actual data lives in localStorage already - this just makes the app shell itself load without
+// a network connection). Requires manifest.json, sw.js, and the icon PNGs to be hosted alongside
+// this file; silently does nothing if they're missing or the browser doesn't support it.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function() {});
+  });
+}
 </script>
 </body>
 </html>
