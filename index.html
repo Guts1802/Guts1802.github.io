@@ -1617,8 +1617,21 @@ function renderProfileManageList() {
     return;
   }
   profiles.forEach(function(p) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'margin-bottom:0.65rem;padding-bottom:0.65rem;border-bottom:1px solid #2a2a45;';
+
+    // Reads this profile's data counts straight from local storage - no need to log in as them
+    // first. Useful for spotting an empty duplicate (e.g. an orphaned profile created on a new
+    // device before it was connected to sync) before deleting it.
+    var counts = readProfileDataCounts(p.id);
+    var countsLine = document.createElement('div');
+    countsLine.style.cssText = 'font-size:0.65rem;color:' + (counts.dramas === 0 && counts.watchlist === 0 ? '#f59e0b' : '#64748b') + ';margin-bottom:0.3rem;';
+    countsLine.textContent = counts.dramas + ' drama(s), ' + counts.watchlist + ' watchlist item(s) on this device' +
+      (counts.dramas === 0 && counts.watchlist === 0 ? ' - looks empty, possibly a duplicate' : '');
+    wrap.appendChild(countsLine);
+
     var row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;';
+    row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;';
     var input = document.createElement('input');
     input.value = p.name;
     input.style.cssText = 'flex:1;margin:0;';
@@ -1630,8 +1643,19 @@ function renderProfileManageList() {
     delBtn.className = 'btn-sm'; delBtn.textContent = 'Delete'; delBtn.style.cssText = 'width:auto;margin:0;background:rgba(244,63,94,0.15);border-color:rgba(244,63,94,0.4);color:#f43f5e;';
     delBtn.onclick = function() { deleteProfile(p.id, p.name); };
     row.appendChild(input); row.appendChild(saveBtn); row.appendChild(delBtn);
-    box.appendChild(row);
+    wrap.appendChild(row);
+    box.appendChild(wrap);
   });
+}
+// Reads drama/watchlist counts for a given profile id directly from this device's local
+// storage, without needing to log in as them. A profile that's 0/0 everywhere on THIS device
+// might still have real data that just hasn't synced down yet - check Gist sync status too
+// before deleting if you're not sure.
+function readProfileDataCounts(profileId) {
+  var dramaCount = 0, watchlistCount = 0;
+  try { var d = JSON.parse(localStorage.getItem('kdc_d_' + profileId) || '[]'); dramaCount = Array.isArray(d) ? d.length : 0; } catch(e) {}
+  try { var w = JSON.parse(localStorage.getItem('kdc_watchlist_' + profileId) || '[]'); watchlistCount = Array.isArray(w) ? w.length : 0; } catch(e) {}
+  return { dramas: dramaCount, watchlist: watchlistCount };
 }
 function renameProfile(id, newName) {
   newName = (newName || '').trim();
