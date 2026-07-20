@@ -1607,7 +1607,7 @@ function switchUser() {
 }
 
 // --- Profile management (Settings) ---
-function renderProfileManageList() {
+async function renderProfileManageList() {
   var box = document.getElementById('profileManageList');
   if (!box) return;
   var profiles = getProfiles();
@@ -1616,18 +1616,41 @@ function renderProfileManageList() {
     box.innerHTML = '<p style="font-size:0.75rem;color:#64748b;">No profiles yet.</p>';
     return;
   }
+  box.innerHTML = '<p style="font-size:0.7rem;color:#64748b;">Checking data counts...</p>';
+
+  // If Gist sync is connected, also check each profile's REAL counts in the cloud - not just
+  // what's already synced down to this device. This is what fixes the "restore says 0 dramas,
+  // but logging in shows dramas" confusion: right after Restore Profiles from Sync, a profile's
+  // identity is known but its actual data only gets pulled to this device once you log in as
+  // them. Checking the cloud directly here closes that gap.
+  var cloudDramas = {}, cloudWatchlist = {};
+  var c = getGistCreds();
+  if (c.token && c.gistId) {
+    try {
+      cloudDramas = await fetchAllDramasFromGist();
+      cloudWatchlist = await fetchAllWatchlistsFromGist();
+    } catch(e) {}
+  }
+
+  box.innerHTML = '';
   profiles.forEach(function(p) {
     var wrap = document.createElement('div');
     wrap.style.cssText = 'margin-bottom:0.65rem;padding-bottom:0.65rem;border-bottom:1px solid #2a2a45;';
 
-    // Reads this profile's data counts straight from local storage - no need to log in as them
-    // first. Useful for spotting an empty duplicate (e.g. an orphaned profile created on a new
-    // device before it was connected to sync) before deleting it.
-    var counts = readProfileDataCounts(p.id);
+    var local = readProfileDataCounts(p.id);
+    var cloudD = Array.isArray(cloudDramas[p.id]) ? cloudDramas[p.id].length : null;
+    var cloudW = Array.isArray(cloudWatchlist[p.id]) ? cloudWatchlist[p.id].length : null;
+    var effDramas = Math.max(local.dramas, cloudD || 0);
+    var effWatchlist = Math.max(local.watchlist, cloudW || 0);
+    var notYetPulled = (cloudD !== null && cloudD > local.dramas) || (cloudW !== null && cloudW > local.watchlist);
+    var trulyEmpty = effDramas === 0 && effWatchlist === 0;
+
     var countsLine = document.createElement('div');
-    countsLine.style.cssText = 'font-size:0.65rem;color:' + (counts.dramas === 0 && counts.watchlist === 0 ? '#f59e0b' : '#64748b') + ';margin-bottom:0.3rem;';
-    countsLine.textContent = counts.dramas + ' drama(s), ' + counts.watchlist + ' watchlist item(s) on this device' +
-      (counts.dramas === 0 && counts.watchlist === 0 ? ' - looks empty, possibly a duplicate' : '');
+    countsLine.style.cssText = 'font-size:0.65rem;color:' + (trulyEmpty ? '#f59e0b' : '#64748b') + ';margin-bottom:0.3rem;';
+    var txt = effDramas + ' drama(s), ' + effWatchlist + ' watchlist item(s)';
+    if (trulyEmpty) txt += ' - looks empty, possibly a duplicate';
+    else if (notYetPulled) txt += ' (from sync - log in as them to pull it to this device)';
+    countsLine.textContent = txt;
     wrap.appendChild(countsLine);
 
     var row = document.createElement('div');
@@ -1648,9 +1671,8 @@ function renderProfileManageList() {
   });
 }
 // Reads drama/watchlist counts for a given profile id directly from this device's local
-// storage, without needing to log in as them. A profile that's 0/0 everywhere on THIS device
-// might still have real data that just hasn't synced down yet - check Gist sync status too
-// before deleting if you're not sure.
+// storage (fast, synchronous - used as the fallback/baseline that renderProfileManageList
+// combines with a live cloud check).
 function readProfileDataCounts(profileId) {
   var dramaCount = 0, watchlistCount = 0;
   try { var d = JSON.parse(localStorage.getItem('kdc_d_' + profileId) || '[]'); dramaCount = Array.isArray(d) ? d.length : 0; } catch(e) {}
