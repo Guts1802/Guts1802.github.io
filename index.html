@@ -225,6 +225,7 @@
   <div class="modal-inner" style="max-width:420px;">
     <h3 class="sec-title" style="margin-bottom:0.25rem;">Welcome back</h3>
     <p style="font-size:0.7rem;color:#64748b;margin-bottom:1rem;">Select your profile and enter your password to keep your watchlist and favorites separate - your co-watcher won't see what you've picked.</p>
+    <p id="profileGateMsg" class="hidden" style="font-size:0.72rem;margin-bottom:0.75rem;padding:0.5rem 0.7rem;border-radius:8px;"></p>
 
     <div id="profileLoginForm" class="hidden">
       <label class="field-lbl">Who's picking?</label>
@@ -246,7 +247,22 @@
       </div>
     </div>
 
-    <button class="btn-sm" id="addProfileBtn" onclick="showProfileCreateForm()" style="width:auto;margin-top:0.75rem;">+ Add a New Person</button>
+    <div id="restoreSyncForm" class="hidden">
+      <p style="font-size:0.68rem;color:#64748b;margin-bottom:0.6rem;">Already set this up on another device? Enter the same GitHub token and Gist ID from there, and any profiles you haven't seen on this device yet will show up above to log into - with all their existing dramas, watchlist, and favorites intact.</p>
+      <label class="field-lbl">GitHub Token</label>
+      <input id="restoreGhToken" type="password" placeholder="ghp_...">
+      <label class="field-lbl">Gist ID</label>
+      <input id="restoreGhGistId" placeholder="e.g., a1b2c3d4...">
+      <div class="row">
+        <button onclick="attemptRestoreSync()" id="restoreSyncSubmitBtn">Connect &amp; Restore</button>
+        <button class="btn-sm" onclick="cancelRestoreSync()">Back</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.75rem;">
+      <button class="btn-sm" id="addProfileBtn" onclick="showProfileCreateForm()" style="width:auto;margin:0;">+ Add a New Person</button>
+      <button class="btn-sm" id="restoreSyncBtn" onclick="showRestoreSyncForm()" style="width:auto;margin:0;">Restore Profiles from Sync</button>
+    </div>
     <p style="font-size:0.62rem;color:#64748b;margin-top:0.9rem;">A password just keeps things separate on a shared device - it's not meant to be strong security, so don't reuse a real password you use elsewhere.</p>
   </div>
 </div>
@@ -1206,6 +1222,8 @@ function simpleHash(str) { var h = 0; for (var i = 0; i < str.length; i++) { h =
 function renderProfileGate() {
   var profiles = getProfiles();
   document.getElementById('profileLoginError').classList.add('hidden');
+  document.getElementById('restoreSyncForm').classList.add('hidden');
+  document.getElementById('profileGateMsg').classList.add('hidden');
   if (!profiles.length) {
     document.getElementById('profileLoginForm').classList.add('hidden');
     document.getElementById('profileCreateForm').classList.remove('hidden');
@@ -1236,6 +1254,68 @@ function cancelProfileCreate() {
   document.getElementById('profileCreateForm').classList.add('hidden');
   renderProfileGate();
 }
+
+// --- Restore Profiles from Sync (for a brand new device) ---
+// Profiles live in localStorage per device, so a new phone/computer starts out only knowing
+// about whoever creates a profile ON that device. Without this, the natural (wrong) move is to
+// tap "+ Add a New Person" for yourself, which creates a fresh disconnected identity with none
+// of your existing dramas/watchlist/favorites. This pulls the REAL profile list (with matching,
+// stable IDs) from the same Gist used on your other device, before any of that can happen.
+function showRestoreSyncForm() {
+  document.getElementById('restoreSyncForm').classList.remove('hidden');
+  document.getElementById('profileLoginForm').classList.add('hidden');
+  document.getElementById('profileCreateForm').classList.add('hidden');
+  var s = getSettings();
+  document.getElementById('restoreGhToken').value = s.ghToken || '';
+  document.getElementById('restoreGhGistId').value = s.ghGistId || '';
+}
+function cancelRestoreSync() {
+  document.getElementById('restoreSyncForm').classList.add('hidden');
+  renderProfileGate();
+}
+async function attemptRestoreSync() {
+  var token = document.getElementById('restoreGhToken').value.trim();
+  var gistId = document.getElementById('restoreGhGistId').value.trim();
+  if (!token || !gistId) { alert('Enter both the GitHub token and the Gist ID.'); return; }
+  var btn = document.getElementById('restoreSyncSubmitBtn');
+  var originalText = btn.textContent;
+  btn.textContent = 'Connecting...'; btn.disabled = true;
+  try {
+    var r = await fetch('https://api.github.com/gists/' + gistId, {
+      headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github.v3+json' },
+      cache: 'no-store'
+    });
+    if (!r.ok) throw new Error('Gist request failed');
+    var j = await r.json();
+    var sf = j.files && j.files['kdrama-settings.json'] ? j.files['kdrama-settings.json'].content : null;
+    var added = 0;
+    if (sf) {
+      var synced = JSON.parse(sf);
+      added = mergeProfilesAdditive(synced.profiles);
+    }
+    // Save the connection so this device is synced going forward, same as connecting via Settings.
+    var s = getSettings();
+    s.ghToken = token; s.ghGistId = gistId;
+    saveSettings2(s);
+
+    document.getElementById('restoreSyncForm').classList.add('hidden');
+    renderProfileGate();
+    var msgEl = document.getElementById('profileGateMsg');
+    if (added) {
+      msgEl.textContent = 'Found ' + added + ' profile' + (added > 1 ? 's' : '') + ' from sync - log in below.';
+      msgEl.style.color = '#10b981'; msgEl.style.background = 'rgba(16,185,129,0.1)';
+    } else {
+      msgEl.textContent = 'Connected, but no new profiles were found in that Gist.';
+      msgEl.style.color = '#a78bfa'; msgEl.style.background = 'rgba(168,85,247,0.1)';
+    }
+    msgEl.classList.remove('hidden');
+  } catch(e) {
+    alert("Couldn't connect - double check the token and Gist ID, and that the token still has access to this Gist.");
+  } finally {
+    btn.textContent = originalText; btn.disabled = false;
+  }
+}
+
 function attemptProfileLogin() {
   var pin = document.getElementById('profilePinInput').value.trim();
   var selId = document.getElementById('profileSelect').value;
@@ -1633,6 +1713,7 @@ function toggleFavoriteActor(name) {
   var idx = favs.indexOf(key);
   if (idx === -1) favs.push(key); else favs.splice(idx, 1);
   saveFavoriteActors(favs);
+  pushGist(); // best-effort - silently does nothing if Gist sync isn't set up
 }
 // Small heart toggle used on actor chips throughout the app (My Dramas cast rows, Directory).
 function makeFavActorBtn(displayName) {
@@ -1715,8 +1796,29 @@ function syncableSettingsPayload() {
   var s = getSettings();
   return {
     trackCrew: !!s.trackCrew, smartScore: !!s.smartScore, excludedActors: s.excludedActors || [],
-    turnOrder: s.turnOrder || [], turnIndex: typeof s.turnIndex === 'number' ? s.turnIndex : 0, turnHistory: s.turnHistory || []
+    turnOrder: s.turnOrder || [], turnIndex: typeof s.turnIndex === 'number' ? s.turnIndex : 0, turnHistory: s.turnHistory || [],
+    profiles: getProfiles()
   };
+}
+
+// Additive-only merge: adds any profile from the cloud that this device doesn't already know
+// about (matched by id), and never touches or removes an existing local one. This is what lets
+// a brand new device see BOTH people's profiles instead of just whichever one gets created
+// locally first - without ever risking clobbering a profile mid-rename on another device.
+function mergeProfilesAdditive(cloudProfiles) {
+  if (!Array.isArray(cloudProfiles) || !cloudProfiles.length) return 0;
+  var local = getProfiles();
+  var localIds = new Set(local.map(function(p) { return p.id; }));
+  var added = 0;
+  cloudProfiles.forEach(function(p) {
+    if (p && p.id && p.name && !localIds.has(p.id)) {
+      local.push({ id: p.id, name: p.name, pinHash: p.pinHash });
+      localIds.add(p.id);
+      added++;
+    }
+  });
+  if (added) saveProfiles(local);
+  return added;
 }
 
 // The Gist only has one 'kdrama-watchlist.json' slot, but each profile needs its own private
@@ -1734,6 +1836,21 @@ async function fetchAllWatchlistsFromGist() {
     var parsed = JSON.parse(wf);
     if (Array.isArray(parsed)) return { _legacy_shared: parsed }; // pre-profile format, kept aside
     return (parsed && typeof parsed === 'object') ? parsed : {};
+  } catch(e) { return {}; }
+}
+
+// Generic version of the same "per-profile slice of one Gist file" pattern used above for the
+// watchlist - reused for Favorite Actors and Skipped Shows so those sync across devices too.
+async function fetchAllFromGistFile(filename) {
+  var c = getGistCreds(); if (!c.token || !c.gistId) return {};
+  try {
+    var r = await fetch(gistUrl(), { headers: gistHdrs(), cache: 'no-store' });
+    if (!r.ok) return {};
+    var j = await r.json();
+    var f = j.files && j.files[filename] ? j.files[filename].content : null;
+    if (!f) return {};
+    var parsed = JSON.parse(f);
+    return (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : {};
   } catch(e) { return {}; }
 }
 
@@ -1758,14 +1875,23 @@ async function pushGist() {
   try {
     var allWatchlists = await fetchAllWatchlistsFromGist();
     var allDramas = await fetchAllDramasFromGist();
+    var allFavorites = await fetchAllFromGistFile('kdrama-favorites.json');
+    var allSkipped = await fetchAllFromGistFile('kdrama-skipped.json');
     var pid = getActiveProfileId();
-    if (pid) { allWatchlists[pid] = watchlist; allDramas[pid] = dramas; }
+    if (pid) {
+      allWatchlists[pid] = watchlist;
+      allDramas[pid] = dramas;
+      allFavorites[pid] = getFavoriteActors();
+      allSkipped[pid] = getSkippedShows();
+    }
     var r = await fetch(gistUrl(), {
       method: 'PATCH', headers: gistHdrs(), cache: 'no-store',
       body: JSON.stringify({ files: {
         'kdrama.json': { content: JSON.stringify(allDramas) },
         'kdrama-settings.json': { content: JSON.stringify(syncableSettingsPayload()) },
-        'kdrama-watchlist.json': { content: JSON.stringify(allWatchlists) }
+        'kdrama-watchlist.json': { content: JSON.stringify(allWatchlists) },
+        'kdrama-favorites.json': { content: JSON.stringify(allFavorites) },
+        'kdrama-skipped.json': { content: JSON.stringify(allSkipped) }
       } })
     });
     return r.ok;
@@ -1797,6 +1923,12 @@ async function pullGist() {
     if (sf) {
       try {
         var synced = JSON.parse(sf);
+        // Profiles get their own additive-only merge (see mergeProfilesAdditive) rather than
+        // being blindly overwritten by whichever device pushed last - losing a profile because
+        // another device happened to sync more recently would be a bad time.
+        var cloudProfiles = synced.profiles;
+        delete synced.profiles;
+        mergeProfilesAdditive(cloudProfiles);
         var local = getSettings();
         var merged = Object.assign({}, local, synced, { ghToken: local.ghToken, ghGistId: local.ghGistId });
         saveSettings2(merged);
@@ -1815,6 +1947,35 @@ async function pullGist() {
           saveLocalWatchlist(watchlist);
         }
       } catch(e) {}
+    }
+
+    // Favorite actors and skipped shows: same idea, only our own profile's slice, merged in
+    // (union, not overwrite) so a favorite/skip added on this device between syncs isn't lost.
+    var pidF = getActiveProfileId();
+    if (pidF) {
+      var ff = j.files && j.files['kdrama-favorites.json'] ? j.files['kdrama-favorites.json'].content : null;
+      if (ff) {
+        try {
+          var parsedF = JSON.parse(ff);
+          if (parsedF && !Array.isArray(parsedF) && Array.isArray(parsedF[pidF])) {
+            var localFavs = getFavoriteActors();
+            parsedF[pidF].forEach(function(name) { if (localFavs.indexOf(name) === -1) localFavs.push(name); });
+            saveFavoriteActors(localFavs);
+          }
+        } catch(e) {}
+      }
+      var skf = j.files && j.files['kdrama-skipped.json'] ? j.files['kdrama-skipped.json'].content : null;
+      if (skf) {
+        try {
+          var parsedSk = JSON.parse(skf);
+          if (parsedSk && !Array.isArray(parsedSk) && Array.isArray(parsedSk[pidF])) {
+            var localSkipped = getSkippedShows();
+            var localSkipIds = new Set(localSkipped.map(function(s) { return s.id; }));
+            parsedSk[pidF].forEach(function(s) { if (s && typeof s.id !== 'undefined' && !localSkipIds.has(s.id)) { localSkipped.push(s); localSkipIds.add(s.id); } });
+            saveSkippedShows(localSkipped);
+          }
+        } catch(e) {}
+      }
     }
 
     return Array.isArray(data) ? data : null;
@@ -3058,11 +3219,13 @@ function skipShow(rec) {
   if (!list.some(function(s) { return s.id === rec.id; })) {
     list.push({ id: rec.id, name: rec.name, poster: rec.poster || '', year: rec.year || '' });
     saveSkippedShows(list);
+    pushGist(); // best-effort - silently does nothing if Gist sync isn't set up
   }
 }
 function unskipShow(id) {
   var list = getSkippedShows().filter(function(s) { return s.id !== id; });
   saveSkippedShows(list);
+  pushGist();
 }
 function filterOutSkipped(items) {
   var skippedIds = new Set(getSkippedShows().map(function(s) { return s.id; }));
