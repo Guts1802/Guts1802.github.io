@@ -54,13 +54,16 @@
     .btn-green { background:rgba(79,174,133,0.15); border:1px solid #4fae85; color:#4fae85; }
     .btn-gold { background:rgba(221,170,85,0.15); border:1px solid #ddaa55; color:#ddaa55; }
     .drama-list { display:flex; flex-direction:column; gap:1rem; }
-    .drama-card { background:#16131f; border:1px solid #2a2432; border-radius:14px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,0.22); transition:border-color 0.15s ease, transform 0.15s ease; }
+    .drama-card { position:relative; background:#16131f; border:1px solid #2a2432; border-radius:14px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,0.22); transition:border-color 0.15s ease, transform 0.18s ease, box-shadow 0.18s ease; }
     .drama-card.active { border-color:rgba(214,92,123,0.5); }
+    .drama-card.active::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:linear-gradient(180deg,#e9879c,#d65c7b); }
     .drama-card.old { opacity:0.55; }
-    .drama-top { display:flex; gap:1rem; padding:1rem; align-items:flex-start; }
-    .drama-poster { width:80px; height:115px; border-radius:8px; object-fit:cover; flex-shrink:0; border:2px solid #2a2432; }
+    .drama-card:hover { box-shadow:0 12px 26px rgba(0,0,0,0.32); transform:translateY(-2px); }
+    .drama-top { display:flex; gap:1.1rem; padding:1.1rem 1.1rem 1.1rem 1.35rem; align-items:flex-start; }
+    .drama-poster { width:92px; height:132px; border-radius:9px; object-fit:cover; flex-shrink:0; border:2px solid #2a2432; box-shadow:0 6px 16px rgba(0,0,0,0.35); }
     .drama-card.active .drama-poster { border-color:rgba(214,92,123,0.5); }
-    .active-badge { display:inline-block; background:rgba(214,92,123,0.2); border:1px solid rgba(214,92,123,0.4); border-radius:999px; padding:0.1rem 0.5rem; font-size:0.62rem; color:#e9879c; text-transform:uppercase; margin-bottom:0.35rem; }
+    .active-badge { display:inline-flex; align-items:center; gap:0.3rem; background:rgba(214,92,123,0.18); border:1px solid rgba(214,92,123,0.4); border-radius:999px; padding:0.15rem 0.6rem; font-size:0.6rem; font-weight:700; color:#e9879c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem; }
+    .active-badge::before { content:'●'; font-size:0.55rem; }
     .actor-scroll { display:flex; gap:0.75rem; overflow-x:auto; padding:0 1rem 1rem; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
     .actor-scroll::-webkit-scrollbar { display:none; }
     .actor-card { display:flex; flex-direction:column; align-items:center; min-width:88px; padding:0.65rem 0.5rem; background:#121017; border:2px solid #2a2432; border-radius:12px; text-align:center; flex-shrink:0; }
@@ -182,12 +185,14 @@
     .sync-ok   { background:rgba(79,174,133,0.1); border:1px solid rgba(79,174,133,0.3); color:#4fae85; }
     .sync-warn { background:rgba(221,170,85,0.1);  border:1px solid rgba(221,170,85,0.3);  color:#ddaa55; }
     .sync-info { background:rgba(214,92,123,0.1); border:1px solid rgba(214,92,123,0.3); color:#e9879c; }
-    .rec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-top:1rem; }
-    .rec-card { background:#121017; border:1px solid #2a2432; border-radius:12px; overflow:hidden; cursor:pointer; transition:border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }
-    .rec-card:hover { border-color:#d65c7b; transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,0.35); }
-    .rec-poster { width:100%; aspect-ratio:2/3; object-fit:cover; display:block; background:#0a0a0f; }
-    .rec-info { padding:0.75rem; }
-    .rec-title { font-size:0.85rem; font-weight:bold; margin-bottom:0.25rem; }
+    .rec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.1rem; margin-top:1.1rem; }
+    .rec-card { background:#121017; border:1px solid #2a2432; border-radius:16px; overflow:hidden; cursor:pointer; transition:border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease; }
+    .rec-card:hover { border-color:#d65c7b; transform:translateY(-4px); box-shadow:0 14px 30px rgba(0,0,0,0.4); }
+    .rec-poster { width:100%; aspect-ratio:2/3; object-fit:cover; display:block; background:#0a0a0f; transition:transform 0.4s ease; }
+    .rec-card:hover .rec-poster { transform:scale(1.05); }
+    .rec-info { padding:0.85rem 0.85rem 0.9rem; position:relative; }
+    .rec-info > .score-pill:first-child, .rec-info > .gem-pill:first-child { margin-top:-1.5rem; box-shadow:0 4px 12px rgba(0,0,0,0.45); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); }
+    .rec-title { font-family:var(--font-display); font-size:0.98rem; font-weight:600; letter-spacing:-0.005em; line-height:1.25; margin-bottom:0.3rem; }
     .rec-actors { font-size:0.68rem; color:#4fae85; }
     .tmdb-badge { font-size:0.6rem; background:rgba(1,180,228,0.15); border:1px solid rgba(1,180,228,0.3); color:#01b4e4; border-radius:4px; padding:0.1rem 0.4rem; margin-left:0.4rem; vertical-align:middle; }
     .cast-select-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:0.5rem; margin:0.5rem 0 1rem; }
@@ -203,7 +208,7 @@
       .header { padding:2.5rem 2rem 2rem; }
       .title { font-size:2.4rem; }
       .drama-list { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; }
-      .drama-poster { width:100px; height:145px; }
+      .drama-poster { width:112px; height:161px; }
       .actor-photo { width:85px; height:85px; }
       .actor-card { min-width:110px; padding:0.85rem 0.6rem; }
       .actor-lbl { font-size:0.82rem; }
@@ -232,7 +237,7 @@
       .dir-grid { grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:1.1rem; }
       .cast-select-grid { grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); }
       .box { padding:1.75rem; }
-      .drama-poster { width:110px; height:158px; }
+      .drama-poster { width:124px; height:178px; }
       .actor-photo { width:90px; height:90px; }
       .fav-chip-photo { width:30px; height:30px; }
     }
@@ -3636,7 +3641,7 @@ function render() {
     pimg.onerror = function() { this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(drama.title) + '&background=1a1a2e&color=c084fc&size=200'; };
     var meta = document.createElement('div'); meta.style.cssText = 'flex:1;min-width:0;';
     if (isActive) { var badge = document.createElement('div'); badge.className = 'active-badge'; badge.textContent = 'Active - Last 10'; meta.appendChild(badge); }
-    var te = document.createElement('div'); te.style.cssText = 'font-size:1rem;font-weight:bold;margin-bottom:0.2rem;'; te.textContent = drama.title;
+    var te = document.createElement('div'); te.style.cssText = 'font-family:var(--font-display);font-size:1.08rem;font-weight:600;letter-spacing:-0.005em;line-height:1.25;margin-bottom:0.25rem;'; te.textContent = drama.title;
     var ye = document.createElement('div'); ye.style.cssText = 'font-size:0.78rem;color:#8b8797;margin-bottom:0.5rem;'; ye.textContent = (drama.year || '') + ' - ' + drama.cast.length + ' cast';
     var btns = document.createElement('div'); btns.style.cssText = 'display:flex;gap:0.4rem;flex-wrap:wrap;';
     var upBtn = document.createElement('button'); upBtn.className = 'btn-sm'; upBtn.textContent = '\u25B2 More recent';
