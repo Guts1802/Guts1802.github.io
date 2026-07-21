@@ -11,7 +11,7 @@
 // falls back to the cached copy if there's no connection at all - so updates show up
 // immediately, and offline viewing still works exactly the same.
 
-const CACHE_NAME = 'kdrama-cast-checker-v2';
+const CACHE_NAME = 'kdrama-cast-checker-v3';
 const APP_SHELL = [
   './',
   './index.html',
