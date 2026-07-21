@@ -97,6 +97,12 @@
     .actor-card.green .actor-lbl { color:#4fae85; }
     .fav-chip { display:flex; align-items:center; gap:0.4rem; background:rgba(214,92,123,0.12); border:1px solid rgba(214,92,123,0.35); border-radius:999px; padding:0.28rem 0.7rem 0.28rem 0.3rem; font-size:0.74rem; max-width:100%; transition:background 0.15s ease; }
     .fav-chip:hover { background:rgba(214,92,123,0.2); }
+    .fav-group summary { cursor:pointer; list-style:none; display:flex; align-items:center; gap:0.5rem; font-size:0.68rem; letter-spacing:0.13em; text-transform:uppercase; color:#e9879c; font-weight:700; user-select:none; }
+    .fav-group summary::-webkit-details-marker { display:none; }
+    .fav-group summary::after { content:'\2304'; font-size:1rem; color:#8b8797; margin-left:auto; transition:transform 0.2s ease; text-transform:none; letter-spacing:0; }
+    .fav-group[open] summary::after { transform:rotate(180deg); }
+    .fav-group::-webkit-scrollbar { width:5px; }
+    .fav-count-badge { background:rgba(214,92,123,0.18); color:#e9879c; border-radius:999px; padding:0.12rem 0.55rem; font-size:0.65rem; text-transform:none; letter-spacing:0; font-weight:700; }
     .fav-chip-photo { width:20px; height:20px; border-radius:50%; object-fit:cover; flex-shrink:0; }
     .role-pill { font-size:0.6rem; padding:0.1rem 0.4rem; border-radius:999px; white-space:nowrap; }
     .lead { background:rgba(221,170,85,0.15); color:#ddaa55; }
@@ -409,10 +415,10 @@
     <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Made a mistake with the order you watched things? Use "More recent" / "Older" on each card to fix it - this changes which dramas count as your last 10.</p>
     <p style="font-size:0.7rem;color:#8b8797;margin-bottom:0.75rem;font-style:italic;">Adding a drama via TMDB now automatically checks if any tracked actors also appear in your other dramas. Use "Scan My Library" once to backfill this check across dramas you added before this feature existed.</p>
     <input id="dramaSearch" placeholder="Search your dramas by title..." oninput="render()" style="margin-bottom:0.75rem;">
-    <div id="favActorsBox" class="box hidden" style="margin-bottom:1rem;">
-      <h4 style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:#e9879c;margin-bottom:0.65rem;">&#9829; Your Favorite Actors</h4>
-      <div id="favActorsGrid" style="display:flex;flex-wrap:wrap;gap:0.5rem;"></div>
-    </div>
+    <details id="favActorsBox" class="box fav-group hidden" style="margin-bottom:1rem;">
+      <summary>&#9829; Your Favorite Actors <span id="favActorsCount" class="fav-count-badge"></span></summary>
+      <div id="favActorsGrid" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.85rem;max-height:240px;overflow-y:auto;padding-right:0.15rem;"></div>
+    </details>
     <div id="dramaList" class="drama-list"></div>
     <p class="note">Tap the &#9825; on any actor's card to mark them as one of your favorites. Favorites are just for you - your co-watcher won't see the same ones marked.</p>
     <p class="note">Red actors = in last 10 dramas &nbsp; Green actors = only in older dramas (safe)</p>
@@ -1909,6 +1915,8 @@ function renderFavActorsStrip() {
   var box = document.getElementById('favActorsBox'), grid = document.getElementById('favActorsGrid');
   if (!box || !grid) return;
   var favs = getFavoriteActors();
+  var countEl = document.getElementById('favActorsCount');
+  if (countEl) countEl.textContent = favs.length;
   if (!favs.length) { box.classList.add('hidden'); grid.innerHTML = ''; return; }
   box.classList.remove('hidden');
   grid.innerHTML = '';
