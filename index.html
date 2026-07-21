@@ -932,23 +932,30 @@
 
     <div id="syncStatus"></div>
 
+    <form id="tmdbKeyForm" onsubmit="return false;" autocomplete="on">
     <label class="field-lbl">TMDB API Key (for auto-fill and recommendations) <span class="tmdb-badge">Free</span></label>
-    <input id="tmdbKeyInput" type="password" placeholder="Paste your TMDB API key (v3 auth)">
+    <input id="tmdbKeyInput" name="tmdb-api-key" type="password" autocomplete="current-password" placeholder="Paste your TMDB API key (v3 auth)">
     <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">
       Get free key: themoviedb.org &rarr; Sign up &rarr; Settings &rarr; API &rarr; Request API Key (v3 auth)
     </p>
+    </form>
 
+    <form id="omdbKeyForm" onsubmit="return false;" autocomplete="on">
     <label class="field-lbl">OMDb API Key (for real IMDb ratings &amp; fuller genres) <span class="tmdb-badge" style="background:rgba(245,197,24,0.15);border-color:rgba(245,197,24,0.3);color:#f5c518;">Free</span></label>
-    <input id="omdbKeyInput" type="password" placeholder="Paste your OMDb API key">
+    <input id="omdbKeyInput" name="omdb-api-key" type="password" autocomplete="current-password" placeholder="Paste your OMDb API key">
     <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">
       Get free key: omdbapi.com/apikey.aspx &rarr; choose FREE (1,000 req/day) &rarr; check your email to activate
     </p>
+    </form>
 
+    <form id="geminiKeyForm" onsubmit="return false;" autocomplete="on">
     <label class="field-lbl">Gemini API Key (for the AI Studio space) <span class="tmdb-badge" style="background:rgba(79,168,212,0.15);border-color:rgba(79,168,212,0.3);color:#4fa8d4;">Free</span></label>
-    <input id="geminiKeyInput" type="password" placeholder="Paste your Gemini API key">
+    <input id="geminiKeyInput" name="gemini-api-key" type="password" autocomplete="current-password" placeholder="Paste your Gemini API key">
     <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">
       Get free key: aistudio.google.com &rarr; Sign in &rarr; Get API Key &rarr; Create API key. Only used inside AI Studio (Mood Search, AI Picks, AI Similar Shows, AI Watch Planner) - the rest of the site works without it.
     </p>
+    </form>
+
 
     <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
     <div class="toggle-row">
@@ -993,11 +1000,13 @@
     <p style="font-size:0.8rem;color:#e9879c;margin-bottom:0.75rem;font-weight:bold;">GitHub Gist Sync (optional)</p>
     <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Connecting this syncs your dramas and preferences (toggles, excluded actors) across devices. Your API keys are NOT synced this way for security - Gists are public, so keys stay local to each device and need entering once per device.</p>
 
+    <form id="ghTokenForm" onsubmit="return false;" autocomplete="on">
     <label class="field-lbl">GitHub Token</label>
-    <input id="ghToken" type="password" placeholder="ghp_...">
+    <input id="ghToken" name="github-token" type="password" autocomplete="current-password" placeholder="ghp_...">
     <label class="field-lbl">Gist ID</label>
-    <input id="ghGistId" placeholder="Gist ID from URL">
-    <button onclick="connectGist()">Test &amp; Save Connection</button>
+    <input id="ghGistId" name="gist-id" autocomplete="username" placeholder="Gist ID from URL">
+    <button type="submit" onclick="connectGist()">Test &amp; Save Connection</button>
+    </form>
     <div id="gistResult" style="margin-top:0.5rem;"></div>
 
     <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
@@ -4202,6 +4211,13 @@ function saveAllSettings() {
   s.ghToken = document.getElementById('ghToken').value.trim();
   s.ghGistId = document.getElementById('ghGistId').value.trim();
   saveSettings2(s);
+  // Nudge the browser's password manager to offer saving each key locally (Keychain/Google
+  // Password Manager/etc) - this is device-local browser behavior, separate from and never
+  // sent through Gist sync.
+  ['tmdbKeyForm', 'omdbKeyForm', 'geminiKeyForm'].forEach(function(id) {
+    var f = document.getElementById(id);
+    if (f && f.requestSubmit) { try { f.requestSubmit(); } catch(e) {} }
+  });
   showBanner('Settings saved!', '#4fae85', 'rgba(79,174,133,0.1)');
   if (s.ghToken && s.ghGistId) setSyncBadge(false);
   pushGist(); // sync API keys/toggles to other devices if connected
