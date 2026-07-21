@@ -39,7 +39,27 @@
     .title { font-family: var(--font-display); font-size: 2rem; font-weight: 600; letter-spacing: -0.01em; background: linear-gradient(120deg,#f0a6b8,#ddaa55); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.3rem; position: relative; }
     .subtitle { color: #8b8797; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.18em; position: relative; }
     #banner { display:none; margin-top:0.5rem; font-size:0.8rem; padding:0.25rem 0.75rem; border-radius:6px; }
-    .hdr-btns { display:flex; gap:0.5rem; justify-content:center; margin-top:0.75rem; flex-wrap:wrap; }
+    .hdr-btns-wrap { margin-top:0.85rem; }
+    .hdr-tabs {
+      display:flex; gap:0.4rem; overflow-x:auto; -webkit-overflow-scrolling:touch;
+      padding:0.2rem 0.15rem 0.55rem; justify-content:flex-start; scrollbar-width:thin;
+      mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent);
+    }
+    @media (min-width:700px) { .hdr-tabs { justify-content:center; flex-wrap:wrap; overflow-x:visible; mask-image:none; } }
+    .hdr-tabs::-webkit-scrollbar { height:4px; }
+    .hdr-tabs::-webkit-scrollbar-thumb { background:#2a2432; border-radius:999px; }
+    .hdr-tab {
+      flex-shrink:0; width:auto; margin:0; white-space:nowrap;
+      background:rgba(214,92,123,0.15); border:1px solid transparent; border-radius:999px;
+      padding:0.45rem 0.95rem; font-size:0.78rem; font-weight:500; color:#ededf3;
+    }
+    .hdr-utils { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; padding-top:0.5rem; border-top:1px solid #2a2432; }
+    .hdr-util-btn {
+      width:auto; margin:0; background:transparent; border:1px solid #2a2432; color:#a29dae;
+      font-size:0.68rem; font-weight:500; padding:0.35rem 0.75rem; border-radius:999px;
+    }
+    .hdr-util-btn:hover { border-color:#8b8797; filter:none; }
+    .hdr-util-accent { color:#4fa8d4; border-color:rgba(79,168,212,0.35); }
     .container { max-width:1000px; margin:0 auto; padding:1.5rem 1rem; }
     .box { background:linear-gradient(160deg,#1c1626,#14111d); border:1px solid #2a2432; border-radius:14px; padding:1.25rem; margin-bottom:1.5rem; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
     .sec-title { font-family:var(--font-display); font-weight:600; color:#e9879c; font-size:1.05rem; margin-bottom:0.6rem; letter-spacing:-0.005em; }
@@ -75,21 +95,26 @@
     .actor-lbl { font-size:0.72rem; font-weight:bold; margin-bottom:0.2rem; word-break:break-word; line-height:1.3; }
     .actor-card.red .actor-lbl { color:#e0605a; }
     .actor-card.green .actor-lbl { color:#4fae85; }
-    .fav-chip { display:flex; align-items:center; gap:0.35rem; background:rgba(224,96,90,0.1); border:1px solid rgba(224,96,90,0.3); border-radius:999px; padding:0.2rem 0.6rem 0.2rem 0.25rem; font-size:0.72rem; max-width:100%; }
+    .fav-chip { display:flex; align-items:center; gap:0.4rem; background:rgba(214,92,123,0.12); border:1px solid rgba(214,92,123,0.35); border-radius:999px; padding:0.28rem 0.7rem 0.28rem 0.3rem; font-size:0.74rem; max-width:100%; transition:background 0.15s ease; }
+    .fav-chip:hover { background:rgba(214,92,123,0.2); }
     .fav-chip-photo { width:20px; height:20px; border-radius:50%; object-fit:cover; flex-shrink:0; }
     .role-pill { font-size:0.6rem; padding:0.1rem 0.4rem; border-radius:999px; white-space:nowrap; }
     .lead { background:rgba(221,170,85,0.15); color:#ddaa55; }
     .supp { background:rgba(108,111,176,0.15); color:#9296d6; }
-    .dir-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:0.75rem; margin-top:0.75rem; }
-    .dir-card { background:#121017; border:2px solid #2a2432; border-radius:12px; padding:0.75rem; text-align:center; }
-    .dir-card.bad { border-color:#e0605a; background:rgba(224,96,90,0.08); }
-    .dir-card.good { border-color:#4fae85; background:rgba(79,174,133,0.06); }
-    .dir-photo { width:64px; height:64px; border-radius:50%; object-fit:cover; margin:0 auto 0.4rem; border:3px solid transparent; display:block; }
+    .dir-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:0.9rem; margin-top:0.9rem; }
+    .dir-card { position:relative; background:#121017; border:1.5px solid #2a2432; border-radius:14px; padding:1rem 0.85rem; text-align:center; transition:transform 0.15s ease, box-shadow 0.15s ease; }
+    .dir-card:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,0.3); }
+    .dir-card.bad { border-color:rgba(224,96,90,0.5); background:rgba(224,96,90,0.06); }
+    .dir-card.good { border-color:rgba(79,174,133,0.4); background:rgba(79,174,133,0.05); }
+    .dir-photo { width:68px; height:68px; border-radius:50%; object-fit:cover; margin:0 auto 0.55rem; border:3px solid transparent; display:block; }
     .dir-card.bad .dir-photo { border-color:#e0605a; }
     .dir-card.good .dir-photo { border-color:#4fae85; }
-    .dir-name { font-size:0.78rem; font-weight:bold; margin-bottom:0.2rem; }
-    .dir-card.bad .dir-name { color:#e0605a; }
-    .dir-card.good .dir-name { color:#4fae85; }
+    .dir-name { font-size:0.82rem; font-weight:600; margin-bottom:0.4rem; line-height:1.25; }
+    .dir-card.bad .dir-name { color:#ededf3; }
+    .dir-card.good .dir-name { color:#ededf3; }
+    .dir-status-pill { display:inline-block; font-size:0.62rem; font-weight:700; padding:0.15rem 0.55rem; border-radius:999px; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:0.3rem; }
+    .dir-card.bad .dir-status-pill { background:rgba(224,96,90,0.15); color:#e0605a; }
+    .dir-card.good .dir-status-pill { background:rgba(79,174,133,0.15); color:#4fae85; }
     .modal { display:none; position:fixed; inset:0; background:rgba(6,4,9,0.82); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); z-index:100; overflow-y:auto; }
     .modal.open { display:block; }
     .modal-inner { background:#16131f; border:1px solid #2a2432; border-radius:18px; padding:1.5rem; width:calc(100% - 2rem); max-width:580px; margin:2rem auto; box-shadow:0 24px 60px rgba(0,0,0,0.5); }
@@ -110,6 +135,15 @@
     .row { display:flex; gap:0.5rem; }
     .set-badge { display:inline-block; background:#e0605a; color:white; border-radius:999px; font-size:0.6rem; padding:0.1rem 0.4rem; margin-left:0.3rem; }
     .toggle-row { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.6rem 0; }
+    .set-group { border:1px solid #2a2432; border-radius:11px; margin-bottom:0.6rem; overflow:hidden; background:#121017; }
+    .set-group summary { list-style:none; cursor:pointer; padding:0.8rem 0.95rem; font-size:0.85rem; font-weight:600; color:#e9879c; display:flex; align-items:center; justify-content:space-between; user-select:none; transition:background 0.15s ease; }
+    .set-group summary::-webkit-details-marker { display:none; }
+    .set-group summary::after { content:'\2304'; font-size:0.9rem; color:#8b8797; transition:transform 0.2s ease; margin-left:0.5rem; }
+    .set-group[open] summary::after { transform:rotate(180deg); }
+    .set-group summary:hover { background:rgba(214,92,123,0.08); }
+    .set-group[open] summary { border-bottom:1px solid #2a2432; }
+    .set-group-body { padding:0.9rem 0.95rem 1rem; }
+    .set-group-body form:last-child p:last-child { margin-bottom:0; }
     .toggle-label { font-size:0.85rem; color:#ededf3; }
     .toggle-sub { font-size:0.68rem; color:#8b8797; margin-top:0.15rem; }
     .toggle-switch { position:relative; width:44px; height:24px; flex-shrink:0; cursor:pointer; }
@@ -315,36 +349,44 @@
   </div>
   <div id="banner" style="display:none;"></div>
 
-  <div id="hdrButtonsMain" class="hdr-btns">
-    <button onclick="openTab('dramas')" id="tab-dramas" class="btn-sm" style="width:auto;margin:0;">My Dramas</button>
-    <button onclick="openTab('watchlist')" id="tab-watchlist" class="btn-sm" style="width:auto;margin:0;">Watchlist</button>
-    <button onclick="openTab('skipped')" id="tab-skipped" class="btn-sm" style="width:auto;margin:0;">Skipped Shows</button>
-    <button onclick="openTab('dir')" id="tab-dir" class="btn-sm" style="width:auto;margin:0;">Actor Directory</button>
-    <button onclick="openTab('check')" id="tab-check" class="btn-sm" style="width:auto;margin:0;">Check Cast</button>
-    <button onclick="openTab('rec')" id="tab-rec" class="btn-gold" style="width:auto;margin:0;">Recommendations</button>
-    <button onclick="openTab('similar')" id="tab-similar" class="btn-gold" style="width:auto;margin:0;">Similar Shows</button>
-    <button onclick="openTab('stats')" id="tab-stats" class="btn-green" style="width:auto;margin:0;">Stats</button>
-    <button onclick="openTab('optimizer')" id="tab-optimizer" class="btn-green" style="width:auto;margin:0;">Watch Optimizer</button>
-    <button onclick="openTab('mood')" id="tab-mood" class="btn-gold" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Mood Search</button>
-    <button onclick="openSettings()" class="btn-sm" style="width:auto;margin:0;">Settings <span id="setBadge" class="set-badge">!</span></button>
-    <button onclick="syncNow()" id="syncNowBtn" class="btn-green" style="width:auto;margin:0;">🔄 Sync Now</button>
-    <button onclick="switchSpace('ai')" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Studio</button>
+  <div id="hdrButtonsMain" class="hdr-btns-wrap">
+    <div class="hdr-tabs">
+      <button onclick="openTab('dramas')" id="tab-dramas" class="hdr-tab">My Dramas</button>
+      <button onclick="openTab('watchlist')" id="tab-watchlist" class="hdr-tab">Watchlist</button>
+      <button onclick="openTab('skipped')" id="tab-skipped" class="hdr-tab">Skipped Shows</button>
+      <button onclick="openTab('dir')" id="tab-dir" class="hdr-tab">Actor Directory</button>
+      <button onclick="openTab('check')" id="tab-check" class="hdr-tab">Check Cast</button>
+      <button onclick="openTab('rec')" id="tab-rec" class="hdr-tab">Recommendations</button>
+      <button onclick="openTab('similar')" id="tab-similar" class="hdr-tab">Similar Shows</button>
+      <button onclick="openTab('stats')" id="tab-stats" class="hdr-tab">Stats</button>
+      <button onclick="openTab('optimizer')" id="tab-optimizer" class="hdr-tab">Watch Optimizer</button>
+      <button onclick="openTab('mood')" id="tab-mood" class="hdr-tab">✨ AI Mood Search</button>
+    </div>
+    <div class="hdr-utils">
+      <button onclick="openSettings()" class="hdr-util-btn">⚙️ Settings <span id="setBadge" class="set-badge">!</span></button>
+      <button onclick="syncNow()" id="syncNowBtn" class="hdr-util-btn">🔄 Sync Now</button>
+      <button onclick="switchSpace('ai')" class="hdr-util-btn hdr-util-accent">✨ AI Studio</button>
+    </div>
   </div>
 
-  <div id="hdrButtonsAI" class="hdr-btns hidden">
-    <button onclick="openTab('dramas')" id="tab-dramas-ai" class="btn-sm" style="width:auto;margin:0;">My Dramas</button>
-    <button onclick="openTab('watchlist')" id="tab-watchlist-ai" class="btn-sm" style="width:auto;margin:0;">Watchlist</button>
-    <button onclick="openTab('skipped')" id="tab-skipped-ai" class="btn-sm" style="width:auto;margin:0;">Skipped Shows</button>
-    <button onclick="openTab('dir')" id="tab-dir-ai" class="btn-sm" style="width:auto;margin:0;">Actor Directory</button>
-    <button onclick="openTab('check')" id="tab-check-ai" class="btn-sm" style="width:auto;margin:0;">Check Cast</button>
-    <button onclick="openTab('stats')" id="tab-stats-ai" class="btn-green" style="width:auto;margin:0;">Stats</button>
-    <button onclick="openTab('mood')" id="tab-mood-ai" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Mood Search</button>
-    <button onclick="openTab('airec')" id="tab-airec" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Picks</button>
-    <button onclick="openTab('aisimilar')" id="tab-aisimilar" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Similar Shows</button>
-    <button onclick="openTab('aioptimizer')" id="tab-aioptimizer" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Watch Planner</button>
-    <button onclick="openSettings()" class="btn-sm" style="width:auto;margin:0;">Settings <span id="setBadgeAi" class="set-badge">!</span></button>
-    <button onclick="syncNow()" id="syncNowBtnAi" class="btn-green" style="width:auto;margin:0;">🔄 Sync Now</button>
-    <button onclick="switchSpace('main')" class="btn-sm" style="width:auto;margin:0;">&larr; Back to Main Site</button>
+  <div id="hdrButtonsAI" class="hdr-btns-wrap hidden">
+    <div class="hdr-tabs">
+      <button onclick="openTab('dramas')" id="tab-dramas-ai" class="hdr-tab">My Dramas</button>
+      <button onclick="openTab('watchlist')" id="tab-watchlist-ai" class="hdr-tab">Watchlist</button>
+      <button onclick="openTab('skipped')" id="tab-skipped-ai" class="hdr-tab">Skipped Shows</button>
+      <button onclick="openTab('dir')" id="tab-dir-ai" class="hdr-tab">Actor Directory</button>
+      <button onclick="openTab('check')" id="tab-check-ai" class="hdr-tab">Check Cast</button>
+      <button onclick="openTab('stats')" id="tab-stats-ai" class="hdr-tab">Stats</button>
+      <button onclick="openTab('mood')" id="tab-mood-ai" class="hdr-tab">✨ AI Mood Search</button>
+      <button onclick="openTab('airec')" id="tab-airec" class="hdr-tab">✨ AI Picks</button>
+      <button onclick="openTab('aisimilar')" id="tab-aisimilar" class="hdr-tab">✨ AI Similar Shows</button>
+      <button onclick="openTab('aioptimizer')" id="tab-aioptimizer" class="hdr-tab">✨ AI Watch Planner</button>
+    </div>
+    <div class="hdr-utils">
+      <button onclick="openSettings()" class="hdr-util-btn">⚙️ Settings <span id="setBadgeAi" class="set-badge">!</span></button>
+      <button onclick="syncNow()" id="syncNowBtnAi" class="hdr-util-btn">🔄 Sync Now</button>
+      <button onclick="switchSpace('main')" class="hdr-util-btn hdr-util-accent">&larr; Back to Main Site</button>
+    </div>
   </div>
 </div>
 
@@ -368,8 +410,8 @@
     <p style="font-size:0.7rem;color:#8b8797;margin-bottom:0.75rem;font-style:italic;">Adding a drama via TMDB now automatically checks if any tracked actors also appear in your other dramas. Use "Scan My Library" once to backfill this check across dramas you added before this feature existed.</p>
     <input id="dramaSearch" placeholder="Search your dramas by title..." oninput="render()" style="margin-bottom:0.75rem;">
     <div id="favActorsBox" class="box hidden" style="margin-bottom:1rem;">
-      <h4 style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:#e0605a;margin-bottom:0.5rem;">&#9829; Your Favorite Actors</h4>
-      <div id="favActorsGrid" style="display:flex;flex-wrap:wrap;gap:0.4rem;"></div>
+      <h4 style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:#e9879c;margin-bottom:0.65rem;">&#9829; Your Favorite Actors</h4>
+      <div id="favActorsGrid" style="display:flex;flex-wrap:wrap;gap:0.5rem;"></div>
     </div>
     <div id="dramaList" class="drama-list"></div>
     <p class="note">Tap the &#9825; on any actor's card to mark them as one of your favorites. Favorites are just for you - your co-watcher won't see the same ones marked.</p>
@@ -932,93 +974,113 @@
 
     <div id="syncStatus"></div>
 
-    <form id="tmdbKeyForm" onsubmit="return false;" autocomplete="on">
-    <label class="field-lbl">TMDB API Key (for auto-fill and recommendations) <span class="tmdb-badge">Free</span></label>
-    <input id="tmdbKeyInput" name="tmdb-api-key" type="password" autocomplete="current-password" placeholder="Paste your TMDB API key (v3 auth)">
-    <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">
-      Get free key: themoviedb.org &rarr; Sign up &rarr; Settings &rarr; API &rarr; Request API Key (v3 auth)
-    </p>
-    </form>
+    <details class="set-group" open>
+      <summary>🔑 API Keys</summary>
+      <div class="set-group-body">
+      <form id="tmdbKeyForm" onsubmit="return false;" autocomplete="on">
+      <label class="field-lbl">TMDB API Key (for auto-fill and recommendations) <span class="tmdb-badge">Free</span></label>
+      <input id="tmdbKeyInput" name="tmdb-api-key" type="password" autocomplete="current-password" placeholder="Paste your TMDB API key (v3 auth)">
+      <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">
+        Get free key: themoviedb.org &rarr; Sign up &rarr; Settings &rarr; API &rarr; Request API Key (v3 auth)
+      </p>
+      </form>
 
-    <form id="omdbKeyForm" onsubmit="return false;" autocomplete="on">
-    <label class="field-lbl">OMDb API Key (for real IMDb ratings &amp; fuller genres) <span class="tmdb-badge" style="background:rgba(245,197,24,0.15);border-color:rgba(245,197,24,0.3);color:#f5c518;">Free</span></label>
-    <input id="omdbKeyInput" name="omdb-api-key" type="password" autocomplete="current-password" placeholder="Paste your OMDb API key">
-    <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">
-      Get free key: omdbapi.com/apikey.aspx &rarr; choose FREE (1,000 req/day) &rarr; check your email to activate
-    </p>
-    </form>
+      <form id="omdbKeyForm" onsubmit="return false;" autocomplete="on">
+      <label class="field-lbl">OMDb API Key (for real IMDb ratings &amp; fuller genres) <span class="tmdb-badge" style="background:rgba(245,197,24,0.15);border-color:rgba(245,197,24,0.3);color:#f5c518;">Free</span></label>
+      <input id="omdbKeyInput" name="omdb-api-key" type="password" autocomplete="current-password" placeholder="Paste your OMDb API key">
+      <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">
+        Get free key: omdbapi.com/apikey.aspx &rarr; choose FREE (1,000 req/day) &rarr; check your email to activate
+      </p>
+      </form>
 
-    <form id="geminiKeyForm" onsubmit="return false;" autocomplete="on">
-    <label class="field-lbl">Gemini API Key (for the AI Studio space) <span class="tmdb-badge" style="background:rgba(79,168,212,0.15);border-color:rgba(79,168,212,0.3);color:#4fa8d4;">Free</span></label>
-    <input id="geminiKeyInput" name="gemini-api-key" type="password" autocomplete="current-password" placeholder="Paste your Gemini API key">
-    <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">
-      Get free key: aistudio.google.com &rarr; Sign in &rarr; Get API Key &rarr; Create API key. Only used inside AI Studio (Mood Search, AI Picks, AI Similar Shows, AI Watch Planner) - the rest of the site works without it.
-    </p>
-    </form>
-
-
-    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
-    <div class="toggle-row">
-      <div>
-        <div class="toggle-label">Avoid Recent Directors/Writers</div>
-        <div class="toggle-sub">Off by default. Directors &amp; writers are always shown in My Dramas and the Crew Directory. Turning this ON also makes Check Cast and Recommendations flag/avoid dramas whose director or writer is in your last 10 - not just actors. Smart Score is unaffected (it already rewards familiar directors/writers on purpose).</div>
+      <form id="geminiKeyForm" onsubmit="return false;" autocomplete="on">
+      <label class="field-lbl">Gemini API Key (for the AI Studio space) <span class="tmdb-badge" style="background:rgba(79,168,212,0.15);border-color:rgba(79,168,212,0.3);color:#4fa8d4;">Free</span></label>
+      <input id="geminiKeyInput" name="gemini-api-key" type="password" autocomplete="current-password" placeholder="Paste your Gemini API key">
+      <p style="font-size:0.65rem;color:#8b8797;margin-bottom:0;font-style:italic;">
+        Get free key: aistudio.google.com &rarr; Sign in &rarr; Get API Key &rarr; Create API key. Only used inside AI Studio (Mood Search, AI Picks, AI Similar Shows, AI Watch Planner) - the rest of the site works without it.
+      </p>
+      </form>
       </div>
-      <label class="toggle-switch">
-        <input type="checkbox" id="trackCrewToggle" onchange="toggleTrackCrew(this.checked)">
-        <span class="toggle-slider"></span>
-      </label>
-    </div>
+    </details>
 
-    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
-    <p style="font-size:0.8rem;color:#e9879c;margin-bottom:0.75rem;font-weight:bold;">Manage Profiles</p>
-    <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Rename a profile, or delete one entirely. Deleting removes that person's My Dramas, Watchlist, and Favorite Actors from this device - it cannot be undone.</p>
-    <div id="profileManageList" style="margin-bottom:0.5rem;"></div>
+    <details class="set-group">
+      <summary>⚙️ Preferences</summary>
+      <div class="set-group-body">
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Avoid Recent Directors/Writers</div>
+          <div class="toggle-sub">Off by default. Directors &amp; writers are always shown in My Dramas and the Crew Directory. Turning this ON also makes Check Cast and Recommendations flag/avoid dramas whose director or writer is in your last 10 - not just actors. Smart Score is unaffected (it already rewards familiar directors/writers on purpose).</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="trackCrewToggle" onchange="toggleTrackCrew(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      </div>
+    </details>
 
-    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
-    <p style="font-size:0.8rem;color:#e9879c;margin-bottom:0.75rem;font-weight:bold;">Whose Turn to Pick?</p>
-    <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Unlike everything else here, this is shared between profiles on purpose - you should both see the same answer. Reorder the rotation, or jump straight to whoever's turn it actually is right now.</p>
-    <div id="turnOrderList" style="margin-bottom:0.75rem;"></div>
-    <label class="field-lbl">It's currently...</label>
-    <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;">
-      <select id="turnCurrentSelect" style="flex:1;margin:0;"></select>
-      <button class="btn-sm" onclick="applyTurnCurrentSelect()" style="width:auto;margin:0;">Set</button>
-    </div>
-    <p id="turnHistoryNote" style="font-size:0.65rem;color:#8b8797;"></p>
+    <details class="set-group">
+      <summary>👥 Manage Profiles</summary>
+      <div class="set-group-body">
+      <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Rename a profile, or delete one entirely. Deleting removes that person's My Dramas, Watchlist, and Favorite Actors from this device - it cannot be undone.</p>
+      <div id="profileManageList" style="margin-bottom:0;"></div>
+      </div>
+    </details>
 
-    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
-    <p style="font-size:0.8rem;color:#e9879c;margin-bottom:0.75rem;font-weight:bold;">Backup &amp; Export</p>
-    <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Download everything for your current profile - My Dramas, Watchlist, Favorite Actors, and Skipped Shows - as a JSON file. Useful as a local backup, or if Gist sync ever breaks.</p>
-    <button onclick="exportMyData()" class="btn-sm" style="width:auto;">Download My Data as JSON</button>
+    <details class="set-group">
+      <summary>🔁 Whose Turn to Pick?</summary>
+      <div class="set-group-body">
+      <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Unlike everything else here, this is shared between profiles on purpose - you should both see the same answer. Reorder the rotation, or jump straight to whoever's turn it actually is right now.</p>
+      <div id="turnOrderList" style="margin-bottom:0.75rem;"></div>
+      <label class="field-lbl">It's currently...</label>
+      <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;">
+        <select id="turnCurrentSelect" style="flex:1;margin:0;"></select>
+        <button class="btn-sm" onclick="applyTurnCurrentSelect()" style="width:auto;margin:0;">Set</button>
+      </div>
+      <p id="turnHistoryNote" style="font-size:0.65rem;color:#8b8797;margin-bottom:0;"></p>
+      </div>
+    </details>
 
-    <div style="margin-top:0.9rem;">
-      <label class="field-lbl">Restore from a backup file</label>
-      <input type="file" id="importFileInput" accept="application/json" onchange="handleImportFile(this)">
-      <p style="font-size:0.65rem;color:#8b8797;margin-top:0.35rem;">Merges into your current profile - adds anything from the file you don't already have (matched by TMDB ID), without deleting anything you currently have.</p>
-    </div>
+    <details class="set-group">
+      <summary>💾 Backup &amp; Restore</summary>
+      <div class="set-group-body">
+      <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Download everything for your current profile - My Dramas, Watchlist, Favorite Actors, and Skipped Shows - as a JSON file. Useful as a local backup, or if Gist sync ever breaks.</p>
+      <button onclick="exportMyData()" class="btn-sm" style="width:auto;">Download My Data as JSON</button>
 
-    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
-    <p style="font-size:0.8rem;color:#e9879c;margin-bottom:0.75rem;font-weight:bold;">GitHub Gist Sync (optional)</p>
-    <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Connecting this syncs your dramas and preferences (toggles, excluded actors) across devices. Your API keys are NOT synced this way for security - Gists are public, so keys stay local to each device and need entering once per device.</p>
+      <div style="margin-top:0.9rem;">
+        <label class="field-lbl">Restore from a backup file</label>
+        <input type="file" id="importFileInput" accept="application/json" onchange="handleImportFile(this)">
+        <p style="font-size:0.65rem;color:#8b8797;margin-top:0.35rem;">Merges into your current profile - adds anything from the file you don't already have (matched by TMDB ID), without deleting anything you currently have.</p>
+      </div>
 
-    <form id="ghTokenForm" onsubmit="return false;" autocomplete="on">
-    <label class="field-lbl">GitHub Token</label>
-    <input id="ghToken" name="github-token" type="password" autocomplete="current-password" placeholder="ghp_...">
-    <label class="field-lbl">Gist ID</label>
-    <input id="ghGistId" name="gist-id" autocomplete="username" placeholder="Gist ID from URL">
-    <button type="submit" onclick="connectGist()">Test &amp; Save Connection</button>
-    </form>
-    <div id="gistResult" style="margin-top:0.5rem;"></div>
+      <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
+      <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.5rem;">Whole-app manual backup (all profiles &amp; settings together):</p>
+      <div class="row">
+        <button class="btn-sm" onclick="exportData()" style="flex:1;">Export Data</button>
+        <label class="btn-sm" style="flex:1;text-align:center;cursor:pointer;border-radius:9px;padding:0.4rem 0.8rem;margin-top:0.25rem;">
+          Import Data<input type="file" accept=".json" onchange="importData(event)" style="display:none;">
+        </label>
+      </div>
+      </div>
+    </details>
 
-    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
-    <p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.5rem;">Manual Backup:</p>
-    <div class="row">
-      <button class="btn-sm" onclick="exportData()" style="flex:1;">Export Data</button>
-      <label class="btn-sm" style="flex:1;text-align:center;cursor:pointer;border-radius:8px;padding:0.4rem 0.8rem;margin-top:0.25rem;">
-        Import Data<input type="file" accept=".json" onchange="importData(event)" style="display:none;">
-      </label>
-    </div>
+    <details class="set-group">
+      <summary>☁️ GitHub Gist Sync <span style="font-weight:400;color:#8b8797;">(optional)</span></summary>
+      <div class="set-group-body">
+      <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Connecting this syncs your dramas and preferences (toggles, excluded actors) across devices. Your API keys are NOT synced this way for security - Gists are public, so keys stay local to each device and need entering once per device.</p>
 
-    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
+      <form id="ghTokenForm" onsubmit="return false;" autocomplete="on">
+      <label class="field-lbl">GitHub Token</label>
+      <input id="ghToken" name="github-token" type="password" autocomplete="current-password" placeholder="ghp_...">
+      <label class="field-lbl">Gist ID</label>
+      <input id="ghGistId" name="gist-id" autocomplete="username" placeholder="Gist ID from URL">
+      <button type="submit" onclick="connectGist()">Test &amp; Save Connection</button>
+      </form>
+      <div id="gistResult" style="margin-top:0.5rem;"></div>
+      </div>
+    </details>
+
+    <div style="height:1px;background:#2a2432;margin:1.1rem 0;"></div>
     <div class="row">
       <button class="btn-del" onclick="closeSettings()">Close</button>
       <button onclick="saveAllSettings()">Save Settings</button>
@@ -1817,7 +1879,7 @@ function makeFavActorBtn(displayName) {
     btn.style.color = nowFav ? '#e0605a' : '#a29dae';
     btn.title = nowFav ? 'Remove from your favorite actors' : 'Mark as one of your favorite actors';
     var card = btn.closest('.actor-card, .dir-card');
-    if (card) card.style.boxShadow = nowFav ? '0 0 0 2px #e0605a' : '';
+    if (card) card.style.boxShadow = nowFav ? '0 0 0 2px #d65c7b' : '';
     if (typeof renderFavActorsStrip === 'function') renderFavActorsStrip();
   };
   return btn;
@@ -3786,12 +3848,12 @@ function renderDir() {
     var label = a.inRecent10 ? 'In last 10' : (ago <= 0 ? 'Available' : ago + ' drama' + (ago > 1 ? 's' : '') + ' ago');
     var card = document.createElement('div'); card.className = 'dir-card ' + (a.inRecent10 ? 'bad' : 'good');
     card.style.position = 'relative';
-    if (isFavoriteActor(a.name)) card.style.boxShadow = '0 0 0 2px #e0605a';
+    if (isFavoriteActor(a.name)) card.style.boxShadow = '0 0 0 2px #d65c7b';
     var img = document.createElement('img'); img.className = 'dir-photo'; img.src = ph(a.name, a.photo); img.alt = a.name;
     img.onerror = function() { this.src = ph(a.name, ''); };
     var name = document.createElement('div'); name.className = 'dir-name'; name.textContent = a.name;
-    var status = document.createElement('div'); status.style.cssText = 'font-size:0.65rem;color:' + (a.inRecent10 ? '#e0605a' : '#4fae85') + ';'; status.textContent = label;
-    var count = document.createElement('div'); count.style.cssText = 'font-size:0.62rem;color:#8b8797;margin-top:0.15rem;'; count.textContent = a.dramas.length + ' drama' + (a.dramas.length > 1 ? 's' : '');
+    var status = document.createElement('div'); status.className = 'dir-status-pill'; status.textContent = label;
+    var count = document.createElement('div'); count.style.cssText = 'font-size:0.62rem;color:#8b8797;margin-top:0.3rem;'; count.textContent = a.dramas.length + ' drama' + (a.dramas.length > 1 ? 's' : '');
     card.appendChild(img); card.appendChild(name); card.appendChild(status); card.appendChild(count); card.appendChild(makeFavActorBtn(a.name));
 
     var completionSlot = document.createElement('div'); completionSlot.style.width = '100%';
@@ -3836,8 +3898,8 @@ function renderCrewDir() {
     var roleTag = document.createElement('div');
     roleTag.style.cssText = 'font-size:0.6rem;padding:0.05rem 0.3rem;border-radius:999px;display:inline-block;margin-bottom:0.2rem;' + (c.role === 'Director' ? 'background:rgba(224,96,90,0.12);color:#d97d89;' : 'background:rgba(79,168,212,0.12);color:#4fa8d4;');
     roleTag.textContent = c.role;
-    var status = document.createElement('div'); status.style.cssText = 'font-size:0.65rem;color:' + (c.inRecent10 ? '#e0605a' : '#4fae85') + ';'; status.textContent = label;
-    var count = document.createElement('div'); count.style.cssText = 'font-size:0.62rem;color:#8b8797;margin-top:0.15rem;'; count.textContent = c.dramas.length + ' drama' + (c.dramas.length > 1 ? 's' : '');
+    var status = document.createElement('div'); status.className = 'dir-status-pill'; status.textContent = label;
+    var count = document.createElement('div'); count.style.cssText = 'font-size:0.62rem;color:#8b8797;margin-top:0.3rem;'; count.textContent = c.dramas.length + ' drama' + (c.dramas.length > 1 ? 's' : '');
     card.appendChild(img); card.appendChild(roleTag); card.appendChild(name); card.appendChild(status); card.appendChild(count);
     grid.appendChild(card);
   });
