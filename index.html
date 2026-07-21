@@ -5,93 +5,118 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>K-Drama Cast Checker</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0d0d14">
+  <meta name="theme-color" content="#0a0a0f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="K-Drama Checker">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" href="icon-192.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Georgia, serif; background: #0d0d14; color: #e2e8f0; min-height: 100vh; }
-    .header { background: linear-gradient(135deg,#1a0a2e,#0d0d1a,#0a1a2e); padding: 2rem 1rem 1.25rem; text-align: center; border-bottom: 1px solid #2a2a45; }
-    .title { font-size: 1.8rem; font-weight: bold; background: linear-gradient(135deg,#c084fc,#818cf8,#fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.25rem; }
-    .subtitle { color: #64748b; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; }
+    :root {
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); background: #0a0a0f; color: #ededf3; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    ::selection { background: rgba(214,92,123,0.35); color: #fff; }
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid #e9879c; outline-offset: 2px; border-radius: 4px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+    }
+    .header {
+      position: relative; overflow: hidden;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(214,92,123,0.20), transparent 65%),
+        linear-gradient(135deg,#170a1f,#0d0a12,#0a1420);
+      padding: 2.25rem 1rem 1.5rem; text-align: center; border-bottom: 1px solid #2a2432;
+    }
+    .title { font-family: var(--font-display); font-size: 2rem; font-weight: 600; letter-spacing: -0.01em; background: linear-gradient(120deg,#f0a6b8,#ddaa55); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.3rem; position: relative; }
+    .subtitle { color: #8b8797; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.18em; position: relative; }
     #banner { display:none; margin-top:0.5rem; font-size:0.8rem; padding:0.25rem 0.75rem; border-radius:6px; }
     .hdr-btns { display:flex; gap:0.5rem; justify-content:center; margin-top:0.75rem; flex-wrap:wrap; }
     .container { max-width:1000px; margin:0 auto; padding:1.5rem 1rem; }
-    .box { background:linear-gradient(135deg,#1a1a35,#131325); border:1px solid #2a2a45; border-radius:12px; padding:1.25rem; margin-bottom:1.5rem; }
-    .sec-title { color:#c084fc; font-size:1rem; margin-bottom:0.5rem; }
-    input, select { width:100%; background:#13131f; border:1px solid #2a2a45; border-radius:8px; padding:0.6rem 0.9rem; color:#e2e8f0; font-size:0.9rem; font-family:Georgia,serif; margin-bottom:0.5rem; outline:none; }
-    button { background:linear-gradient(135deg,#a855f7,#6366f1); border:none; border-radius:8px; padding:0.6rem 1.2rem; color:white; font-size:0.85rem; font-weight:bold; cursor:pointer; font-family:Georgia,serif; width:100%; margin-top:0.5rem; }
-    .btn-sm { background:rgba(168,85,247,0.15); border:1px solid #c084fc; color:#c084fc; font-size:0.75rem; padding:0.4rem 0.8rem; }
-    .btn-del { background:rgba(244,63,94,0.15); border:1px solid #f43f5e; color:#f43f5e; }
-    .btn-green { background:rgba(16,185,129,0.15); border:1px solid #10b981; color:#10b981; }
-    .btn-gold { background:rgba(251,191,36,0.15); border:1px solid #fbbf24; color:#fbbf24; }
+    .box { background:linear-gradient(160deg,#1c1626,#14111d); border:1px solid #2a2432; border-radius:14px; padding:1.25rem; margin-bottom:1.5rem; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+    .sec-title { font-family:var(--font-display); font-weight:600; color:#e9879c; font-size:1.05rem; margin-bottom:0.6rem; letter-spacing:-0.005em; }
+    input, select, textarea { width:100%; background:#121017; border:1px solid #2a2432; border-radius:9px; padding:0.65rem 0.9rem; color:#ededf3; font-size:0.9rem; font-family:var(--font-body); margin-bottom:0.5rem; outline:none; transition:border-color 0.15s ease; }
+    input:focus, select:focus, textarea:focus { border-color:#d65c7b; }
+    button { background:linear-gradient(135deg,#d65c7b,#a8496a); border:none; border-radius:9px; padding:0.65rem 1.2rem; color:white; font-size:0.85rem; font-weight:600; cursor:pointer; font-family:var(--font-body); width:100%; margin-top:0.5rem; transition:filter 0.15s ease, transform 0.1s ease; }
+    button:hover { filter:brightness(1.1); }
+    button:active { transform:translateY(1px); }
+    button:disabled { opacity:0.4; cursor:default; filter:none; transform:none; }
+    .btn-sm { background:rgba(214,92,123,0.15); border:1px solid #e9879c; color:#e9879c; font-size:0.75rem; padding:0.4rem 0.8rem; font-weight:500; }
+    .btn-del { background:rgba(224,96,90,0.15); border:1px solid #e0605a; color:#e0605a; }
+    .btn-green { background:rgba(79,174,133,0.15); border:1px solid #4fae85; color:#4fae85; }
+    .btn-gold { background:rgba(221,170,85,0.15); border:1px solid #ddaa55; color:#ddaa55; }
     .drama-list { display:flex; flex-direction:column; gap:1rem; }
-    .drama-card { background:#1a1a2e; border:1px solid #2a2a45; border-radius:12px; overflow:hidden; }
-    .drama-card.active { border-color:rgba(168,85,247,0.5); }
-    .drama-card.old { opacity:0.5; }
+    .drama-card { background:#16131f; border:1px solid #2a2432; border-radius:14px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,0.22); transition:border-color 0.15s ease, transform 0.15s ease; }
+    .drama-card.active { border-color:rgba(214,92,123,0.5); }
+    .drama-card.old { opacity:0.55; }
     .drama-top { display:flex; gap:1rem; padding:1rem; align-items:flex-start; }
-    .drama-poster { width:80px; height:115px; border-radius:8px; object-fit:cover; flex-shrink:0; border:2px solid #2a2a45; }
-    .drama-card.active .drama-poster { border-color:rgba(168,85,247,0.5); }
-    .active-badge { display:inline-block; background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.4); border-radius:999px; padding:0.1rem 0.5rem; font-size:0.62rem; color:#c084fc; text-transform:uppercase; margin-bottom:0.35rem; }
+    .drama-poster { width:80px; height:115px; border-radius:8px; object-fit:cover; flex-shrink:0; border:2px solid #2a2432; }
+    .drama-card.active .drama-poster { border-color:rgba(214,92,123,0.5); }
+    .active-badge { display:inline-block; background:rgba(214,92,123,0.2); border:1px solid rgba(214,92,123,0.4); border-radius:999px; padding:0.1rem 0.5rem; font-size:0.62rem; color:#e9879c; text-transform:uppercase; margin-bottom:0.35rem; }
     .actor-scroll { display:flex; gap:0.75rem; overflow-x:auto; padding:0 1rem 1rem; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
     .actor-scroll::-webkit-scrollbar { display:none; }
-    .actor-card { display:flex; flex-direction:column; align-items:center; min-width:88px; padding:0.65rem 0.5rem; background:#13131f; border:2px solid #2a2a45; border-radius:12px; text-align:center; flex-shrink:0; }
-    .actor-card.red { border-color:#f43f5e; background:rgba(244,63,94,0.1); }
-    .actor-card.green { border-color:#10b981; background:rgba(16,185,129,0.08); }
+    .actor-card { display:flex; flex-direction:column; align-items:center; min-width:88px; padding:0.65rem 0.5rem; background:#121017; border:2px solid #2a2432; border-radius:12px; text-align:center; flex-shrink:0; }
+    .actor-card.red { border-color:#e0605a; background:rgba(224,96,90,0.1); }
+    .actor-card.green { border-color:#4fae85; background:rgba(79,174,133,0.08); }
     .actor-photo { width:64px; height:64px; border-radius:50%; object-fit:cover; margin-bottom:0.4rem; border:2px solid transparent; }
-    .actor-card.red .actor-photo { border-color:#f43f5e; }
-    .actor-card.green .actor-photo { border-color:#10b981; }
+    .actor-card.red .actor-photo { border-color:#e0605a; }
+    .actor-card.green .actor-photo { border-color:#4fae85; }
     .actor-lbl { font-size:0.72rem; font-weight:bold; margin-bottom:0.2rem; word-break:break-word; line-height:1.3; }
-    .actor-card.red .actor-lbl { color:#f43f5e; }
-    .actor-card.green .actor-lbl { color:#10b981; }
-    .fav-chip { display:flex; align-items:center; gap:0.35rem; background:rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.3); border-radius:999px; padding:0.2rem 0.6rem 0.2rem 0.25rem; font-size:0.72rem; max-width:100%; }
+    .actor-card.red .actor-lbl { color:#e0605a; }
+    .actor-card.green .actor-lbl { color:#4fae85; }
+    .fav-chip { display:flex; align-items:center; gap:0.35rem; background:rgba(224,96,90,0.1); border:1px solid rgba(224,96,90,0.3); border-radius:999px; padding:0.2rem 0.6rem 0.2rem 0.25rem; font-size:0.72rem; max-width:100%; }
     .fav-chip-photo { width:20px; height:20px; border-radius:50%; object-fit:cover; flex-shrink:0; }
     .role-pill { font-size:0.6rem; padding:0.1rem 0.4rem; border-radius:999px; white-space:nowrap; }
-    .lead { background:rgba(251,191,36,0.15); color:#fbbf24; }
-    .supp { background:rgba(99,102,241,0.15); color:#818cf8; }
+    .lead { background:rgba(221,170,85,0.15); color:#ddaa55; }
+    .supp { background:rgba(108,111,176,0.15); color:#9296d6; }
     .dir-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:0.75rem; margin-top:0.75rem; }
-    .dir-card { background:#13131f; border:2px solid #2a2a45; border-radius:12px; padding:0.75rem; text-align:center; }
-    .dir-card.bad { border-color:#f43f5e; background:rgba(244,63,94,0.08); }
-    .dir-card.good { border-color:#10b981; background:rgba(16,185,129,0.06); }
+    .dir-card { background:#121017; border:2px solid #2a2432; border-radius:12px; padding:0.75rem; text-align:center; }
+    .dir-card.bad { border-color:#e0605a; background:rgba(224,96,90,0.08); }
+    .dir-card.good { border-color:#4fae85; background:rgba(79,174,133,0.06); }
     .dir-photo { width:64px; height:64px; border-radius:50%; object-fit:cover; margin:0 auto 0.4rem; border:3px solid transparent; display:block; }
-    .dir-card.bad .dir-photo { border-color:#f43f5e; }
-    .dir-card.good .dir-photo { border-color:#10b981; }
+    .dir-card.bad .dir-photo { border-color:#e0605a; }
+    .dir-card.good .dir-photo { border-color:#4fae85; }
     .dir-name { font-size:0.78rem; font-weight:bold; margin-bottom:0.2rem; }
-    .dir-card.bad .dir-name { color:#f43f5e; }
-    .dir-card.good .dir-name { color:#10b981; }
-    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:100; overflow-y:auto; }
+    .dir-card.bad .dir-name { color:#e0605a; }
+    .dir-card.good .dir-name { color:#4fae85; }
+    .modal { display:none; position:fixed; inset:0; background:rgba(6,4,9,0.82); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); z-index:100; overflow-y:auto; }
     .modal.open { display:block; }
-    .modal-inner { background:#1a1a2e; border:1px solid #2a2a45; border-radius:16px; padding:1.5rem; width:calc(100% - 2rem); max-width:580px; margin:2rem auto; }
-    .field-lbl { display:block; font-size:0.72rem; color:#64748b; margin-bottom:0.3rem; text-transform:uppercase; }
-    .cast-row { background:#0d0d14; border:1px solid #2a2a45; border-radius:8px; padding:0.75rem; margin-bottom:0.75rem; }
+    .modal-inner { background:#16131f; border:1px solid #2a2432; border-radius:18px; padding:1.5rem; width:calc(100% - 2rem); max-width:580px; margin:2rem auto; box-shadow:0 24px 60px rgba(0,0,0,0.5); }
+    .field-lbl { display:block; font-size:0.72rem; color:#8b8797; margin-bottom:0.3rem; text-transform:uppercase; }
+    .cast-row { background:#0a0a0f; border:1px solid #2a2432; border-radius:8px; padding:0.75rem; margin-bottom:0.75rem; }
     .ac-wrap { position:relative; }
-    .ac-list { position:absolute; top:calc(100% + 2px); left:0; right:0; background:#1a1a2e; border:1px solid #a855f7; border-radius:8px; z-index:300; max-height:260px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,0.5); }
-    .ac-item { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0.75rem; cursor:pointer; border-bottom:1px solid #2a2a45; }
+    .ac-list { position:absolute; top:calc(100% + 2px); left:0; right:0; background:#16131f; border:1px solid #d65c7b; border-radius:8px; z-index:300; max-height:260px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,0.5); }
+    .ac-item { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0.75rem; cursor:pointer; border-bottom:1px solid #2a2432; }
     .ac-item:last-child { border-bottom:none; }
-    .ac-item:hover, .ac-item.hi { background:rgba(168,85,247,0.2); }
+    .ac-item:hover, .ac-item.hi { background:rgba(214,92,123,0.2); }
     .ac-item img { width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0; }
     .ac-item .ac-poster { width:30px; height:42px; border-radius:4px; object-fit:cover; flex-shrink:0; }
     .ac-n { font-size:0.85rem; font-weight:bold; }
-    .ac-m { font-size:0.68rem; color:#64748b; }
-    .prev-img { display:none; object-fit:cover; border:2px solid #2a2a45; }
+    .ac-m { font-size:0.68rem; color:#8b8797; }
+    .prev-img { display:none; object-fit:cover; border:2px solid #2a2432; }
     .hidden { display:none; }
-    .note { font-size:0.7rem; color:#64748b; text-align:center; margin-top:2rem; }
+    .note { font-size:0.7rem; color:#8b8797; text-align:center; margin-top:2rem; }
     .row { display:flex; gap:0.5rem; }
-    .set-badge { display:inline-block; background:#f43f5e; color:white; border-radius:999px; font-size:0.6rem; padding:0.1rem 0.4rem; margin-left:0.3rem; }
+    .set-badge { display:inline-block; background:#e0605a; color:white; border-radius:999px; font-size:0.6rem; padding:0.1rem 0.4rem; margin-left:0.3rem; }
     .toggle-row { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.6rem 0; }
-    .toggle-label { font-size:0.85rem; color:#e2e8f0; }
-    .toggle-sub { font-size:0.68rem; color:#64748b; margin-top:0.15rem; }
+    .toggle-label { font-size:0.85rem; color:#ededf3; }
+    .toggle-sub { font-size:0.68rem; color:#8b8797; margin-top:0.15rem; }
     .toggle-switch { position:relative; width:44px; height:24px; flex-shrink:0; cursor:pointer; }
     .toggle-switch input { opacity:0; width:0; height:0; }
-    .toggle-slider { position:absolute; inset:0; background:#2a2a45; border-radius:999px; transition:0.2s; }
-    .toggle-slider:before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#e2e8f0; border-radius:50%; transition:0.2s; }
-    .toggle-switch input:checked + .toggle-slider { background:linear-gradient(135deg,#a855f7,#6366f1); }
+    .toggle-slider { position:absolute; inset:0; background:#2a2432; border-radius:999px; transition:0.2s; }
+    .toggle-slider:before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#ededf3; border-radius:50%; transition:0.2s; }
+    .toggle-switch input:checked + .toggle-slider { background:linear-gradient(135deg,#d65c7b,#6c6fb0); }
     .toggle-switch input:checked + .toggle-slider:before { transform:translateX(20px); }
-    .score-pill { display:inline-block; font-size:0.7rem; font-weight:bold; padding:0.15rem 0.5rem; border-radius:999px; background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.4); color:#c084fc; margin-bottom:0.3rem; }
-    .gem-pill { display:inline-block; font-size:0.7rem; font-weight:bold; padding:0.15rem 0.5rem; border-radius:999px; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; margin-bottom:0.3rem; margin-right:0.3rem; }
+    .score-pill { display:inline-block; font-size:0.7rem; font-weight:bold; padding:0.15rem 0.5rem; border-radius:999px; background:rgba(214,92,123,0.2); border:1px solid rgba(214,92,123,0.4); color:#e9879c; margin-bottom:0.3rem; }
+    .gem-pill { display:inline-block; font-size:0.7rem; font-weight:bold; padding:0.15rem 0.5rem; border-radius:999px; background:rgba(79,168,212,0.15); border:1px solid rgba(79,168,212,0.4); color:#4fa8d4; margin-bottom:0.3rem; margin-right:0.3rem; }
     .tmdb-link-badge {
       display:inline-flex; align-items:center; gap:0.25rem; font-size:0.65rem; font-weight:bold;
       padding:0.15rem 0.5rem; border-radius:999px; background:rgba(1,180,228,0.15);
@@ -101,11 +126,11 @@
     .tmdb-link-badge:hover { background:rgba(1,180,228,0.28); }
     .watchlist-add-badge {
       display:inline-flex; align-items:center; gap:0.25rem; font-size:0.65rem; font-weight:bold;
-      padding:0.15rem 0.5rem; border-radius:999px; background:rgba(168,85,247,0.15);
-      border:1px solid rgba(168,85,247,0.35); color:#c084fc;
+      padding:0.15rem 0.5rem; border-radius:999px; background:rgba(214,92,123,0.15);
+      border:1px solid rgba(214,92,123,0.35); color:#e9879c;
       margin-bottom:0.3rem; margin-right:0.3rem; cursor:pointer;
     }
-    .watchlist-add-badge:hover { background:rgba(168,85,247,0.28); }
+    .watchlist-add-badge:hover { background:rgba(214,92,123,0.28); }
     .trailer-badge {
       display:inline-flex; align-items:center; gap:0.25rem; font-size:0.65rem; font-weight:bold;
       padding:0.15rem 0.5rem; border-radius:999px; background:rgba(239,68,68,0.15);
@@ -113,64 +138,64 @@
       margin-bottom:0.3rem; margin-right:0.3rem; cursor:pointer;
     }
     .trailer-badge:hover { background:rgba(239,68,68,0.28); }
-    .trailer-badge.unverified { background:rgba(100,116,139,0.15); border-color:rgba(100,116,139,0.35); color:#94a3b8; }
-    .trailer-badge.unverified:hover { background:rgba(100,116,139,0.28); }
+    .trailer-badge.unverified { background:rgba(139,135,151,0.15); border-color:rgba(139,135,151,0.35); color:#a29dae; }
+    .trailer-badge.unverified:hover { background:rgba(139,135,151,0.28); }
     .skip-badge {
       display:inline-flex; align-items:center; gap:0.25rem; font-size:0.65rem; font-weight:bold;
-      padding:0.15rem 0.5rem; border-radius:999px; background:rgba(100,116,139,0.15);
-      border:1px solid rgba(100,116,139,0.35); color:#94a3b8;
+      padding:0.15rem 0.5rem; border-radius:999px; background:rgba(139,135,151,0.15);
+      border:1px solid rgba(139,135,151,0.35); color:#a29dae;
       margin-bottom:0.3rem; margin-right:0.3rem; cursor:pointer;
     }
-    .skip-badge:hover { background:rgba(100,116,139,0.28); }
+    .skip-badge:hover { background:rgba(139,135,151,0.28); }
     .undo-toast {
       position:fixed; bottom:1.25rem; left:50%; transform:translateX(-50%);
-      background:#181828; border:1px solid #2a2a45; border-radius:999px;
+      background:#1b1620; border:1px solid #2a2432; border-radius:999px;
       padding:0.55rem 0.5rem 0.55rem 1rem; display:flex; align-items:center; gap:0.75rem;
-      box-shadow:0 8px 28px rgba(0,0,0,0.5); z-index:700; font-size:0.78rem; color:#e2e8f0;
+      box-shadow:0 8px 28px rgba(0,0,0,0.5); z-index:700; font-size:0.78rem; color:#ededf3;
       max-width:92vw;
     }
     .undo-toast span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .undo-toast button {
       width:auto; margin:0; padding:0.35rem 0.9rem; font-size:0.72rem; font-weight:bold;
-      background:linear-gradient(135deg,#a855f7,#6366f1); border:none; border-radius:999px;
+      background:linear-gradient(135deg,#d65c7b,#6c6fb0); border:none; border-radius:999px;
       color:white; cursor:pointer; flex-shrink:0;
     }
-    .actor-tip { position:relative; border-bottom:1px dotted #38bdf8; color:#38bdf8; cursor:help; }
+    .actor-tip { position:relative; border-bottom:1px dotted #4fa8d4; color:#4fa8d4; cursor:help; }
     .actor-tip .tip-card {
       position:absolute; bottom:135%; left:50%; transform:translateX(-50%);
       display:flex; align-items:flex-start; gap:0.5rem;
-      background:#1a1a2e; border:1px solid #38bdf8; border-radius:10px;
+      background:#16131f; border:1px solid #4fa8d4; border-radius:10px;
       padding:0.5rem 0.65rem; width:max-content; max-width:220px;
       opacity:0; visibility:hidden; pointer-events:none;
       transition:opacity 0.15s ease; z-index:80;
       box-shadow:0 4px 12px rgba(0,0,0,0.5);
     }
     .actor-tip:hover .tip-card { opacity:1; visibility:visible; }
-    .tip-card .tip-photo { width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #38bdf8; background:#13131f; flex-shrink:0; }
+    .tip-card .tip-photo { width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #4fa8d4; background:#121017; flex-shrink:0; }
     .tip-card .tip-info { text-align:left; white-space:normal; }
-    .tip-card .tip-name { font-size:0.75rem; font-weight:bold; color:#e2e8f0; line-height:1.2; margin-bottom:0.15rem; }
-    .tip-card .tip-dramas { font-size:0.65rem; color:#94a3b8; line-height:1.35; }
-    .crew-chip { border-color:#818cf8 !important; }
-    .role-director { background:rgba(244,63,94,0.12); color:#fb7185; }
-    .role-writer { background:rgba(56,189,248,0.12); color:#38bdf8; }
+    .tip-card .tip-name { font-size:0.75rem; font-weight:bold; color:#ededf3; line-height:1.2; margin-bottom:0.15rem; }
+    .tip-card .tip-dramas { font-size:0.65rem; color:#a29dae; line-height:1.35; }
+    .crew-chip { border-color:#9296d6 !important; }
+    .role-director { background:rgba(224,96,90,0.12); color:#d97d89; }
+    .role-writer { background:rgba(79,168,212,0.12); color:#4fa8d4; }
     .sync-box { font-size:0.78rem; padding:0.6rem 0.85rem; border-radius:8px; margin-bottom:0.85rem; line-height:1.6; }
-    .sync-ok   { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); color:#10b981; }
-    .sync-warn { background:rgba(251,191,36,0.1);  border:1px solid rgba(251,191,36,0.3);  color:#fbbf24; }
-    .sync-info { background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); color:#c084fc; }
+    .sync-ok   { background:rgba(79,174,133,0.1); border:1px solid rgba(79,174,133,0.3); color:#4fae85; }
+    .sync-warn { background:rgba(221,170,85,0.1);  border:1px solid rgba(221,170,85,0.3);  color:#ddaa55; }
+    .sync-info { background:rgba(214,92,123,0.1); border:1px solid rgba(214,92,123,0.3); color:#e9879c; }
     .rec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-top:1rem; }
-    .rec-card { background:#13131f; border:1px solid #2a2a45; border-radius:12px; overflow:hidden; cursor:pointer; transition:border-color 0.2s; }
-    .rec-card:hover { border-color:#10b981; }
-    .rec-poster { width:100%; aspect-ratio:2/3; object-fit:cover; display:block; background:#0d0d14; }
+    .rec-card { background:#121017; border:1px solid #2a2432; border-radius:12px; overflow:hidden; cursor:pointer; transition:border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }
+    .rec-card:hover { border-color:#d65c7b; transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,0.35); }
+    .rec-poster { width:100%; aspect-ratio:2/3; object-fit:cover; display:block; background:#0a0a0f; }
     .rec-info { padding:0.75rem; }
     .rec-title { font-size:0.85rem; font-weight:bold; margin-bottom:0.25rem; }
-    .rec-actors { font-size:0.68rem; color:#10b981; }
+    .rec-actors { font-size:0.68rem; color:#4fae85; }
     .tmdb-badge { font-size:0.6rem; background:rgba(1,180,228,0.15); border:1px solid rgba(1,180,228,0.3); color:#01b4e4; border-radius:4px; padding:0.1rem 0.4rem; margin-left:0.4rem; vertical-align:middle; }
     .cast-select-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:0.5rem; margin:0.5rem 0 1rem; }
-    .cast-select-item { display:flex; flex-direction:column; align-items:center; padding:0.5rem; background:#0d0d14; border:2px solid #2a2a45; border-radius:8px; cursor:pointer; text-align:center; }
-    .cast-select-item.selected { border-color:#a855f7; background:rgba(168,85,247,0.1); }
+    .cast-select-item { display:flex; flex-direction:column; align-items:center; padding:0.5rem; background:#0a0a0f; border:2px solid #2a2432; border-radius:8px; cursor:pointer; text-align:center; }
+    .cast-select-item.selected { border-color:#d65c7b; background:rgba(214,92,123,0.1); }
     .cast-select-item img { width:50px; height:50px; border-radius:50%; object-fit:cover; margin-bottom:0.3rem; }
     .cast-select-item .csn { font-size:0.7rem; font-weight:bold; }
-    .cast-select-item .csc { font-size:0.6rem; color:#64748b; }
+    .cast-select-item .csc { font-size:0.6rem; color:#8b8797; }
     .loading-dots::after { content:'.'; animation:dots 1.2s steps(3,end) infinite; }
     @keyframes dots { 0%,20%{content:'.';} 40%{content:'..';} 60%,100%{content:'...';} }
     @media (min-width:768px) {
@@ -224,7 +249,7 @@
 <div id="profileGate" class="modal" style="z-index:500;">
   <div class="modal-inner" style="max-width:420px;">
     <h3 class="sec-title" style="margin-bottom:0.25rem;">Welcome back</h3>
-    <p style="font-size:0.7rem;color:#64748b;margin-bottom:1rem;">Select your profile and enter your password to keep your watchlist and favorites separate - your co-watcher won't see what you've picked.</p>
+    <p style="font-size:0.7rem;color:#8b8797;margin-bottom:1rem;">Select your profile and enter your password to keep your watchlist and favorites separate - your co-watcher won't see what you've picked.</p>
     <p id="profileGateMsg" class="hidden" style="font-size:0.72rem;margin-bottom:0.75rem;padding:0.5rem 0.7rem;border-radius:8px;"></p>
 
     <div id="profileLoginForm" class="hidden">
@@ -232,7 +257,7 @@
       <select id="profileSelect" onchange="document.getElementById('profilePinInput').value=''; document.getElementById('profileLoginError').classList.add('hidden');"></select>
       <label class="field-lbl">Password</label>
       <input id="profilePinInput" type="password" placeholder="Enter your password" onkeydown="if(event.key==='Enter')attemptProfileLogin()">
-      <p id="profileLoginError" class="hidden" style="font-size:0.7rem;color:#f43f5e;margin:-0.25rem 0 0.5rem;">Wrong password - try again.</p>
+      <p id="profileLoginError" class="hidden" style="font-size:0.7rem;color:#e0605a;margin:-0.25rem 0 0.5rem;">Wrong password - try again.</p>
       <button onclick="attemptProfileLogin()">Log In</button>
     </div>
 
@@ -248,7 +273,7 @@
     </div>
 
     <div id="restoreSyncForm" class="hidden">
-      <p style="font-size:0.68rem;color:#64748b;margin-bottom:0.6rem;">Already set this up on another device? Enter the same GitHub token and Gist ID from there, and any profiles you haven't seen on this device yet will show up above to log into - with all their existing dramas, watchlist, and favorites intact.</p>
+      <p style="font-size:0.68rem;color:#8b8797;margin-bottom:0.6rem;">Already set this up on another device? Enter the same GitHub token and Gist ID from there, and any profiles you haven't seen on this device yet will show up above to log into - with all their existing dramas, watchlist, and favorites intact.</p>
       <label class="field-lbl">GitHub Token</label>
       <input id="restoreGhToken" type="password" placeholder="ghp_...">
       <label class="field-lbl">Gist ID</label>
@@ -263,7 +288,7 @@
       <button class="btn-sm" id="addProfileBtn" onclick="showProfileCreateForm()" style="width:auto;margin:0;">+ Add a New Person</button>
       <button class="btn-sm" id="restoreSyncBtn" onclick="showRestoreSyncForm()" style="width:auto;margin:0;">Restore Profiles from Sync</button>
     </div>
-    <p style="font-size:0.62rem;color:#64748b;margin-top:0.9rem;">A password just keeps things separate on a shared device - it's not meant to be strong security, so don't reuse a real password you use elsewhere.</p>
+    <p style="font-size:0.62rem;color:#8b8797;margin-top:0.9rem;">A password just keeps things separate on a shared device - it's not meant to be strong security, so don't reuse a real password you use elsewhere.</p>
   </div>
 </div>
 
@@ -275,12 +300,12 @@
 <div class="header">
   <h1 class="title">K-Drama Cast Checker</h1>
   <p class="subtitle" id="spaceSubtitle">Track actors across your last 10 dramas</p>
-  <div id="hdrProfileBar" style="display:flex;justify-content:center;align-items:center;gap:0.5rem;margin-top:0.6rem;font-size:0.75rem;color:#94a3b8;">
-    <span>&#128100; <b id="hdrProfileName" style="color:#c084fc;"></b>'s watchlist</span>
+  <div id="hdrProfileBar" style="display:flex;justify-content:center;align-items:center;gap:0.5rem;margin-top:0.6rem;font-size:0.75rem;color:#a29dae;">
+    <span>&#128100; <b id="hdrProfileName" style="color:#e9879c;"></b>'s watchlist</span>
     <button class="btn-sm" onclick="switchUser()" style="width:auto;margin:0;padding:0.25rem 0.6rem;font-size:0.65rem;">Switch User</button>
   </div>
   <div id="turnWidget" class="hidden" style="text-align:center;margin-top:0.5rem;">
-    <span id="turnWidgetText" style="font-size:0.8rem;color:#fbbf24;font-weight:bold;"></span>
+    <span id="turnWidgetText" style="font-size:0.8rem;color:#ddaa55;font-weight:bold;"></span>
     <button class="btn-sm" onclick="advanceTurn()" style="width:auto;margin:0 0 0 0.5rem;padding:0.25rem 0.6rem;font-size:0.65rem;">I Picked - Pass Turn</button>
   </div>
   <div id="banner" style="display:none;"></div>
@@ -295,10 +320,10 @@
     <button onclick="openTab('similar')" id="tab-similar" class="btn-gold" style="width:auto;margin:0;">Similar Shows</button>
     <button onclick="openTab('stats')" id="tab-stats" class="btn-green" style="width:auto;margin:0;">Stats</button>
     <button onclick="openTab('optimizer')" id="tab-optimizer" class="btn-green" style="width:auto;margin:0;">Watch Optimizer</button>
-    <button onclick="openTab('mood')" id="tab-mood" class="btn-gold" style="width:auto;margin:0;background:linear-gradient(135deg,#38bdf8,#818cf8);border:none;color:white;">✨ AI Mood Search</button>
+    <button onclick="openTab('mood')" id="tab-mood" class="btn-gold" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Mood Search</button>
     <button onclick="openSettings()" class="btn-sm" style="width:auto;margin:0;">Settings <span id="setBadge" class="set-badge">!</span></button>
     <button onclick="syncNow()" id="syncNowBtn" class="btn-green" style="width:auto;margin:0;">🔄 Sync Now</button>
-    <button onclick="switchSpace('ai')" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#38bdf8,#818cf8);border:none;color:white;">✨ AI Studio</button>
+    <button onclick="switchSpace('ai')" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Studio</button>
   </div>
 
   <div id="hdrButtonsAI" class="hdr-btns hidden">
@@ -308,10 +333,10 @@
     <button onclick="openTab('dir')" id="tab-dir-ai" class="btn-sm" style="width:auto;margin:0;">Actor Directory</button>
     <button onclick="openTab('check')" id="tab-check-ai" class="btn-sm" style="width:auto;margin:0;">Check Cast</button>
     <button onclick="openTab('stats')" id="tab-stats-ai" class="btn-green" style="width:auto;margin:0;">Stats</button>
-    <button onclick="openTab('mood')" id="tab-mood-ai" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#38bdf8,#818cf8);border:none;color:white;">✨ AI Mood Search</button>
-    <button onclick="openTab('airec')" id="tab-airec" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#38bdf8,#818cf8);border:none;color:white;">✨ AI Picks</button>
-    <button onclick="openTab('aisimilar')" id="tab-aisimilar" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#38bdf8,#818cf8);border:none;color:white;">✨ AI Similar Shows</button>
-    <button onclick="openTab('aioptimizer')" id="tab-aioptimizer" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#38bdf8,#818cf8);border:none;color:white;">✨ AI Watch Planner</button>
+    <button onclick="openTab('mood')" id="tab-mood-ai" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Mood Search</button>
+    <button onclick="openTab('airec')" id="tab-airec" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Picks</button>
+    <button onclick="openTab('aisimilar')" id="tab-aisimilar" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Similar Shows</button>
+    <button onclick="openTab('aioptimizer')" id="tab-aioptimizer" class="btn-sm" style="width:auto;margin:0;background:linear-gradient(135deg,#4fa8d4,#9296d6);border:none;color:white;">✨ AI Watch Planner</button>
     <button onclick="openSettings()" class="btn-sm" style="width:auto;margin:0;">Settings <span id="setBadgeAi" class="set-badge">!</span></button>
     <button onclick="syncNow()" id="syncNowBtnAi" class="btn-green" style="width:auto;margin:0;">🔄 Sync Now</button>
     <button onclick="switchSpace('main')" class="btn-sm" style="width:auto;margin:0;">&larr; Back to Main Site</button>
@@ -319,26 +344,26 @@
 </div>
 
 <div class="container">
-  <div id="backupReminder" class="hidden" style="max-width:700px;margin:0 auto 1.25rem;background:#181828;border:1px solid #2a2a45;border-radius:10px;padding:0.7rem 1rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-    <span id="backupReminderText" style="flex:1;font-size:0.78rem;color:#c084fc;min-width:200px;"></span>
+  <div id="backupReminder" class="hidden" style="max-width:700px;margin:0 auto 1.25rem;background:#1b1620;border:1px solid #2a2432;border-radius:10px;padding:0.7rem 1rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+    <span id="backupReminderText" style="flex:1;font-size:0.78rem;color:#e9879c;min-width:200px;"></span>
     <button class="btn-sm" onclick="exportMyData()" style="width:auto;margin:0;">Export Now</button>
     <button class="btn-sm" onclick="dismissBackupReminder(false)" style="width:auto;margin:0;">Remind Me Later</button>
   </div>
   <!-- Dramas Tab -->
   <div id="page-dramas">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#c084fc;">Your Watched Dramas</h3>
+      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#e9879c;">Your Watched Dramas</h3>
       <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
-        <span id="dramaCount" style="background:#1a1a2e;border:1px solid #2a2a45;border-radius:999px;padding:0.2rem 0.6rem;font-size:0.7rem;color:#64748b;"></span>
+        <span id="dramaCount" style="background:#16131f;border:1px solid #2a2432;border-radius:999px;padding:0.2rem 0.6rem;font-size:0.7rem;color:#8b8797;"></span>
         <button class="btn-sm" onclick="scanLibrary()" id="scanLibraryBtn" style="width:auto;margin:0;">Scan My Library</button>
         <button onclick="openModal(null)" style="width:auto;margin:0;">+ Add Drama</button>
       </div>
     </div>
-    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Made a mistake with the order you watched things? Use "More recent" / "Older" on each card to fix it - this changes which dramas count as your last 10.</p>
-    <p style="font-size:0.7rem;color:#64748b;margin-bottom:0.75rem;font-style:italic;">Adding a drama via TMDB now automatically checks if any tracked actors also appear in your other dramas. Use "Scan My Library" once to backfill this check across dramas you added before this feature existed.</p>
+    <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Made a mistake with the order you watched things? Use "More recent" / "Older" on each card to fix it - this changes which dramas count as your last 10.</p>
+    <p style="font-size:0.7rem;color:#8b8797;margin-bottom:0.75rem;font-style:italic;">Adding a drama via TMDB now automatically checks if any tracked actors also appear in your other dramas. Use "Scan My Library" once to backfill this check across dramas you added before this feature existed.</p>
     <input id="dramaSearch" placeholder="Search your dramas by title..." oninput="render()" style="margin-bottom:0.75rem;">
     <div id="favActorsBox" class="box hidden" style="margin-bottom:1rem;">
-      <h4 style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:#f43f5e;margin-bottom:0.5rem;">&#9829; Your Favorite Actors</h4>
+      <h4 style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:#e0605a;margin-bottom:0.5rem;">&#9829; Your Favorite Actors</h4>
       <div id="favActorsGrid" style="display:flex;flex-wrap:wrap;gap:0.4rem;"></div>
     </div>
     <div id="dramaList" class="drama-list"></div>
@@ -349,13 +374,13 @@
   <!-- Watchlist Tab -->
   <div id="page-watchlist" class="hidden">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#c084fc;">Watchlist</h3>
+      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#e9879c;">Watchlist</h3>
       <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
-        <span id="watchlistCount" style="background:#1a1a2e;border:1px solid #2a2a45;border-radius:999px;padding:0.2rem 0.6rem;font-size:0.7rem;color:#64748b;"></span>
+        <span id="watchlistCount" style="background:#16131f;border:1px solid #2a2432;border-radius:999px;padding:0.2rem 0.6rem;font-size:0.7rem;color:#8b8797;"></span>
         <button onclick="openWatchlistModal()" style="width:auto;margin:0;">+ Add to Watchlist</button>
       </div>
     </div>
-    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Dramas you want to watch, not yet marked as watched. Green/red dots show whether they share a cast member with your last 10.</p>
+    <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Dramas you want to watch, not yet marked as watched. Green/red dots show whether they share a cast member with your last 10.</p>
 
     <div class="box">
       <button class="btn-sm" onclick="toggleWatchlistFilters()" id="watchlistFiltersBtn" style="width:auto;margin-bottom:0.75rem;">Show Filters</button>
@@ -386,10 +411,10 @@
   <!-- Skipped Shows Tab -->
   <div id="page-skipped" class="hidden">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#c084fc;">Skipped Shows</h3>
-      <span id="skippedCount" style="background:#1a1a2e;border:1px solid #2a2a45;border-radius:999px;padding:0.2rem 0.6rem;font-size:0.7rem;color:#64748b;"></span>
+      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#e9879c;">Skipped Shows</h3>
+      <span id="skippedCount" style="background:#16131f;border:1px solid #2a2432;border-radius:999px;padding:0.2rem 0.6rem;font-size:0.7rem;color:#8b8797;"></span>
     </div>
-    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Shows you've dismissed with "Skip" on a recommendation card, across Recommendations, Similar Shows, AI Mood Search, AI Picks, and AI Similar Shows. Restore any of these to let them be suggested again.</p>
+    <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Shows you've dismissed with "Skip" on a recommendation card, across Recommendations, Similar Shows, AI Mood Search, AI Picks, and AI Similar Shows. Restore any of these to let them be suggested again.</p>
     <input id="skippedSearch" placeholder="Search skipped shows by title..." oninput="renderSkippedShowsPage()" style="margin-bottom:0.75rem;">
     <div id="skippedGrid" class="rec-grid"></div>
   </div>
@@ -398,14 +423,14 @@
   <div id="page-dir" class="hidden">
     <div class="box">
       <h3 class="sec-title">Actor Directory</h3>
-      <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.75rem;">Red = In last 10 (avoid) &nbsp; Green = Available (safe to watch) &nbsp; Sorted by longest unseen first</p>
+      <p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">Red = In last 10 (avoid) &nbsp; Green = Available (safe to watch) &nbsp; Sorted by longest unseen first</p>
       <input id="dirSearch" placeholder="Search actor..." oninput="renderDir()">
       <div id="dirGrid" class="dir-grid"></div>
     </div>
 
     <div id="crewDirBox" class="box">
       <h3 class="sec-title">Writers &amp; Directors</h3>
-      <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.75rem;">Red = In last 10 &nbsp; Green = Available &nbsp; Sorted by longest unseen first</p>
+      <p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">Red = In last 10 &nbsp; Green = Available &nbsp; Sorted by longest unseen first</p>
       <input id="crewDirSearch" placeholder="Search director or writer..." oninput="renderCrewDir()">
       <div id="crewDirGrid" class="dir-grid"></div>
     </div>
@@ -415,7 +440,7 @@
   <div id="page-check" class="hidden">
     <div class="box">
       <h3 class="sec-title">Check a New Drama</h3>
-      <p style="font-size:0.8rem;color:#64748b;margin-bottom:0.75rem;">Search a drama on TMDB to auto-fill its cast, or type actor names manually <span class="tmdb-badge">TMDB</span></p>
+      <p style="font-size:0.8rem;color:#8b8797;margin-bottom:0.75rem;">Search a drama on TMDB to auto-fill its cast, or type actor names manually <span class="tmdb-badge">TMDB</span></p>
       <label class="field-lbl">Drama Title</label>
       <div class="ac-wrap">
         <input id="chkTitle" placeholder="Search a drama on TMDB, or type any title" autocomplete="off" oninput="searchTmdbCheckDrama(this.value)">
@@ -431,7 +456,7 @@
           <input id="chkCrew" placeholder="Auto-fills from TMDB, or type names comma separated" autocomplete="off" oninput="chkCrewAC(this)">
         </div>
       </div>
-      <p id="chkCrewOffNote" class="hidden" style="font-size:0.68rem;color:#64748b;margin-bottom:0.5rem;font-style:italic;">Enable "Avoid Recent Directors/Writers" in Settings to also check crew here.</p>
+      <p id="chkCrewOffNote" class="hidden" style="font-size:0.68rem;color:#8b8797;margin-bottom:0.5rem;font-style:italic;">Enable "Avoid Recent Directors/Writers" in Settings to also check crew here.</p>
 
       <button onclick="runCheck()">Check Cast</button>
       <div id="chkResults" class="hidden" style="margin-top:1rem;"></div>
@@ -442,7 +467,7 @@
   <div id="page-rec" class="hidden">
     <div class="box">
       <h3 class="sec-title">Drama Recommendations</h3>
-      <p style="font-size:0.8rem;color:#64748b;margin-bottom:0.75rem;">
+      <p style="font-size:0.8rem;color:#8b8797;margin-bottom:0.75rem;">
         Finds Korean dramas only (no movies, no reality/variety shows) starring your available (green) actors, sorted so actors you have not seen the longest appear first. Shows real IMDb ratings and genres when an OMDb key is set.
         <span class="tmdb-badge">TMDB</span>
         <span class="tmdb-badge" style="background:rgba(245,197,24,0.15);border-color:rgba(245,197,24,0.3);color:#f5c518;">IMDb via OMDb</span>
@@ -462,7 +487,7 @@
         <label class="field-lbl">Exclude actors (optional)</label>
         <input id="excludeSearch" placeholder="Search actor to exclude..." oninput="renderExcludeGrid()">
         <div id="excludeGrid" class="cast-select-grid" style="max-height:220px;overflow-y:auto;margin-bottom:0.5rem;"></div>
-        <p style="font-size:0.65rem;color:#64748b;margin-bottom:1rem;font-style:italic;">Tap an actor to exclude them from recommendations. Tap again to include them back. Your exclusions are remembered next time.</p>
+        <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">Tap an actor to exclude them from recommendations. Tap again to include them back. Your exclusions are remembered next time.</p>
 
         <div style="display:flex;gap:0.75rem;">
           <div style="flex:1;">
@@ -475,7 +500,7 @@
           </div>
         </div>
 
-        <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
+        <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
         <div class="toggle-row">
           <div>
             <div class="toggle-label">Smart Score sorting</div>
@@ -530,7 +555,7 @@
   <div id="page-similar" class="hidden">
     <div class="box">
       <h3 class="sec-title">Similar Shows</h3>
-      <p style="font-size:0.8rem;color:#64748b;margin-bottom:0.75rem;">
+      <p style="font-size:0.8rem;color:#8b8797;margin-bottom:0.75rem;">
         Pick one or more dramas you have already watched, and this finds Korean dramas similar to them that you have not seen yet.
         <span class="tmdb-badge">TMDB</span>
       </p>
@@ -541,7 +566,7 @@
       <label class="field-lbl">Search your watched dramas</label>
       <input id="similarSourceSearch" placeholder="Search to filter the list below..." oninput="renderSimilarSourcePicker()">
       <div id="similarSourceGrid" class="cast-select-grid" style="max-height:280px;overflow-y:auto;margin-bottom:0.5rem;"></div>
-      <p style="font-size:0.65rem;color:#64748b;margin-bottom:1rem;font-style:italic;">Tap one or more dramas to base the search on. Only dramas added via TMDB search can be used here.</p>
+      <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">Tap one or more dramas to base the search on. Only dramas added via TMDB search can be used here.</p>
 
       <button class="btn-sm" onclick="toggleSimilarAdvanced()" id="similarAdvancedBtn" style="width:auto;margin-bottom:0.75rem;">Show Advanced Options</button>
 
@@ -594,8 +619,8 @@
   <div id="page-optimizer" class="hidden">
     <div class="box">
       <h3 class="sec-title">Watch Order Optimizer</h3>
-      <p style="font-size:0.8rem;color:#64748b;margin-bottom:0.75rem;">Quick Mode</p>
-      <p style="font-size:0.78rem;color:#64748b;margin-bottom:0.75rem;">
+      <p style="font-size:0.8rem;color:#8b8797;margin-bottom:0.75rem;">Quick Mode</p>
+      <p style="font-size:0.78rem;color:#8b8797;margin-bottom:0.75rem;">
         No manual picking needed. This automatically searches your available actors (using whatever filters are set on the Recommendations tab, if any) then works out the best watch order to minimize repeated actors - all from real TMDB data, no AI involved.
       </p>
 
@@ -634,7 +659,7 @@
         <button class="btn-sm" onclick="toggleOptimizerAdvanced()" id="optAdvancedBtn" style="width:auto;margin:0;">Show</button>
       </div>
       <div id="optimizerAdvancedSection" class="hidden">
-        <p style="font-size:0.8rem;color:#64748b;margin-bottom:0.75rem;">
+        <p style="font-size:0.8rem;color:#8b8797;margin-bottom:0.75rem;">
           Pick specific dramas from your last generated Recommendations and/or Similar Shows results yourself, instead of letting Quick Mode choose automatically.
         </p>
         <p id="optimizerNoData" class="sync-box sync-info hidden">Run Recommendations or Similar Shows first to have candidates to sequence.</p>
@@ -678,19 +703,19 @@
 
   <!-- AI Mood Search Tab (isolated - uses Gemini, everything else works without it) -->
   <div id="page-mood" class="hidden">
-    <div class="box" style="border-color:rgba(56,189,248,0.3);background:linear-gradient(135deg,#0f1a2e,#131325);">
-      <h3 class="sec-title" style="color:#38bdf8;">✨ AI Mood Search <span class="tmdb-badge" style="background:rgba(56,189,248,0.15);border-color:rgba(56,189,248,0.3);color:#38bdf8;">Gemini</span></h3>
-      <p style="font-size:0.8rem;color:#64748b;margin-bottom:0.75rem;">
+    <div class="box" style="border-color:rgba(79,168,212,0.3);background:linear-gradient(135deg,#0f1a2e,#14111d);">
+      <h3 class="sec-title" style="color:#4fa8d4;">✨ AI Mood Search <span class="tmdb-badge" style="background:rgba(79,168,212,0.15);border-color:rgba(79,168,212,0.3);color:#4fa8d4;">Gemini</span></h3>
+      <p style="font-size:0.8rem;color:#8b8797;margin-bottom:0.75rem;">
         Describe the mood, vibe, or story you're in the mood for, in your own words. Gemini suggests titles, and every suggestion is checked against TMDB before it's shown to you - if it can't verify a title, it's dropped rather than shown as a guess.
       </p>
-      <p style="font-size:0.7rem;color:#64748b;margin-bottom:0.75rem;font-style:italic;">This tab is fully separate from the rest of the site. If Gemini is slow, unavailable, or you run out of free daily requests, everything else here keeps working normally.</p>
+      <p style="font-size:0.7rem;color:#8b8797;margin-bottom:0.75rem;font-style:italic;">This tab is fully separate from the rest of the site. If Gemini is slow, unavailable, or you run out of free daily requests, everything else here keeps working normally.</p>
 
       <div id="geminiKeyWarning" class="sync-warn sync-box hidden">
         Gemini API key not set. Go to Settings to add one - it's free at aistudio.google.com. This is the only tab that needs it.
       </div>
 
       <label class="field-lbl">What are you in the mood for?</label>
-      <textarea id="moodInput" rows="3" placeholder="e.g., A slow-burn office romance, less angsty than my last few picks. Or: something with a strong female lead solving mysteries." style="width:100%;background:#13131f;border:1px solid #2a2a45;border-radius:8px;padding:0.7rem 0.9rem;color:#e2e8f0;font-size:0.9rem;font-family:Georgia,serif;margin-bottom:0.5rem;resize:vertical;"></textarea>
+      <textarea id="moodInput" rows="3" placeholder="e.g., A slow-burn office romance, less angsty than my last few picks. Or: something with a strong female lead solving mysteries." style="width:100%;background:#121017;border:1px solid #2a2432;border-radius:9px;padding:0.7rem 0.9rem;color:#ededf3;font-size:0.9rem;font-family:var(--font-body);margin-bottom:0.5rem;resize:vertical;"></textarea>
 
       <label class="field-lbl">How many shows?</label>
       <input id="moodCount" type="number" min="1" max="24" value="8" inputmode="numeric" style="max-width:120px;margin-bottom:0.75rem;">
@@ -717,19 +742,19 @@
         </label>
       </div>
 
-      <button onclick="runMoodSearch()" id="moodBtn" style="background:linear-gradient(135deg,#38bdf8,#818cf8);">Find Shows for This Mood</button>
+      <button onclick="runMoodSearch()" id="moodBtn" style="background:linear-gradient(135deg,#4fa8d4,#9296d6);">Find Shows for This Mood</button>
       <div id="moodResults" style="margin-top:1rem;"></div>
     </div>
   </div>
 
   <!-- AI Picks Tab -->
   <div id="page-airec" class="hidden">
-    <div class="box" style="border-color:rgba(56,189,248,0.3);background:linear-gradient(135deg,#0f1a2e,#131325);">
-      <h3 class="sec-title" style="color:#38bdf8;">✨ AI Picks <span class="tmdb-badge" style="background:rgba(56,189,248,0.15);border-color:rgba(56,189,248,0.3);color:#38bdf8;">Gemini</span></h3>
-      <p style="font-size:0.8rem;color:#64748b;margin-bottom:0.75rem;">
+    <div class="box" style="border-color:rgba(79,168,212,0.3);background:linear-gradient(135deg,#0f1a2e,#14111d);">
+      <h3 class="sec-title" style="color:#4fa8d4;">✨ AI Picks <span class="tmdb-badge" style="background:rgba(79,168,212,0.15);border-color:rgba(79,168,212,0.3);color:#4fa8d4;">Gemini</span></h3>
+      <p style="font-size:0.8rem;color:#8b8797;margin-bottom:0.75rem;">
         Gemini looks at your Actor Directory (who you haven't seen in a while, your most-watched genres) and picks shows for you, with reasoning. Every suggestion is verified against TMDB before it's shown - unverifiable ones are dropped, not guessed.
       </p>
-      <p style="font-size:0.7rem;color:#64748b;margin-bottom:0.75rem;font-style:italic;">Fully separate from the regular Recommendations tab. If Gemini is unavailable or you hit your free daily limit, Recommendations keeps working normally.</p>
+      <p style="font-size:0.7rem;color:#8b8797;margin-bottom:0.75rem;font-style:italic;">Fully separate from the regular Recommendations tab. If Gemini is unavailable or you hit your free daily limit, Recommendations keeps working normally.</p>
 
       <div id="airecKeyWarning" class="sync-warn sync-box hidden">
         Gemini API key not set. Go to Settings to add one - it's free at aistudio.google.com.
@@ -749,19 +774,19 @@
         </label>
       </div>
 
-      <button onclick="runAiPicks()" id="airecBtn" style="background:linear-gradient(135deg,#38bdf8,#818cf8);">Let AI Pick My Next Shows</button>
+      <button onclick="runAiPicks()" id="airecBtn" style="background:linear-gradient(135deg,#4fa8d4,#9296d6);">Let AI Pick My Next Shows</button>
       <div id="airecResults" style="margin-top:1rem;"></div>
     </div>
   </div>
 
   <!-- AI Similar Shows Tab -->
   <div id="page-aisimilar" class="hidden">
-    <div class="box" style="border-color:rgba(56,189,248,0.3);background:linear-gradient(135deg,#0f1a2e,#131325);">
-      <h3 class="sec-title" style="color:#38bdf8;">✨ AI Similar Shows <span class="tmdb-badge" style="background:rgba(56,189,248,0.15);border-color:rgba(56,189,248,0.3);color:#38bdf8;">Gemini</span></h3>
-      <p style="font-size:0.8rem;color:#64748b;margin-bottom:0.75rem;">
+    <div class="box" style="border-color:rgba(79,168,212,0.3);background:linear-gradient(135deg,#0f1a2e,#14111d);">
+      <h3 class="sec-title" style="color:#4fa8d4;">✨ AI Similar Shows <span class="tmdb-badge" style="background:rgba(79,168,212,0.15);border-color:rgba(79,168,212,0.3);color:#4fa8d4;">Gemini</span></h3>
+      <p style="font-size:0.8rem;color:#8b8797;margin-bottom:0.75rem;">
         Pick one or more dramas you've watched, and Gemini suggests similar Korean dramas using its own knowledge (rather than TMDB's similarity engine). Every suggestion is verified against TMDB before it's shown.
       </p>
-      <p style="font-size:0.7rem;color:#64748b;margin-bottom:0.75rem;font-style:italic;">Fully separate from the regular Similar Shows tab. If Gemini is unavailable, that tab keeps working normally.</p>
+      <p style="font-size:0.7rem;color:#8b8797;margin-bottom:0.75rem;font-style:italic;">Fully separate from the regular Similar Shows tab. If Gemini is unavailable, that tab keeps working normally.</p>
 
       <div id="aisimilarKeyWarning" class="sync-warn sync-box hidden">
         Gemini API key not set. Go to Settings to add one - it's free at aistudio.google.com.
@@ -770,7 +795,7 @@
       <label class="field-lbl">Search your watched dramas</label>
       <input id="aiSimilarSourceSearch" placeholder="Search to filter the list below..." oninput="renderAiSimilarSourcePicker()">
       <div id="aiSimilarSourceGrid" class="cast-select-grid" style="max-height:280px;overflow-y:auto;margin-bottom:0.5rem;"></div>
-      <p style="font-size:0.65rem;color:#64748b;margin-bottom:1rem;font-style:italic;">Tap one or more dramas to base the search on.</p>
+      <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">Tap one or more dramas to base the search on.</p>
 
       <div class="toggle-row">
         <div>
@@ -783,19 +808,19 @@
         </label>
       </div>
 
-      <button onclick="runAiSimilar()" id="aisimilarBtn" style="background:linear-gradient(135deg,#38bdf8,#818cf8);">Find Similar Dramas with AI</button>
+      <button onclick="runAiSimilar()" id="aisimilarBtn" style="background:linear-gradient(135deg,#4fa8d4,#9296d6);">Find Similar Dramas with AI</button>
       <div id="aisimilarResults" style="margin-top:1rem;"></div>
     </div>
   </div>
 
   <!-- AI Watch Planner Tab -->
   <div id="page-aioptimizer" class="hidden">
-    <div class="box" style="border-color:rgba(56,189,248,0.3);background:linear-gradient(135deg,#0f1a2e,#131325);">
-      <h3 class="sec-title" style="color:#38bdf8;">✨ AI Watch Planner <span class="tmdb-badge" style="background:rgba(56,189,248,0.15);border-color:rgba(56,189,248,0.3);color:#38bdf8;">Gemini</span></h3>
-      <p style="font-size:0.8rem;color:#64748b;margin-bottom:0.75rem;">
+    <div class="box" style="border-color:rgba(79,168,212,0.3);background:linear-gradient(135deg,#0f1a2e,#14111d);">
+      <h3 class="sec-title" style="color:#4fa8d4;">✨ AI Watch Planner <span class="tmdb-badge" style="background:rgba(79,168,212,0.15);border-color:rgba(79,168,212,0.3);color:#4fa8d4;">Gemini</span></h3>
+      <p style="font-size:0.8rem;color:#8b8797;margin-bottom:0.75rem;">
         Gemini both picks shows for you (using your Actor Directory) and proposes a watch order with reasoning for the sequence. Every suggested title is verified against TMDB, and the actual actor/crew overlap with your last 10 is calculated for real (not just Gemini's word for it) and shown alongside its reasoning.
       </p>
-      <p style="font-size:0.7rem;color:#64748b;margin-bottom:0.75rem;font-style:italic;">Fully separate from the regular Watch Optimizer tab, which keeps working normally regardless of Gemini's availability.</p>
+      <p style="font-size:0.7rem;color:#8b8797;margin-bottom:0.75rem;font-style:italic;">Fully separate from the regular Watch Optimizer tab, which keeps working normally regardless of Gemini's availability.</p>
 
       <div id="aioptimizerKeyWarning" class="sync-warn sync-box hidden">
         Gemini API key not set. Go to Settings to add one - it's free at aistudio.google.com.
@@ -815,7 +840,7 @@
         </label>
       </div>
 
-      <button onclick="runAiWatchPlanner()" id="aioptimizerBtn" style="background:linear-gradient(135deg,#38bdf8,#818cf8);">Let AI Plan My Next Shows</button>
+      <button onclick="runAiWatchPlanner()" id="aioptimizerBtn" style="background:linear-gradient(135deg,#4fa8d4,#9296d6);">Let AI Plan My Next Shows</button>
       <div id="aioptimizerResults" style="margin-top:1rem;"></div>
     </div>
   </div>
@@ -830,9 +855,9 @@
     <div class="ac-wrap">
       <input id="tmdbSearch" placeholder="Type drama name to search TMDB..." oninput="searchTmdbDrama(this.value)" autocomplete="off">
     </div>
-    <p style="font-size:0.65rem;color:#64748b;margin-bottom:0.75rem;font-style:italic;">Select from results to auto-fill everything including cast photos. Or fill manually below.</p>
+    <p style="font-size:0.65rem;color:#8b8797;margin-bottom:0.75rem;font-style:italic;">Select from results to auto-fill everything including cast photos. Or fill manually below.</p>
 
-    <div style="height:1px;background:#2a2a45;margin:0.75rem 0;"></div>
+    <div style="height:1px;background:#2a2432;margin:0.75rem 0;"></div>
 
     <label class="field-lbl">Drama Title *</label>
     <input id="mTitle" placeholder="e.g., Crash Landing on You">
@@ -843,7 +868,7 @@
       </div>
       <div style="flex:1;">
         <label class="field-lbl">TMDB ID (auto-filled)</label>
-        <input id="mTmdbId" placeholder="auto" style="color:#64748b;">
+        <input id="mTmdbId" placeholder="auto" style="color:#8b8797;">
       </div>
     </div>
     <input type="hidden" id="mGenreIds">
@@ -856,15 +881,15 @@
       <input id="mPoster" placeholder="Paste poster URL or auto-filled from TMDB" style="margin:0;" oninput="prevImg('mPoster','posterPrev')">
     </div>
 
-    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
+    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
 
     <!-- Cast from TMDB picker -->
     <div id="tmdbCastPicker" class="hidden">
       <label class="field-lbl">Select Cast to Track (from TMDB)</label>
-      <p style="font-size:0.65rem;color:#64748b;margin-bottom:0.5rem;">Tap actors to add them. Purple = selected.</p>
+      <p style="font-size:0.65rem;color:#8b8797;margin-bottom:0.5rem;">Tap actors to add them. Purple = selected.</p>
       <div id="tmdbCastGrid" class="cast-select-grid"></div>
       <button class="btn-sm" onclick="confirmTmdbCast()" style="margin-bottom:0.75rem;">Use Selected Actors</button>
-      <div style="height:1px;background:#2a2a45;margin-bottom:0.75rem;"></div>
+      <div style="height:1px;background:#2a2432;margin-bottom:0.75rem;"></div>
     </div>
 
     <label class="field-lbl">Cast to Track *</label>
@@ -872,14 +897,14 @@
     <button class="btn-sm" onclick="addCastRow(null)" style="margin-bottom:1rem;">+ Add Actor Manually</button>
 
     <div id="crewSection">
-      <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
+      <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
 
       <div id="tmdbCrewPicker" class="hidden">
         <label class="field-lbl">Select Director/Writer to Track (from TMDB)</label>
-        <p style="font-size:0.65rem;color:#64748b;margin-bottom:0.5rem;">Tap to toggle. Purple = selected.</p>
+        <p style="font-size:0.65rem;color:#8b8797;margin-bottom:0.5rem;">Tap to toggle. Purple = selected.</p>
         <div id="tmdbCrewGrid" class="cast-select-grid"></div>
         <button class="btn-sm" onclick="confirmTmdbCrew()" style="margin-bottom:0.75rem;">Use Selected Crew</button>
-        <div style="height:1px;background:#2a2a45;margin-bottom:0.75rem;"></div>
+        <div style="height:1px;background:#2a2432;margin-bottom:0.75rem;"></div>
       </div>
 
       <label class="field-lbl">Directors &amp; Writers (optional)</label>
@@ -898,29 +923,29 @@
 <div id="settingsModal" class="modal">
   <div class="modal-inner">
     <h2 style="margin-bottom:0.25rem;font-size:1.2rem;">Settings</h2>
-    <p style="font-size:0.8rem;color:#64748b;margin-bottom:1rem;">Configure sync and TMDB integration</p>
+    <p style="font-size:0.8rem;color:#8b8797;margin-bottom:1rem;">Configure sync and TMDB integration</p>
 
     <div id="syncStatus"></div>
 
     <label class="field-lbl">TMDB API Key (for auto-fill and recommendations) <span class="tmdb-badge">Free</span></label>
     <input id="tmdbKeyInput" type="password" placeholder="Paste your TMDB API key (v3 auth)">
-    <p style="font-size:0.65rem;color:#64748b;margin-bottom:1rem;font-style:italic;">
+    <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">
       Get free key: themoviedb.org &rarr; Sign up &rarr; Settings &rarr; API &rarr; Request API Key (v3 auth)
     </p>
 
     <label class="field-lbl">OMDb API Key (for real IMDb ratings &amp; fuller genres) <span class="tmdb-badge" style="background:rgba(245,197,24,0.15);border-color:rgba(245,197,24,0.3);color:#f5c518;">Free</span></label>
     <input id="omdbKeyInput" type="password" placeholder="Paste your OMDb API key">
-    <p style="font-size:0.65rem;color:#64748b;margin-bottom:1rem;font-style:italic;">
+    <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">
       Get free key: omdbapi.com/apikey.aspx &rarr; choose FREE (1,000 req/day) &rarr; check your email to activate
     </p>
 
-    <label class="field-lbl">Gemini API Key (for the AI Studio space) <span class="tmdb-badge" style="background:rgba(56,189,248,0.15);border-color:rgba(56,189,248,0.3);color:#38bdf8;">Free</span></label>
+    <label class="field-lbl">Gemini API Key (for the AI Studio space) <span class="tmdb-badge" style="background:rgba(79,168,212,0.15);border-color:rgba(79,168,212,0.3);color:#4fa8d4;">Free</span></label>
     <input id="geminiKeyInput" type="password" placeholder="Paste your Gemini API key">
-    <p style="font-size:0.65rem;color:#64748b;margin-bottom:1rem;font-style:italic;">
+    <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">
       Get free key: aistudio.google.com &rarr; Sign in &rarr; Get API Key &rarr; Create API key. Only used inside AI Studio (Mood Search, AI Picks, AI Similar Shows, AI Watch Planner) - the rest of the site works without it.
     </p>
 
-    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
+    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
     <div class="toggle-row">
       <div>
         <div class="toggle-label">Avoid Recent Directors/Writers</div>
@@ -932,36 +957,36 @@
       </label>
     </div>
 
-    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
-    <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">Manage Profiles</p>
-    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Rename a profile, or delete one entirely. Deleting removes that person's My Dramas, Watchlist, and Favorite Actors from this device - it cannot be undone.</p>
+    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
+    <p style="font-size:0.8rem;color:#e9879c;margin-bottom:0.75rem;font-weight:bold;">Manage Profiles</p>
+    <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Rename a profile, or delete one entirely. Deleting removes that person's My Dramas, Watchlist, and Favorite Actors from this device - it cannot be undone.</p>
     <div id="profileManageList" style="margin-bottom:0.5rem;"></div>
 
-    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
-    <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">Whose Turn to Pick?</p>
-    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Unlike everything else here, this is shared between profiles on purpose - you should both see the same answer. Reorder the rotation, or jump straight to whoever's turn it actually is right now.</p>
+    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
+    <p style="font-size:0.8rem;color:#e9879c;margin-bottom:0.75rem;font-weight:bold;">Whose Turn to Pick?</p>
+    <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Unlike everything else here, this is shared between profiles on purpose - you should both see the same answer. Reorder the rotation, or jump straight to whoever's turn it actually is right now.</p>
     <div id="turnOrderList" style="margin-bottom:0.75rem;"></div>
     <label class="field-lbl">It's currently...</label>
     <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;">
       <select id="turnCurrentSelect" style="flex:1;margin:0;"></select>
       <button class="btn-sm" onclick="applyTurnCurrentSelect()" style="width:auto;margin:0;">Set</button>
     </div>
-    <p id="turnHistoryNote" style="font-size:0.65rem;color:#64748b;"></p>
+    <p id="turnHistoryNote" style="font-size:0.65rem;color:#8b8797;"></p>
 
-    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
-    <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">Backup &amp; Export</p>
-    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Download everything for your current profile - My Dramas, Watchlist, Favorite Actors, and Skipped Shows - as a JSON file. Useful as a local backup, or if Gist sync ever breaks.</p>
+    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
+    <p style="font-size:0.8rem;color:#e9879c;margin-bottom:0.75rem;font-weight:bold;">Backup &amp; Export</p>
+    <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Download everything for your current profile - My Dramas, Watchlist, Favorite Actors, and Skipped Shows - as a JSON file. Useful as a local backup, or if Gist sync ever breaks.</p>
     <button onclick="exportMyData()" class="btn-sm" style="width:auto;">Download My Data as JSON</button>
 
     <div style="margin-top:0.9rem;">
       <label class="field-lbl">Restore from a backup file</label>
       <input type="file" id="importFileInput" accept="application/json" onchange="handleImportFile(this)">
-      <p style="font-size:0.65rem;color:#64748b;margin-top:0.35rem;">Merges into your current profile - adds anything from the file you don't already have (matched by TMDB ID), without deleting anything you currently have.</p>
+      <p style="font-size:0.65rem;color:#8b8797;margin-top:0.35rem;">Merges into your current profile - adds anything from the file you don't already have (matched by TMDB ID), without deleting anything you currently have.</p>
     </div>
 
-    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
-    <p style="font-size:0.8rem;color:#c084fc;margin-bottom:0.75rem;font-weight:bold;">GitHub Gist Sync (optional)</p>
-    <p style="font-size:0.72rem;color:#64748b;margin-bottom:0.75rem;">Connecting this syncs your dramas and preferences (toggles, excluded actors) across devices. Your API keys are NOT synced this way for security - Gists are public, so keys stay local to each device and need entering once per device.</p>
+    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
+    <p style="font-size:0.8rem;color:#e9879c;margin-bottom:0.75rem;font-weight:bold;">GitHub Gist Sync (optional)</p>
+    <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Connecting this syncs your dramas and preferences (toggles, excluded actors) across devices. Your API keys are NOT synced this way for security - Gists are public, so keys stay local to each device and need entering once per device.</p>
 
     <label class="field-lbl">GitHub Token</label>
     <input id="ghToken" type="password" placeholder="ghp_...">
@@ -970,8 +995,8 @@
     <button onclick="connectGist()">Test &amp; Save Connection</button>
     <div id="gistResult" style="margin-top:0.5rem;"></div>
 
-    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
-    <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.5rem;">Manual Backup:</p>
+    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
+    <p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.5rem;">Manual Backup:</p>
     <div class="row">
       <button class="btn-sm" onclick="exportData()" style="flex:1;">Export Data</button>
       <label class="btn-sm" style="flex:1;text-align:center;cursor:pointer;border-radius:8px;padding:0.4rem 0.8rem;margin-top:0.25rem;">
@@ -979,7 +1004,7 @@
       </label>
     </div>
 
-    <div style="height:1px;background:#2a2a45;margin:1rem 0;"></div>
+    <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
     <div class="row">
       <button class="btn-del" onclick="closeSettings()">Close</button>
       <button onclick="saveAllSettings()">Save Settings</button>
@@ -992,7 +1017,7 @@
 <div id="retroModal" class="modal">
   <div class="modal-inner">
     <h2 style="margin-bottom:0.5rem;font-size:1.2rem;">Found some connections</h2>
-    <p style="font-size:0.8rem;color:#64748b;margin-bottom:1rem;">These actors appear in dramas you've already logged but weren't tracked there. Tick the ones you want added.</p>
+    <p style="font-size:0.8rem;color:#8b8797;margin-bottom:1rem;">These actors appear in dramas you've already logged but weren't tracked there. Tick the ones you want added.</p>
     <div id="retroList" style="max-height:400px;overflow-y:auto;margin-bottom:1rem;"></div>
     <div class="row">
       <button class="btn-del" onclick="closeRetroModal()">Dismiss</button>
@@ -1009,11 +1034,11 @@
     <div class="ac-wrap">
       <input id="watchlistSearchInput" placeholder="Type drama name to search TMDB..." oninput="searchTmdbForWatchlist(this.value)" autocomplete="off">
     </div>
-    <div id="watchlistPreview" class="hidden" style="margin-top:1rem;display:flex;gap:0.85rem;align-items:center;background:#13131f;border:1px solid #2a2a45;border-radius:10px;padding:0.75rem;">
+    <div id="watchlistPreview" class="hidden" style="margin-top:1rem;display:flex;gap:0.85rem;align-items:center;background:#121017;border:1px solid #2a2432;border-radius:10px;padding:0.75rem;">
       <img id="watchlistPreviewImg" style="width:56px;height:80px;border-radius:8px;object-fit:cover;">
       <div>
         <div id="watchlistPreviewTitle" style="font-weight:bold;font-size:0.95rem;"></div>
-        <div id="watchlistPreviewMeta" style="font-size:0.75rem;color:#64748b;"></div>
+        <div id="watchlistPreviewMeta" style="font-size:0.75rem;color:#8b8797;"></div>
       </div>
     </div>
     <div class="row" style="margin-top:1rem;">
@@ -1080,8 +1105,8 @@ function setSyncBadge(visible) {
 function showBanner(msg, color, bg) {
   var b = document.getElementById('banner');
   b.textContent = msg;
-  b.style.color = color || '#10b981';
-  b.style.background = bg || 'rgba(16,185,129,0.1)';
+  b.style.color = color || '#4fae85';
+  b.style.background = bg || 'rgba(79,174,133,0.1)';
   b.style.display = 'inline-block';
   clearTimeout(b._t);
   b._t = setTimeout(function() { b.style.display = 'none'; }, 4000);
@@ -1109,14 +1134,14 @@ function openTab(name) {
     if (el) el.classList.add('hidden');
     buttonIdsForPage(p).forEach(function(bid) {
       var btn = document.getElementById(bid);
-      if (btn) btn.style.background = 'rgba(168,85,247,0.15)';
+      if (btn) btn.style.background = 'rgba(214,92,123,0.15)';
     });
   });
   var page = document.getElementById('page-' + name);
   if (page) page.classList.remove('hidden');
   buttonIdsForPage(name).forEach(function(bid) {
     var btn = document.getElementById(bid);
-    if (btn) btn.style.background = 'linear-gradient(135deg,#a855f7,#6366f1)';
+    if (btn) btn.style.background = 'linear-gradient(135deg,#d65c7b,#6c6fb0)';
   });
   currentTab = name;
   if (name === 'dir') renderDir();
@@ -1303,10 +1328,10 @@ async function attemptRestoreSync() {
     var msgEl = document.getElementById('profileGateMsg');
     if (added) {
       msgEl.textContent = 'Found ' + added + ' profile' + (added > 1 ? 's' : '') + ' from sync - log in below.';
-      msgEl.style.color = '#10b981'; msgEl.style.background = 'rgba(16,185,129,0.1)';
+      msgEl.style.color = '#4fae85'; msgEl.style.background = 'rgba(79,174,133,0.1)';
     } else {
       msgEl.textContent = 'Connected, but no new profiles were found in that Gist.';
-      msgEl.style.color = '#a78bfa'; msgEl.style.background = 'rgba(168,85,247,0.1)';
+      msgEl.style.color = '#a78bfa'; msgEl.style.background = 'rgba(214,92,123,0.1)';
     }
     msgEl.classList.remove('hidden');
   } catch(e) {
@@ -1373,7 +1398,7 @@ function exportMyData() {
   setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
   setLastExportDate();
   dismissBackupReminder(true);
-  showBanner('Backup downloaded (' + dramas.length + ' dramas, ' + watchlist.length + ' watchlist items)', '#10b981', 'rgba(16,185,129,0.1)');
+  showBanner('Backup downloaded (' + dramas.length + ' dramas, ' + watchlist.length + ' watchlist items)', '#4fae85', 'rgba(79,174,133,0.1)');
 }
 
 // --- Auto-Backup Reminder ---
@@ -1469,7 +1494,7 @@ function importBackupData(data) {
   saveSkippedShows(skipped);
 
   saveData(); saveWatchlistData(); render(); renderWatchlist();
-  showBanner('Imported: +' + addedDramas + ' dramas, +' + addedWatchlist + ' watchlist, +' + addedFavorites + ' favorite actors, +' + addedSkipped + ' skipped shows', '#10b981', 'rgba(16,185,129,0.1)');
+  showBanner('Imported: +' + addedDramas + ' dramas, +' + addedWatchlist + ' watchlist, +' + addedFavorites + ' favorite actors, +' + addedSkipped + ' skipped shows', '#4fae85', 'rgba(79,174,133,0.1)');
 }
 
 // --- Whose Turn to Pick? ---
@@ -1518,7 +1543,7 @@ function advanceTurn() {
   renderTurnWidget();
   renderTurnSettingsSection();
   var nextProfile = getProfiles().find(function(p) { return p.id === t.order[newIndex]; });
-  showBanner('Marked as picked' + (picker ? ' by ' + picker.name : '') + ' - ' + (nextProfile ? nextProfile.name + "'s" : 'the next person\'s') + ' turn now', '#10b981', 'rgba(16,185,129,0.1)');
+  showBanner('Marked as picked' + (picker ? ' by ' + picker.name : '') + ' - ' + (nextProfile ? nextProfile.name + "'s" : 'the next person\'s') + ' turn now', '#4fae85', 'rgba(79,174,133,0.1)');
 }
 function setCurrentTurn(profileId) {
   var t = getTurnState();
@@ -1544,7 +1569,7 @@ function applyTurnCurrentSelect() {
   if (!sel || !sel.value) return;
   setCurrentTurn(sel.value);
   renderTurnSettingsSection();
-  showBanner('Turn updated', '#10b981', 'rgba(16,185,129,0.1)');
+  showBanner('Turn updated', '#4fae85', 'rgba(79,174,133,0.1)');
 }
 function renderTurnSettingsSection() {
   var t = getTurnState();
@@ -1553,7 +1578,7 @@ function renderTurnSettingsSection() {
   if (box) {
     box.innerHTML = '';
     if (t.order.length < 2) {
-      box.innerHTML = '<p style="font-size:0.75rem;color:#64748b;">Add a second profile to set up a pick rotation.</p>';
+      box.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;">Add a second profile to set up a pick rotation.</p>';
     } else {
       t.order.forEach(function(id, i) {
         var p = profiles.find(function(x) { return x.id === id; });
@@ -1563,7 +1588,7 @@ function renderTurnSettingsSection() {
         var lbl = document.createElement('span');
         lbl.style.flex = '1';
         lbl.textContent = (i + 1) + '. ' + p.name + (i === t.index ? ' \u2190 current turn' : '');
-        if (i === t.index) lbl.style.color = '#fbbf24';
+        if (i === t.index) lbl.style.color = '#ddaa55';
         var upBtn = document.createElement('button'); upBtn.className = 'btn-sm'; upBtn.textContent = '\u2191';
         upBtn.style.cssText = 'width:auto;margin:0;padding:0.2rem 0.5rem;';
         upBtn.disabled = i === 0;
@@ -1613,10 +1638,10 @@ async function renderProfileManageList() {
   var profiles = getProfiles();
   box.innerHTML = '';
   if (!profiles.length) {
-    box.innerHTML = '<p style="font-size:0.75rem;color:#64748b;">No profiles yet.</p>';
+    box.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;">No profiles yet.</p>';
     return;
   }
-  box.innerHTML = '<p style="font-size:0.7rem;color:#64748b;">Checking data counts...</p>';
+  box.innerHTML = '<p style="font-size:0.7rem;color:#8b8797;">Checking data counts...</p>';
 
   // If Gist sync is connected, also check each profile's REAL counts in the cloud - not just
   // what's already synced down to this device. This is what fixes the "restore says 0 dramas,
@@ -1635,7 +1660,7 @@ async function renderProfileManageList() {
   box.innerHTML = '';
   profiles.forEach(function(p) {
     var wrap = document.createElement('div');
-    wrap.style.cssText = 'margin-bottom:0.65rem;padding-bottom:0.65rem;border-bottom:1px solid #2a2a45;';
+    wrap.style.cssText = 'margin-bottom:0.65rem;padding-bottom:0.65rem;border-bottom:1px solid #2a2432;';
 
     var local = readProfileDataCounts(p.id);
     var cloudD = Array.isArray(cloudDramas[p.id]) ? cloudDramas[p.id].length : null;
@@ -1646,7 +1671,7 @@ async function renderProfileManageList() {
     var trulyEmpty = effDramas === 0 && effWatchlist === 0;
 
     var countsLine = document.createElement('div');
-    countsLine.style.cssText = 'font-size:0.65rem;color:' + (trulyEmpty ? '#f59e0b' : '#64748b') + ';margin-bottom:0.3rem;';
+    countsLine.style.cssText = 'font-size:0.65rem;color:' + (trulyEmpty ? '#f59e0b' : '#8b8797') + ';margin-bottom:0.3rem;';
     var txt = effDramas + ' drama(s), ' + effWatchlist + ' watchlist item(s)';
     if (trulyEmpty) txt += ' - looks empty, possibly a duplicate';
     else if (notYetPulled) txt += ' (from sync - log in as them to pull it to this device)';
@@ -1663,7 +1688,7 @@ async function renderProfileManageList() {
     saveBtn.className = 'btn-sm'; saveBtn.textContent = 'Rename'; saveBtn.style.cssText = 'width:auto;margin:0;';
     saveBtn.onclick = function() { renameProfile(p.id, input.value); };
     var delBtn = document.createElement('button');
-    delBtn.className = 'btn-sm'; delBtn.textContent = 'Delete'; delBtn.style.cssText = 'width:auto;margin:0;background:rgba(244,63,94,0.15);border-color:rgba(244,63,94,0.4);color:#f43f5e;';
+    delBtn.className = 'btn-sm'; delBtn.textContent = 'Delete'; delBtn.style.cssText = 'width:auto;margin:0;background:rgba(224,96,90,0.15);border-color:rgba(224,96,90,0.4);color:#e0605a;';
     delBtn.onclick = function() { deleteProfile(p.id, p.name); };
     row.appendChild(input); row.appendChild(saveBtn); row.appendChild(delBtn);
     wrap.appendChild(row);
@@ -1692,7 +1717,7 @@ function renameProfile(id, newName) {
     var nameEl = document.getElementById('hdrProfileName');
     if (nameEl) nameEl.textContent = newName;
   }
-  showBanner('Renamed to ' + newName, '#10b981', 'rgba(16,185,129,0.1)');
+  showBanner('Renamed to ' + newName, '#4fae85', 'rgba(79,174,133,0.1)');
 }
 function deleteProfile(id, name) {
   if (!confirm('Delete "' + name + '"? This removes their My Dramas, Watchlist, and Favorite Actors from this device - you\'ll have a few seconds to undo right after.')) return;
@@ -1769,16 +1794,16 @@ function makeFavActorBtn(displayName) {
   btn.className = 'fav-actor-btn';
   btn.textContent = isFav ? '\u2665' : '\u2661';
   btn.title = isFav ? 'Remove from your favorite actors' : 'Mark as one of your favorite actors';
-  btn.style.cssText = 'position:absolute;top:0.25rem;right:0.25rem;background:rgba(10,10,20,0.55);border:none;border-radius:50%;width:22px;height:22px;font-size:0.75rem;line-height:22px;padding:0;cursor:pointer;color:' + (isFav ? '#f43f5e' : '#94a3b8') + ';z-index:2;';
+  btn.style.cssText = 'position:absolute;top:0.25rem;right:0.25rem;background:rgba(10,10,20,0.55);border:none;border-radius:50%;width:22px;height:22px;font-size:0.75rem;line-height:22px;padding:0;cursor:pointer;color:' + (isFav ? '#e0605a' : '#a29dae') + ';z-index:2;';
   btn.onclick = function(e) {
     e.stopPropagation();
     toggleFavoriteActor(displayName);
     var nowFav = isFavoriteActor(displayName);
     btn.textContent = nowFav ? '\u2665' : '\u2661';
-    btn.style.color = nowFav ? '#f43f5e' : '#94a3b8';
+    btn.style.color = nowFav ? '#e0605a' : '#a29dae';
     btn.title = nowFav ? 'Remove from your favorite actors' : 'Mark as one of your favorite actors';
     var card = btn.closest('.actor-card, .dir-card');
-    if (card) card.style.boxShadow = nowFav ? '0 0 0 2px #f43f5e' : '';
+    if (card) card.style.boxShadow = nowFav ? '0 0 0 2px #e0605a' : '';
     if (typeof renderFavActorsStrip === 'function') renderFavActorsStrip();
   };
   return btn;
@@ -1822,7 +1847,7 @@ function renderFavActorsStrip() {
     img.onerror = function() { this.src = ph(actor ? actor.name : favKey, ''); };
     var lbl = document.createElement('span'); lbl.textContent = actor ? actor.name : favKey;
     var rm = document.createElement('button'); rm.textContent = '\u00d7';
-    rm.style.cssText = 'background:none;border:none;color:#f43f5e;cursor:pointer;font-size:0.85rem;padding:0;';
+    rm.style.cssText = 'background:none;border:none;color:#e0605a;cursor:pointer;font-size:0.85rem;padding:0;';
     rm.onclick = (function(name) { return function() { toggleFavoriteActor(name); renderFavActorsStrip(); render(); }; })(actor ? actor.name : favKey);
     chip.appendChild(img); chip.appendChild(lbl); chip.appendChild(rm);
     grid.appendChild(chip);
@@ -2033,7 +2058,7 @@ async function syncNow() {
   var c = getGistCreds();
   var btns = [document.getElementById('syncNowBtn'), document.getElementById('syncNowBtnAi')];
   if (!c.token || !c.gistId) {
-    showBanner('Sync is not set up yet - open Settings to connect.', '#a78bfa', 'rgba(168,85,247,0.1)');
+    showBanner('Sync is not set up yet - open Settings to connect.', '#a78bfa', 'rgba(214,92,123,0.1)');
     return;
   }
   btns.forEach(function(b) { if (b) { b.textContent = '⏳ Syncing...'; b.disabled = true; } });
@@ -2041,9 +2066,9 @@ async function syncNow() {
   if (cloud) {
     dramas = cloud; saveLocal(dramas);
     render(); renderDir(); renderCrewDir(); renderWatchlist();
-    showBanner('✓ Synced! Loaded ' + dramas.length + ' drama(s) from the cloud.', '#10b981', 'rgba(16,185,129,0.1)');
+    showBanner('✓ Synced! Loaded ' + dramas.length + ' drama(s) from the cloud.', '#4fae85', 'rgba(79,174,133,0.1)');
   } else {
-    showBanner('Could not reach the cloud. Check your connection and try again.', '#f59e0b', 'rgba(251,191,36,0.1)');
+    showBanner('Could not reach the cloud. Check your connection and try again.', '#f59e0b', 'rgba(221,170,85,0.1)');
   }
   btns.forEach(function(b) { if (b) { b.textContent = '🔄 Sync Now'; b.disabled = false; } });
 }
@@ -2053,11 +2078,11 @@ async function saveData() {
   saveLocal(dramas);
   var c = getGistCreds();
   if (c.token && c.gistId) {
-    showBanner('Syncing...', '#fbbf24', 'rgba(251,191,36,0.1)');
+    showBanner('Syncing...', '#ddaa55', 'rgba(221,170,85,0.1)');
     var ok = await pushGist();
-    showBanner(ok ? 'Saved and synced to all devices!' : 'Saved locally (cloud sync failed)', ok ? '#10b981' : '#f59e0b', ok ? 'rgba(16,185,129,0.1)' : 'rgba(251,191,36,0.1)');
+    showBanner(ok ? 'Saved and synced to all devices!' : 'Saved locally (cloud sync failed)', ok ? '#4fae85' : '#f59e0b', ok ? 'rgba(79,174,133,0.1)' : 'rgba(221,170,85,0.1)');
   } else {
-    showBanner('Saved ' + dramas.length + ' drama(s)', '#10b981', 'rgba(16,185,129,0.1)');
+    showBanner('Saved ' + dramas.length + ' drama(s)', '#4fae85', 'rgba(79,174,133,0.1)');
   }
 }
 
@@ -2065,11 +2090,11 @@ async function saveWatchlistData() {
   saveLocalWatchlist(watchlist);
   var c = getGistCreds();
   if (c.token && c.gistId) {
-    showBanner('Syncing watchlist...', '#fbbf24', 'rgba(251,191,36,0.1)');
+    showBanner('Syncing watchlist...', '#ddaa55', 'rgba(221,170,85,0.1)');
     var ok = await pushGist();
-    showBanner(ok ? 'Watchlist synced to all devices!' : 'Saved locally (cloud sync failed)', ok ? '#10b981' : '#f59e0b', ok ? 'rgba(16,185,129,0.1)' : 'rgba(251,191,36,0.1)');
+    showBanner(ok ? 'Watchlist synced to all devices!' : 'Saved locally (cloud sync failed)', ok ? '#4fae85' : '#f59e0b', ok ? 'rgba(79,174,133,0.1)' : 'rgba(221,170,85,0.1)');
   } else {
-    showBanner('Saved ' + watchlist.length + ' watchlist item(s)', '#10b981', 'rgba(16,185,129,0.1)');
+    showBanner('Saved ' + watchlist.length + ' watchlist item(s)', '#4fae85', 'rgba(79,174,133,0.1)');
   }
 }
 
@@ -2170,7 +2195,7 @@ async function selectTmdbDrama(show) {
   // Load cast + crew together via aggregate_credits, which reflects the FULL cast across all
   // seasons/episodes (matching TMDB's "View More" list) rather than the short top-billed list
   // the basic /credits endpoint returns.
-  showBanner('Loading cast from TMDB...', '#fbbf24', 'rgba(251,191,36,0.1)');
+  showBanner('Loading cast from TMDB...', '#ddaa55', 'rgba(221,170,85,0.1)');
   var agg = await tmdbGet('/tv/' + show.id + '/aggregate_credits');
   if (agg && agg.cast && agg.cast.length) {
     var cast = agg.cast.slice(0, 50);
@@ -2179,9 +2204,9 @@ async function selectTmdbDrama(show) {
     // when an actor you're adding elsewhere also appeared here, even if you didn't pick them at the time.
     var fullCastData = cast.map(function(c) { return { name: c.name, photo: c.profile_path ? (TMDB_IMG + c.profile_path) : '', tmdbId: c.id }; });
     document.getElementById('mFullCast').value = JSON.stringify(fullCastData);
-    showBanner('Cast loaded (' + cast.length + ' members)! Select who to track.', '#10b981', 'rgba(16,185,129,0.1)');
+    showBanner('Cast loaded (' + cast.length + ' members)! Select who to track.', '#4fae85', 'rgba(79,174,133,0.1)');
   } else {
-    showBanner('Could not load cast. Add manually below.', '#f59e0b', 'rgba(251,191,36,0.1)');
+    showBanner('Could not load cast. Add manually below.', '#f59e0b', 'rgba(221,170,85,0.1)');
   }
   // Load crew (directors/writers) - only shown/used if the user has Track Writers & Directors enabled,
   // but we fetch it regardless so the data is there and ready if they turn it on later
@@ -2343,7 +2368,7 @@ function showAC(inputEl, rowId) {
   if (getTmdbKey()) {
     var loadingEl = document.createElement('div');
     loadingEl.className = 'ac-item';
-    loadingEl.style.color = '#64748b';
+    loadingEl.style.color = '#8b8797';
     loadingEl.style.fontSize = '0.75rem';
     loadingEl.id = 'ac-tmdb-loading-' + rowId;
     loadingEl.textContent = 'Searching TMDB...';
@@ -2421,7 +2446,7 @@ function renderExcludeGrid() {
   grid.innerHTML = '';
   if (!actors.length) {
     var msg = document.createElement('p');
-    msg.style.cssText = 'font-size:0.75rem;color:#64748b;grid-column:1/-1;padding:0.5rem 0;';
+    msg.style.cssText = 'font-size:0.75rem;color:#8b8797;grid-column:1/-1;padding:0.5rem 0;';
     msg.textContent = dramas.length ? 'No actors match your search.' : 'Add some dramas first to see actors here.';
     grid.appendChild(msg);
     return;
@@ -2572,7 +2597,7 @@ async function getRecommendations() {
   btn.textContent = 'Searching TMDB...';
   btn.disabled = true;
   var container = document.getElementById('recResults');
-  container.innerHTML = '<p style="color:#64748b;font-size:0.85rem;">Finding dramas for your available actors...</p>';
+  container.innerHTML = '<p style="color:#8b8797;font-size:0.85rem;">Finding dramas for your available actors...</p>';
 
   // Non-drama genre ids to exclude: Reality/Talk/News/Documentary/Kids (see global EXCLUDE_GENRES)
 
@@ -2787,7 +2812,7 @@ async function getRecommendations() {
   var crewNote = (!smartMode && isTrackCrewOn()) ? ', excluding dramas by directors/writers you have watched recently' : '';
   var fullCastNote = recFullCastOn ? ', full cast checked for hidden last-10 overlaps' : '';
   var gemNote = hiddenGemsOn ? ' (Hidden Gems only)' : '';
-  container.innerHTML = '<p style="font-size:0.75rem;color:#64748b;margin-bottom:0.75rem;">Found ' + recs.length + ' K-dramas featuring your available actors' + gemNote + ', sorted by ' + (smartMode ? 'smart score (rating, unseen actor, genre, popularity' + (isTrackCrewOn() ? ', familiar writer/director' : '') + ')' : 'longest since you last watched them') + crewNote + fullCastNote + '. Click a drama to add it to My Dramas.</p>';
+  container.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">Found ' + recs.length + ' K-dramas featuring your available actors' + gemNote + ', sorted by ' + (smartMode ? 'smart score (rating, unseen actor, genre, popularity' + (isTrackCrewOn() ? ', familiar writer/director' : '') + ')' : 'longest since you last watched them') + crewNote + fullCastNote + '. Click a drama to add it to My Dramas.</p>';
   var grid = document.createElement('div');
   grid.className = 'rec-grid';
   recs.forEach(function(rec) {
@@ -2799,7 +2824,7 @@ async function getRecommendations() {
     var info = document.createElement('div'); info.className = 'rec-info';
     var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = rec.name + (rec.year ? ' (' + rec.year + ')' : '');
     var ratingRow = document.createElement('div');
-    ratingRow.style.cssText = 'font-size:0.68rem;color:#fbbf24;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
+    ratingRow.style.cssText = 'font-size:0.68rem;color:#ddaa55;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
     if (typeof rec.imdbRating === 'number') {
       var imdbTag = document.createElement('span');
       imdbTag.style.cssText = 'font-size:0.55rem;background:rgba(245,197,24,0.15);border:1px solid rgba(245,197,24,0.3);color:#f5c518;border-radius:3px;padding:0.05rem 0.3rem;';
@@ -2819,12 +2844,12 @@ async function getRecommendations() {
       ratingRow.appendChild(ratingText2);
     } else {
       ratingRow.textContent = 'No rating yet';
-      ratingRow.style.color = '#64748b';
+      ratingRow.style.color = '#8b8797';
     }
     var genreRow = document.createElement('div');
-    genreRow.style.cssText = 'font-size:0.65rem;color:#818cf8;margin-bottom:0.3rem;';
+    genreRow.style.cssText = 'font-size:0.65rem;color:#9296d6;margin-bottom:0.3rem;';
     genreRow.textContent = rec.genres && rec.genres.length ? rec.genres.join(', ') : '';
-    var agoLbl = document.createElement('div'); agoLbl.style.cssText = 'font-size:0.62rem;color:#c084fc;margin-bottom:0.2rem;';
+    var agoLbl = document.createElement('div'); agoLbl.style.cssText = 'font-size:0.62rem;color:#e9879c;margin-bottom:0.2rem;';
     agoLbl.textContent = ago > 0 ? (ago + ' drama' + (ago > 1 ? 's' : '') + ' since last seen') : 'Never seen yet';
     var actors = document.createElement('div'); actors.className = 'rec-actors';
     renderTextWithActorTooltips(actors, rec.actors.length + ' available actor' + (rec.actors.length > 1 ? 's' : '') + ': ' + rec.actors.join(', '));
@@ -2875,14 +2900,14 @@ function renderSimilarSourcePicker() {
   grid.innerHTML = '';
   if (!withTmdb.length) {
     var msg = document.createElement('p');
-    msg.style.cssText = 'font-size:0.78rem;color:#64748b;grid-column:1/-1;padding:0.75rem 0;';
+    msg.style.cssText = 'font-size:0.78rem;color:#8b8797;grid-column:1/-1;padding:0.75rem 0;';
     msg.textContent = 'None of your dramas were added via TMDB search yet. Add a new drama using the TMDB search box, or edit an existing one and re-select it from TMDB, to use this feature.';
     grid.appendChild(msg);
     return;
   }
   if (!list.length) {
     var msg2 = document.createElement('p');
-    msg2.style.cssText = 'font-size:0.78rem;color:#64748b;grid-column:1/-1;padding:0.75rem 0;';
+    msg2.style.cssText = 'font-size:0.78rem;color:#8b8797;grid-column:1/-1;padding:0.75rem 0;';
     msg2.textContent = 'No dramas match your search.';
     grid.appendChild(msg2);
     return;
@@ -2918,13 +2943,13 @@ async function getSimilarShows() {
   var sources = dramas.filter(function(d) { return selectedSimilarSources.has(d.id); });
   var container = document.getElementById('similarResults');
   if (!sources.length) {
-    container.innerHTML = '<p style="color:#64748b;">Pick at least one drama above first.</p>';
+    container.innerHTML = '<p style="color:#8b8797;">Pick at least one drama above first.</p>';
     return;
   }
   var btn = document.getElementById('similarBtn');
   btn.textContent = 'Searching TMDB...';
   btn.disabled = true;
-  container.innerHTML = '<p style="color:#64748b;font-size:0.85rem;">Finding shows similar to your selection...</p>';
+  container.innerHTML = '<p style="color:#8b8797;font-size:0.85rem;">Finding shows similar to your selection...</p>';
 
   var watchedTitles = new Set(dramas.map(function(d) { return d.title.toLowerCase().trim(); }));
   var similarMap = {};
@@ -3021,7 +3046,7 @@ async function getSimilarShows() {
 
   var gemNote2 = similarHiddenGemsOn ? ' (Hidden Gems only)' : '';
   var fullCastNote2 = similarFullCastOn ? ', full cast checked for hidden last-10 overlaps' : '';
-  container.innerHTML = '<p style="font-size:0.75rem;color:#64748b;margin-bottom:0.75rem;">Found ' + results.length + ' K-dramas similar to your selection' + gemNote2 + fullCastNote2 + '. Click a drama to add it to My Dramas.</p>';
+  container.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">Found ' + results.length + ' K-dramas similar to your selection' + gemNote2 + fullCastNote2 + '. Click a drama to add it to My Dramas.</p>';
   var grid = document.createElement('div');
   grid.className = 'rec-grid';
   results.forEach(function(rec) {
@@ -3032,7 +3057,7 @@ async function getSimilarShows() {
     var info = document.createElement('div'); info.className = 'rec-info';
     var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = rec.name + (rec.year ? ' (' + rec.year + ')' : '');
     var ratingRow = document.createElement('div');
-    ratingRow.style.cssText = 'font-size:0.68rem;color:#fbbf24;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
+    ratingRow.style.cssText = 'font-size:0.68rem;color:#ddaa55;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
     if (typeof rec.imdbRating === 'number') {
       var imdbTag = document.createElement('span');
       imdbTag.style.cssText = 'font-size:0.55rem;background:rgba(245,197,24,0.15);border:1px solid rgba(245,197,24,0.3);color:#f5c518;border-radius:3px;padding:0.05rem 0.3rem;';
@@ -3047,12 +3072,12 @@ async function getSimilarShows() {
       ratingRow.appendChild(rt2);
     } else {
       ratingRow.textContent = 'No rating yet';
-      ratingRow.style.color = '#64748b';
+      ratingRow.style.color = '#8b8797';
     }
     var genreRow = document.createElement('div');
-    genreRow.style.cssText = 'font-size:0.65rem;color:#818cf8;margin-bottom:0.3rem;';
+    genreRow.style.cssText = 'font-size:0.65rem;color:#9296d6;margin-bottom:0.3rem;';
     genreRow.textContent = rec.genres && rec.genres.length ? rec.genres.join(', ') : '';
-    var srcLbl = document.createElement('div'); srcLbl.style.cssText = 'font-size:0.62rem;color:#c084fc;margin-bottom:0.3rem;';
+    var srcLbl = document.createElement('div'); srcLbl.style.cssText = 'font-size:0.62rem;color:#e9879c;margin-bottom:0.3rem;';
     srcLbl.textContent = 'Similar to: ' + rec.sources.join(', ');
     if (isHiddenGem(rec)) {
       var gemPill2 = document.createElement('div'); gemPill2.className = 'gem-pill'; gemPill2.textContent = '\uD83D\uDC8E Hidden Gem';
@@ -3108,7 +3133,7 @@ async function initApp() {
   syncFavOnlyToggles();
   renderTurnWidget();
 
-  showBanner('Loading...', '#fbbf24', 'rgba(251,191,36,0.1)');
+  showBanner('Loading...', '#ddaa55', 'rgba(221,170,85,0.1)');
   openTab('dramas');
   watchlist = loadLocalWatchlist(); // local fallback; pullGist() below will refresh this if synced
   var c = getGistCreds();
@@ -3116,16 +3141,16 @@ async function initApp() {
     var cloud = await pullGist();
     if (cloud && cloud.length > 0) {
       dramas = cloud; saveLocal(dramas);
-      showBanner('Loaded ' + dramas.length + ' dramas from cloud', '#10b981', 'rgba(16,185,129,0.1)');
+      showBanner('Loaded ' + dramas.length + ' dramas from cloud', '#4fae85', 'rgba(79,174,133,0.1)');
     } else {
       dramas = loadLocal() || [];
-      if (dramas.length > 0) { pushGist(); showBanner('Loaded ' + dramas.length + ' dramas (uploaded to cloud)', '#10b981', 'rgba(16,185,129,0.1)'); }
-      else showBanner('No dramas yet. Add your first drama!', '#a78bfa', 'rgba(168,85,247,0.1)');
+      if (dramas.length > 0) { pushGist(); showBanner('Loaded ' + dramas.length + ' dramas (uploaded to cloud)', '#4fae85', 'rgba(79,174,133,0.1)'); }
+      else showBanner('No dramas yet. Add your first drama!', '#a78bfa', 'rgba(214,92,123,0.1)');
     }
     setSyncBadge(false);
   } else {
     dramas = loadLocal() || [];
-    showBanner(dramas.length > 0 ? ('Loaded ' + dramas.length + ' dramas') : 'Welcome! Add your dramas to get started', '#10b981', 'rgba(16,185,129,0.1)');
+    showBanner(dramas.length > 0 ? ('Loaded ' + dramas.length + ' dramas') : 'Welcome! Add your dramas to get started', '#4fae85', 'rgba(79,174,133,0.1)');
   }
   var s = getSettings();
   if (s.ghToken && s.ghGistId) setSyncBadge(false);
@@ -3185,16 +3210,16 @@ function ph(name, photo) { return photo || ('https://ui-avatars.com/api/?name=' 
 // Builds a diagnostic "why is this empty" box listing which active filters are likely
 // responsible, instead of a generic "no results" message.
 function explainEmptyResults(activeFilters) {
-  var html = '<div style="background:#13131f;border:1px solid #2a2a45;border-radius:10px;padding:1rem;">';
-  html += '<p style="color:#e2e8f0;font-weight:bold;margin-bottom:0.5rem;font-size:0.9rem;">No results found</p>';
+  var html = '<div style="background:#121017;border:1px solid #2a2432;border-radius:10px;padding:1rem;">';
+  html += '<p style="color:#ededf3;font-weight:bold;margin-bottom:0.5rem;font-size:0.9rem;">No results found</p>';
   if (activeFilters && activeFilters.length) {
-    html += '<p style="font-size:0.78rem;color:#64748b;margin-bottom:0.5rem;">These active filters/settings are likely narrowing things down too much:</p>';
+    html += '<p style="font-size:0.78rem;color:#8b8797;margin-bottom:0.5rem;">These active filters/settings are likely narrowing things down too much:</p>';
     html += '<ul style="margin:0 0 0.6rem 1.1rem;padding:0;font-size:0.78rem;color:#f59e0b;">';
     activeFilters.forEach(function(f) { html += '<li style="margin-bottom:0.2rem;">' + f + '</li>'; });
     html += '</ul>';
-    html += '<p style="font-size:0.75rem;color:#64748b;">Try loosening or turning off one of these and search again.</p>';
+    html += '<p style="font-size:0.75rem;color:#8b8797;">Try loosening or turning off one of these and search again.</p>';
   } else {
-    html += '<p style="font-size:0.78rem;color:#64748b;">No filters are active, so this is likely because your library does not have enough dramas yet, or no actors are currently "available" (not in your last 10). Try adding a few more dramas first.</p>';
+    html += '<p style="font-size:0.78rem;color:#8b8797;">No filters are active, so this is likely because your library does not have enough dramas yet, or no actors are currently "available" (not in your last 10). Try adding a few more dramas first.</p>';
   }
   html += '</div>';
   return html;
@@ -3295,7 +3320,7 @@ function renderSkippedShowsPage() {
   if (!grid) return;
   grid.innerHTML = '';
   if (!skipped.length) {
-    grid.innerHTML = '<p style="text-align:center;color:#64748b;padding:2rem;grid-column:1/-1;">Nothing skipped yet. Tap "\u2715 Skip" on any recommendation card to hide it from future suggestions - it\'ll show up here so you can bring it back anytime.</p>';
+    grid.innerHTML = '<p style="text-align:center;color:#8b8797;padding:2rem;grid-column:1/-1;">Nothing skipped yet. Tap "\u2715 Skip" on any recommendation card to hide it from future suggestions - it\'ll show up here so you can bring it back anytime.</p>';
     return;
   }
   if (!filtered.length) {
@@ -3317,7 +3342,7 @@ function renderSkippedShowsPage() {
       e.stopPropagation();
       unskipShow(s.id);
       renderSkippedShowsPage();
-      showBanner('Restored "' + s.name + '" - it can be suggested again', '#10b981', 'rgba(16,185,129,0.1)');
+      showBanner('Restored "' + s.name + '" - it can be suggested again', '#4fae85', 'rgba(79,174,133,0.1)');
     };
     info.appendChild(restoreBtn);
     card.appendChild(img); card.appendChild(info);
@@ -3588,7 +3613,7 @@ function render() {
   document.getElementById('dramaCount').textContent = dramas.length + ' total - last ' + Math.min(dramas.length, 10) + ' active';
   var list = document.getElementById('dramaList'); list.innerHTML = '';
   if (!dramas.length) {
-    list.innerHTML = '<div style="text-align:center;padding:3rem;color:#64748b;"><p style="font-size:1rem;margin-bottom:0.5rem;">No dramas yet</p><p style="font-size:0.85rem;">Click "+ Add Drama" to get started!</p></div>';
+    list.innerHTML = '<div style="text-align:center;padding:3rem;color:#8b8797;"><p style="font-size:1rem;margin-bottom:0.5rem;">No dramas yet</p><p style="font-size:0.85rem;">Click "+ Add Drama" to get started!</p></div>';
     return;
   }
   var searchEl = document.getElementById('dramaSearch');
@@ -3596,7 +3621,7 @@ function render() {
   var displayList = dramas.slice().reverse();
   if (searchTerm) displayList = displayList.filter(function(d) { return d.title.toLowerCase().indexOf(searchTerm) !== -1; });
   if (searchTerm && !displayList.length) {
-    list.innerHTML = '<div style="text-align:center;padding:2rem;color:#64748b;"><p style="font-size:0.9rem;">No dramas match "' + searchTerm + '".</p></div>';
+    list.innerHTML = '<div style="text-align:center;padding:2rem;color:#8b8797;"><p style="font-size:0.9rem;">No dramas match "' + searchTerm + '".</p></div>';
     return;
   }
   displayList.forEach(function(drama) {
@@ -3612,7 +3637,7 @@ function render() {
     var meta = document.createElement('div'); meta.style.cssText = 'flex:1;min-width:0;';
     if (isActive) { var badge = document.createElement('div'); badge.className = 'active-badge'; badge.textContent = 'Active - Last 10'; meta.appendChild(badge); }
     var te = document.createElement('div'); te.style.cssText = 'font-size:1rem;font-weight:bold;margin-bottom:0.2rem;'; te.textContent = drama.title;
-    var ye = document.createElement('div'); ye.style.cssText = 'font-size:0.78rem;color:#64748b;margin-bottom:0.5rem;'; ye.textContent = (drama.year || '') + ' - ' + drama.cast.length + ' cast';
+    var ye = document.createElement('div'); ye.style.cssText = 'font-size:0.78rem;color:#8b8797;margin-bottom:0.5rem;'; ye.textContent = (drama.year || '') + ' - ' + drama.cast.length + ' cast';
     var btns = document.createElement('div'); btns.style.cssText = 'display:flex;gap:0.4rem;flex-wrap:wrap;';
     var upBtn = document.createElement('button'); upBtn.className = 'btn-sm'; upBtn.textContent = '\u25B2 More recent';
     upBtn.style.cssText = 'width:auto;margin:0;padding:0.3rem 0.6rem;' + (canMoveUp ? '' : 'opacity:0.3;cursor:default;');
@@ -3634,7 +3659,7 @@ function render() {
       var inR10 = r10names.has(a.name.toLowerCase().trim());
       var ac = document.createElement('div'); ac.className = 'actor-card ' + (inR10 ? 'red' : 'green');
       ac.style.position = 'relative';
-      if (isFavoriteActor(a.name)) ac.style.boxShadow = '0 0 0 2px #f43f5e';
+      if (isFavoriteActor(a.name)) ac.style.boxShadow = '0 0 0 2px #e0605a';
       var ai = document.createElement('img'); ai.className = 'actor-photo'; ai.src = ph(a.name, a.photo); ai.alt = a.name;
       ai.onerror = function() { this.src = ph(a.name, ''); };
       var an = document.createElement('div'); an.className = 'actor-lbl'; an.textContent = a.name;
@@ -3645,7 +3670,7 @@ function render() {
 
     if (drama.crew && drama.crew.length) {
       var crewLbl = document.createElement('div');
-      crewLbl.style.cssText = 'font-size:0.62rem;color:#818cf8;padding:0 1rem;margin-top:-0.5rem;margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.05em;';
+      crewLbl.style.cssText = 'font-size:0.62rem;color:#9296d6;padding:0 1rem;margin-top:-0.5rem;margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.05em;';
       crewLbl.textContent = 'Writers & Directors';
       var crewScroll = document.createElement('div'); crewScroll.className = 'actor-scroll';
       drama.crew.forEach(function(c) {
@@ -3696,15 +3721,15 @@ function renderCompletionBar(container, watched, total) {
   var pct = total > 0 ? Math.min(100, Math.round((watched / total) * 100)) : 0;
   var denom = Math.max(total, watched);
   container.innerHTML = '';
-  var barWrap = document.createElement('div'); barWrap.style.cssText = 'width:100%;background:#0d0d14;border-radius:999px;height:6px;overflow:hidden;margin:0.35rem 0 0.2rem;';
-  var barFill = document.createElement('div'); barFill.style.cssText = 'height:100%;background:linear-gradient(90deg,#a855f7,#6366f1);width:' + pct + '%;';
+  var barWrap = document.createElement('div'); barWrap.style.cssText = 'width:100%;background:#0a0a0f;border-radius:999px;height:6px;overflow:hidden;margin:0.35rem 0 0.2rem;';
+  var barFill = document.createElement('div'); barFill.style.cssText = 'height:100%;background:linear-gradient(90deg,#d65c7b,#6c6fb0);width:' + pct + '%;';
   barWrap.appendChild(barFill);
-  var label = document.createElement('div'); label.style.cssText = 'font-size:0.6rem;color:#c084fc;';
+  var label = document.createElement('div'); label.style.cssText = 'font-size:0.6rem;color:#e9879c;';
   label.textContent = watched + '/' + denom + ' shows watched (' + pct + '%)';
   container.appendChild(barWrap); container.appendChild(label);
 }
 async function computeActorCompletion(actor, container) {
-  container.innerHTML = '<div style="font-size:0.6rem;color:#64748b;">Calculating...</div>';
+  container.innerHTML = '<div style="font-size:0.6rem;color:#8b8797;">Calculating...</div>';
   var watched = actor.dramas.length;
   var cached = completionCacheGet(actor.name);
   if (cached) { renderCompletionBar(container, watched, cached.total); return; }
@@ -3712,11 +3737,11 @@ async function computeActorCompletion(actor, container) {
   var personId = actor.tmdbId;
   if (!personId) {
     var personData = await tmdbGet('/search/person?query=' + encodeURIComponent(actor.name));
-    if (!personData || !personData.results || !personData.results.length) { container.innerHTML = '<div style="font-size:0.58rem;color:#64748b;">Not found on TMDB</div>'; return; }
+    if (!personData || !personData.results || !personData.results.length) { container.innerHTML = '<div style="font-size:0.58rem;color:#8b8797;">Not found on TMDB</div>'; return; }
     personId = personData.results[0].id;
   }
   var credits = await tmdbGet('/person/' + personId + '/tv_credits');
-  if (!credits || !credits.cast) { container.innerHTML = '<div style="font-size:0.58rem;color:#64748b;">No data available</div>'; return; }
+  if (!credits || !credits.cast) { container.innerHTML = '<div style="font-size:0.58rem;color:#8b8797;">No data available</div>'; return; }
   var qualifying = credits.cast.filter(function(show) {
     if (!show.first_air_date) return false;
     if (show.origin_country && show.origin_country.length && show.origin_country.indexOf('KR') === -1) return false;
@@ -3738,7 +3763,7 @@ function renderDir() {
   });
   var grid = document.getElementById('dirGrid'); grid.innerHTML = '';
   if (!actors.length) {
-    var msg = document.createElement('p'); msg.style.cssText = 'text-align:center;color:#64748b;padding:1rem;grid-column:1/-1;';
+    var msg = document.createElement('p'); msg.style.cssText = 'text-align:center;color:#8b8797;padding:1rem;grid-column:1/-1;';
     msg.textContent = dramas.length === 0 ? 'Add some dramas first!' : 'No actors found';
     grid.appendChild(msg); return;
   }
@@ -3747,12 +3772,12 @@ function renderDir() {
     var label = a.inRecent10 ? 'In last 10' : (ago <= 0 ? 'Available' : ago + ' drama' + (ago > 1 ? 's' : '') + ' ago');
     var card = document.createElement('div'); card.className = 'dir-card ' + (a.inRecent10 ? 'bad' : 'good');
     card.style.position = 'relative';
-    if (isFavoriteActor(a.name)) card.style.boxShadow = '0 0 0 2px #f43f5e';
+    if (isFavoriteActor(a.name)) card.style.boxShadow = '0 0 0 2px #e0605a';
     var img = document.createElement('img'); img.className = 'dir-photo'; img.src = ph(a.name, a.photo); img.alt = a.name;
     img.onerror = function() { this.src = ph(a.name, ''); };
     var name = document.createElement('div'); name.className = 'dir-name'; name.textContent = a.name;
-    var status = document.createElement('div'); status.style.cssText = 'font-size:0.65rem;color:' + (a.inRecent10 ? '#f43f5e' : '#10b981') + ';'; status.textContent = label;
-    var count = document.createElement('div'); count.style.cssText = 'font-size:0.62rem;color:#64748b;margin-top:0.15rem;'; count.textContent = a.dramas.length + ' drama' + (a.dramas.length > 1 ? 's' : '');
+    var status = document.createElement('div'); status.style.cssText = 'font-size:0.65rem;color:' + (a.inRecent10 ? '#e0605a' : '#4fae85') + ';'; status.textContent = label;
+    var count = document.createElement('div'); count.style.cssText = 'font-size:0.62rem;color:#8b8797;margin-top:0.15rem;'; count.textContent = a.dramas.length + ' drama' + (a.dramas.length > 1 ? 's' : '');
     card.appendChild(img); card.appendChild(name); card.appendChild(status); card.appendChild(count); card.appendChild(makeFavActorBtn(a.name));
 
     var completionSlot = document.createElement('div'); completionSlot.style.width = '100%';
@@ -3783,7 +3808,7 @@ function renderCrewDir() {
   });
   var grid = document.getElementById('crewDirGrid'); grid.innerHTML = '';
   if (!crew.length) {
-    var msg = document.createElement('p'); msg.style.cssText = 'text-align:center;color:#64748b;padding:1rem;grid-column:1/-1;';
+    var msg = document.createElement('p'); msg.style.cssText = 'text-align:center;color:#8b8797;padding:1rem;grid-column:1/-1;';
     msg.textContent = dramas.length === 0 ? 'Add some dramas first!' : 'No writers/directors tracked yet. Add them when adding/editing a drama.';
     grid.appendChild(msg); return;
   }
@@ -3795,10 +3820,10 @@ function renderCrewDir() {
     img.onerror = function() { this.src = ph(c.name, ''); };
     var name = document.createElement('div'); name.className = 'dir-name'; name.textContent = c.name;
     var roleTag = document.createElement('div');
-    roleTag.style.cssText = 'font-size:0.6rem;padding:0.05rem 0.3rem;border-radius:999px;display:inline-block;margin-bottom:0.2rem;' + (c.role === 'Director' ? 'background:rgba(244,63,94,0.12);color:#fb7185;' : 'background:rgba(56,189,248,0.12);color:#38bdf8;');
+    roleTag.style.cssText = 'font-size:0.6rem;padding:0.05rem 0.3rem;border-radius:999px;display:inline-block;margin-bottom:0.2rem;' + (c.role === 'Director' ? 'background:rgba(224,96,90,0.12);color:#d97d89;' : 'background:rgba(79,168,212,0.12);color:#4fa8d4;');
     roleTag.textContent = c.role;
-    var status = document.createElement('div'); status.style.cssText = 'font-size:0.65rem;color:' + (c.inRecent10 ? '#f43f5e' : '#10b981') + ';'; status.textContent = label;
-    var count = document.createElement('div'); count.style.cssText = 'font-size:0.62rem;color:#64748b;margin-top:0.15rem;'; count.textContent = c.dramas.length + ' drama' + (c.dramas.length > 1 ? 's' : '');
+    var status = document.createElement('div'); status.style.cssText = 'font-size:0.65rem;color:' + (c.inRecent10 ? '#e0605a' : '#4fae85') + ';'; status.textContent = label;
+    var count = document.createElement('div'); count.style.cssText = 'font-size:0.62rem;color:#8b8797;margin-top:0.15rem;'; count.textContent = c.dramas.length + ' drama' + (c.dramas.length > 1 ? 's' : '');
     card.appendChild(img); card.appendChild(roleTag); card.appendChild(name); card.appendChild(status); card.appendChild(count);
     grid.appendChild(card);
   });
@@ -3810,9 +3835,9 @@ function statBarList(title, subtitle, items, opts) {
   var box = document.createElement('div'); box.className = 'box';
   var h = document.createElement('h3'); h.className = 'sec-title'; h.textContent = title;
   box.appendChild(h);
-  if (subtitle) { var sub = document.createElement('p'); sub.style.cssText = 'font-size:0.75rem;color:#64748b;margin-bottom:0.75rem;'; sub.textContent = subtitle; box.appendChild(sub); }
+  if (subtitle) { var sub = document.createElement('p'); sub.style.cssText = 'font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;'; sub.textContent = subtitle; box.appendChild(sub); }
   if (!items.length) {
-    var empty = document.createElement('p'); empty.style.cssText = 'font-size:0.8rem;color:#64748b;padding:0.5rem 0;'; empty.textContent = opts.emptyText || 'No data yet.';
+    var empty = document.createElement('p'); empty.style.cssText = 'font-size:0.8rem;color:#8b8797;padding:0.5rem 0;'; empty.textContent = opts.emptyText || 'No data yet.';
     box.appendChild(empty);
     return box;
   }
@@ -3829,15 +3854,15 @@ function statBarList(title, subtitle, items, opts) {
     var lblRow = document.createElement('div'); lblRow.style.cssText = 'display:flex;justify-content:space-between;gap:0.5rem;font-size:0.78rem;margin-bottom:0.2rem;';
     var lbl = document.createElement('span'); lbl.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
     lbl.textContent = item.label + (item.tag ? '' : '');
-    var cnt = document.createElement('span'); cnt.style.cssText = 'color:#c084fc;font-weight:bold;flex-shrink:0;'; cnt.textContent = item.countLabel || item.count;
+    var cnt = document.createElement('span'); cnt.style.cssText = 'color:#e9879c;font-weight:bold;flex-shrink:0;'; cnt.textContent = item.countLabel || item.count;
     lblRow.appendChild(lbl); lblRow.appendChild(cnt);
-    var barBg = document.createElement('div'); barBg.style.cssText = 'background:#0d0d14;border-radius:999px;height:7px;overflow:hidden;';
-    var barFill = document.createElement('div'); barFill.style.cssText = 'height:100%;background:linear-gradient(90deg,#a855f7,#6366f1);width:' + Math.max(4, Math.round((item.count / maxCount) * 100)) + '%;';
+    var barBg = document.createElement('div'); barBg.style.cssText = 'background:#0a0a0f;border-radius:999px;height:7px;overflow:hidden;';
+    var barFill = document.createElement('div'); barFill.style.cssText = 'height:100%;background:linear-gradient(90deg,#d65c7b,#6c6fb0);width:' + Math.max(4, Math.round((item.count / maxCount) * 100)) + '%;';
     barBg.appendChild(barFill);
     barCol.appendChild(lblRow); barCol.appendChild(barBg);
     if (item.tag) {
       var tagEl = document.createElement('span');
-      tagEl.style.cssText = 'font-size:0.55rem;padding:0.05rem 0.3rem;border-radius:999px;margin-left:0.3rem;' + (item.tag === 'Director' ? 'background:rgba(244,63,94,0.12);color:#fb7185;' : 'background:rgba(56,189,248,0.12);color:#38bdf8;');
+      tagEl.style.cssText = 'font-size:0.55rem;padding:0.05rem 0.3rem;border-radius:999px;margin-left:0.3rem;' + (item.tag === 'Director' ? 'background:rgba(224,96,90,0.12);color:#d97d89;' : 'background:rgba(79,168,212,0.12);color:#4fa8d4;');
       tagEl.textContent = item.tag;
       lbl.appendChild(tagEl);
     }
@@ -3873,9 +3898,9 @@ function renderStats() {
   ];
   tiles.forEach(function(t) {
     var tile = document.createElement('div');
-    tile.style.cssText = 'background:#13131f;border:1px solid #2a2a45;border-radius:10px;padding:0.9rem 0.6rem;text-align:center;';
-    var num = document.createElement('div'); num.style.cssText = 'font-size:1.5rem;font-weight:bold;color:#c084fc;'; num.textContent = t.n;
-    var lbl = document.createElement('div'); lbl.style.cssText = 'font-size:0.62rem;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;margin-top:0.2rem;'; lbl.textContent = t.l;
+    tile.style.cssText = 'background:#121017;border:1px solid #2a2432;border-radius:10px;padding:0.9rem 0.6rem;text-align:center;';
+    var num = document.createElement('div'); num.style.cssText = 'font-size:1.5rem;font-weight:bold;color:#e9879c;'; num.textContent = t.n;
+    var lbl = document.createElement('div'); lbl.style.cssText = 'font-size:0.62rem;color:#8b8797;text-transform:uppercase;letter-spacing:0.05em;margin-top:0.2rem;'; lbl.textContent = t.l;
     tile.appendChild(num); tile.appendChild(lbl);
     tileGrid.appendChild(tile);
   });
@@ -3890,12 +3915,12 @@ function renderStats() {
     var highlight = document.createElement('div');
     highlight.className = 'box';
     highlight.style.cssText += 'display:flex;align-items:center;gap:1rem;';
-    var hImg = document.createElement('img'); hImg.src = ph(topPick.name, topPick.photo); hImg.style.cssText = 'width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid #10b981;flex-shrink:0;';
+    var hImg = document.createElement('img'); hImg.src = ph(topPick.name, topPick.photo); hImg.style.cssText = 'width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid #4fae85;flex-shrink:0;';
     hImg.onerror = function() { this.src = ph(topPick.name, ''); };
     var hText = document.createElement('div');
-    var hTitle = document.createElement('div'); hTitle.style.cssText = 'font-size:0.7rem;color:#10b981;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.2rem;'; hTitle.textContent = 'Longest overdue for a rewatch';
+    var hTitle = document.createElement('div'); hTitle.style.cssText = 'font-size:0.7rem;color:#4fae85;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.2rem;'; hTitle.textContent = 'Longest overdue for a rewatch';
     var hName = document.createElement('div'); hName.style.cssText = 'font-size:1.05rem;font-weight:bold;'; hName.textContent = topPick.name;
-    var hSub = document.createElement('div'); hSub.style.cssText = 'font-size:0.75rem;color:#64748b;'; hSub.textContent = ago > 0 ? (ago + ' dramas since you last watched them') : 'Available now';
+    var hSub = document.createElement('div'); hSub.style.cssText = 'font-size:0.75rem;color:#8b8797;'; hSub.textContent = ago > 0 ? (ago + ' dramas since you last watched them') : 'Available now';
     hText.appendChild(hTitle); hText.appendChild(hName); hText.appendChild(hSub);
     highlight.appendChild(hImg); highlight.appendChild(hText);
     container.appendChild(highlight);
@@ -4108,30 +4133,30 @@ function runCheck() {
   var good = results.filter(function(r) { return !r.conflict; }).length;
   var box = document.getElementById('chkResults'); box.innerHTML = '';
   var g = document.createElement('div'); g.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem;';
-  [{ n: bad, l: 'CONFLICTS', bg: 'rgba(244,63,94,0.1)', bo: 'rgba(244,63,94,0.3)', c: '#f43f5e' },
-   { n: good, l: 'ALL CLEAR', bg: 'rgba(16,185,129,0.1)', bo: 'rgba(16,185,129,0.3)', c: '#10b981' },
-   { n: null, l: 'VERDICT', bg: '#13131f', bo: '#2a2a45', c: bad > 0 ? '#f43f5e' : '#10b981' }].forEach(function(d, i) {
+  [{ n: bad, l: 'CONFLICTS', bg: 'rgba(224,96,90,0.1)', bo: 'rgba(224,96,90,0.3)', c: '#e0605a' },
+   { n: good, l: 'ALL CLEAR', bg: 'rgba(79,174,133,0.1)', bo: 'rgba(79,174,133,0.3)', c: '#4fae85' },
+   { n: null, l: 'VERDICT', bg: '#121017', bo: '#2a2432', c: bad > 0 ? '#e0605a' : '#4fae85' }].forEach(function(d, i) {
     var c = document.createElement('div'); c.style.cssText = 'background:' + d.bg + ';border:1px solid ' + d.bo + ';border-radius:8px;padding:0.75rem;text-align:center;';
     var num = document.createElement('div'); num.style.cssText = 'font-size:1.4rem;font-weight:bold;color:' + d.c + ';'; num.textContent = i === 2 ? (bad > 0 ? 'Skip' : 'Safe') : d.n;
     var lbl = document.createElement('div'); lbl.style.cssText = 'font-size:0.62rem;color:' + d.c + ';'; lbl.textContent = d.l;
     c.appendChild(num); c.appendChild(lbl); g.appendChild(c);
   });
-  var rl = document.createElement('div'); rl.style.cssText = 'background:#13131f;border:1px solid #2a2a45;border-radius:10px;padding:1rem;';
+  var rl = document.createElement('div'); rl.style.cssText = 'background:#121017;border:1px solid #2a2432;border-radius:10px;padding:1rem;';
   results.forEach(function(r, i) {
-    var row = document.createElement('div'); row.style.cssText = 'display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;' + (i < results.length - 1 ? 'border-bottom:1px solid #2a2a45;' : '');
-    var img = document.createElement('img'); img.src = ph(r.name, r.photo); img.style.cssText = 'width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid ' + (r.conflict ? '#f43f5e' : '#10b981') + ';flex-shrink:0;';
+    var row = document.createElement('div'); row.style.cssText = 'display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;' + (i < results.length - 1 ? 'border-bottom:1px solid #2a2432;' : '');
+    var img = document.createElement('img'); img.src = ph(r.name, r.photo); img.style.cssText = 'width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid ' + (r.conflict ? '#e0605a' : '#4fae85') + ';flex-shrink:0;';
     img.onerror = function() { this.src = ph(r.name, ''); };
     var info = document.createElement('div'); info.style.flex = '1';
     var nameRow = document.createElement('div'); nameRow.style.cssText = 'display:flex;align-items:center;gap:0.4rem;';
-    var nm = document.createElement('div'); nm.style.cssText = 'font-weight:bold;color:' + (r.conflict ? '#f43f5e' : '#10b981') + ';'; nm.textContent = r.name;
+    var nm = document.createElement('div'); nm.style.cssText = 'font-weight:bold;color:' + (r.conflict ? '#e0605a' : '#4fae85') + ';'; nm.textContent = r.name;
     nameRow.appendChild(nm);
     if (r.role && r.role !== 'Actor') {
       var roleTag = document.createElement('span');
-      roleTag.style.cssText = 'font-size:0.6rem;padding:0.05rem 0.35rem;border-radius:999px;' + (r.role === 'Director' ? 'background:rgba(244,63,94,0.12);color:#fb7185;' : 'background:rgba(56,189,248,0.12);color:#38bdf8;');
+      roleTag.style.cssText = 'font-size:0.6rem;padding:0.05rem 0.35rem;border-radius:999px;' + (r.role === 'Director' ? 'background:rgba(224,96,90,0.12);color:#d97d89;' : 'background:rgba(79,168,212,0.12);color:#4fa8d4;');
       roleTag.textContent = r.role;
       nameRow.appendChild(roleTag);
     }
-    var sub = document.createElement('div'); sub.style.cssText = 'font-size:0.72rem;color:#64748b;'; sub.textContent = r.conflict ? 'Seen in: ' + r.conflict : 'Not in your recent 10';
+    var sub = document.createElement('div'); sub.style.cssText = 'font-size:0.72rem;color:#8b8797;'; sub.textContent = r.conflict ? 'Seen in: ' + r.conflict : 'Not in your recent 10';
     info.appendChild(nameRow); info.appendChild(sub); row.appendChild(img); row.appendChild(info); rl.appendChild(row);
   });
   var clr = document.createElement('button'); clr.className = 'btn-sm'; clr.textContent = 'Clear Results'; clr.style.marginTop = '0.75rem';
@@ -4172,7 +4197,7 @@ function saveAllSettings() {
   s.ghToken = document.getElementById('ghToken').value.trim();
   s.ghGistId = document.getElementById('ghGistId').value.trim();
   saveSettings2(s);
-  showBanner('Settings saved!', '#10b981', 'rgba(16,185,129,0.1)');
+  showBanner('Settings saved!', '#4fae85', 'rgba(79,174,133,0.1)');
   if (s.ghToken && s.ghGistId) setSyncBadge(false);
   pushGist(); // sync API keys/toggles to other devices if connected
   closeSettings();
@@ -4202,7 +4227,7 @@ function disconnectSync() {
   var s = getSettings(); s.ghToken = ''; s.ghGistId = ''; saveSettings2(s);
   setSyncBadge(true);
   document.getElementById('syncStatus').innerHTML = '<div class="sync-box sync-info">Sync disconnected.</div>';
-  showBanner('Sync disconnected.', '#f59e0b', 'rgba(251,191,36,0.1)');
+  showBanner('Sync disconnected.', '#f59e0b', 'rgba(221,170,85,0.1)');
 }
 
 function exportData() {
@@ -4320,12 +4345,12 @@ function runGreedyOrder(candidates, useCrew) {
 }
 
 function renderOrderResults(container, order, useCrew, introText) {
-  container.innerHTML = '<p style="font-size:0.75rem;color:#64748b;margin-bottom:0.75rem;">' + introText + '</p>';
+  container.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">' + introText + '</p>';
   order.forEach(function(entry, i) {
     var card = document.createElement('div');
-    card.style.cssText = 'display:flex;gap:0.85rem;align-items:center;background:#1a1a2e;border:1px solid #2a2a45;border-radius:12px;padding:0.85rem;margin-bottom:0.75rem;';
+    card.style.cssText = 'display:flex;gap:0.85rem;align-items:center;background:#16131f;border:1px solid #2a2432;border-radius:12px;padding:0.85rem;margin-bottom:0.75rem;';
     var numEl = document.createElement('div');
-    numEl.style.cssText = 'font-size:1.3rem;font-weight:bold;color:#c084fc;width:32px;text-align:center;flex-shrink:0;';
+    numEl.style.cssText = 'font-size:1.3rem;font-weight:bold;color:#e9879c;width:32px;text-align:center;flex-shrink:0;';
     numEl.textContent = '#' + (i + 1);
     var img = document.createElement('img');
     img.style.cssText = 'width:56px;height:80px;border-radius:8px;object-fit:cover;flex-shrink:0;';
@@ -4335,7 +4360,7 @@ function renderOrderResults(container, order, useCrew, introText) {
     var titleEl = document.createElement('div'); titleEl.style.cssText = 'font-weight:bold;font-size:0.95rem;margin-bottom:0.2rem;'; titleEl.textContent = entry.item.name + (entry.item.year ? ' (' + entry.item.year + ')' : '');
     var overlapEl = document.createElement('div');
     if (entry.overlapCount === 0) {
-      overlapEl.style.cssText = 'font-size:0.72rem;color:#10b981;'; overlapEl.textContent = 'No repeats from the last 10 shows in this queue';
+      overlapEl.style.cssText = 'font-size:0.72rem;color:#4fae85;'; overlapEl.textContent = 'No repeats from the last 10 shows in this queue';
     } else {
       overlapEl.style.cssText = 'font-size:0.72rem;color:#f59e0b;';
       renderTextWithActorTooltips(overlapEl, 'Shares ' + entry.overlapCount + ' name' + (entry.overlapCount > 1 ? 's' : '') + ' with recent shows: ' + entry.overlapNames.slice(0, 3).join(', '));
@@ -4377,10 +4402,10 @@ async function quickGenerateNext() {
 
   btn.textContent = 'Searching your available actors...';
   btn.disabled = true;
-  container.innerHTML = '<p style="color:#64748b;font-size:0.85rem;">Finding candidates using TMDB (same engine as Recommendations)...</p>';
+  container.innerHTML = '<p style="color:#8b8797;font-size:0.85rem;">Finding candidates using TMDB (same engine as Recommendations)...</p>';
 
   if (!getTmdbKey()) {
-    container.innerHTML = '<p style="color:#64748b;">Set a TMDB API key in Settings first - Quick Mode needs it to search for candidates.</p>';
+    container.innerHTML = '<p style="color:#8b8797;">Set a TMDB API key in Settings first - Quick Mode needs it to search for candidates.</p>';
     btn.textContent = 'Give Me My Next Shows'; btn.disabled = false;
     return;
   }
@@ -4391,7 +4416,7 @@ async function quickGenerateNext() {
   await getRecommendations();
 
   if (!lastRecPool.length) {
-    container.innerHTML = '<p style="color:#64748b;">No candidates found. Try adjusting your filters on the Recommendations tab, or add more dramas to My Dramas first.</p>';
+    container.innerHTML = '<p style="color:#8b8797;">No candidates found. Try adjusting your filters on the Recommendations tab, or add more dramas to My Dramas first.</p>';
     btn.textContent = 'Give Me My Next Shows'; btn.disabled = false;
     return;
   }
@@ -4415,7 +4440,7 @@ async function generateOptimalOrder() {
 
   var container = document.getElementById('optimizerResults');
   if (!selectedItems.length) {
-    container.innerHTML = '<p style="color:#64748b;">Pick at least one drama above first.</p>';
+    container.innerHTML = '<p style="color:#8b8797;">Pick at least one drama above first.</p>';
     return;
   }
 
@@ -4475,9 +4500,9 @@ async function runMoodSearch() {
   var moodText = document.getElementById('moodInput').value.trim();
   var container = document.getElementById('moodResults');
   var btn = document.getElementById('moodBtn');
-  if (!moodText) { container.innerHTML = '<p style="color:#64748b;">Describe what you are in the mood for first.</p>'; return; }
+  if (!moodText) { container.innerHTML = '<p style="color:#8b8797;">Describe what you are in the mood for first.</p>'; return; }
   if (!getGeminiKey()) { document.getElementById('geminiKeyWarning').classList.remove('hidden'); return; }
-  if (!getTmdbKey()) { container.innerHTML = '<p style="color:#64748b;">A TMDB API key is also needed to verify and show results with posters/ratings. Add one in Settings.</p>'; return; }
+  if (!getTmdbKey()) { container.innerHTML = '<p style="color:#8b8797;">A TMDB API key is also needed to verify and show results with posters/ratings. Add one in Settings.</p>'; return; }
   var moodFavOnlyOn = document.getElementById('moodFavOnlyToggle').checked;
   if (moodFavOnlyOn && !getFavoriteActors().length) {
     container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
@@ -4487,7 +4512,7 @@ async function runMoodSearch() {
   var howMany = Math.max(1, Math.min(24, parseInt(document.getElementById('moodCount').value, 10) || 8));
   btn.textContent = 'Asking Gemini...';
   btn.disabled = true;
-  container.innerHTML = '<p style="color:#64748b;font-size:0.85rem;">Thinking about your mood...</p>';
+  container.innerHTML = '<p style="color:#8b8797;font-size:0.85rem;">Thinking about your mood...</p>';
 
   var watchedTitles = dramas.map(function(d) { return d.title; });
   var recentActorNames = [];
@@ -4514,7 +4539,7 @@ async function runMoodSearch() {
 
   var suggestions = parseGeminiJsonArray(res.text);
   if (!suggestions || !suggestions.length) {
-    container.innerHTML = '<p style="color:#64748b;">Gemini did not return usable suggestions. Try rephrasing your mood description.</p>';
+    container.innerHTML = '<p style="color:#8b8797;">Gemini did not return usable suggestions. Try rephrasing your mood description.</p>';
     btn.textContent = 'Find Shows for This Mood'; btn.disabled = false;
     return;
   }
@@ -4577,13 +4602,13 @@ async function runMoodSearch() {
     if (moodFullCastOn) noMoodFilters.push('"Check full cast for last-10 overlap" is on - some may have been excluded for a hidden co-star');
     if (moodFavOnlyOn) noMoodFilters.push('"Only my favorite actors" is on - some may have been excluded for not featuring one of your favorites');
     if (moodSkippedCount) noMoodFilters.push('You previously skipped ' + moodSkippedCount + ' of the shows Gemini suggested this time');
-    container.innerHTML = explainEmptyResults(noMoodFilters) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try rephrasing your mood description, or try again - Gemini\'s wording can vary between attempts.</p>';
+    container.innerHTML = explainEmptyResults(noMoodFilters) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try rephrasing your mood description, or try again - Gemini\'s wording can vary between attempts.</p>';
     btn.textContent = 'Find Shows for This Mood'; btn.disabled = false;
     return;
   }
 
   var fullCastNote3 = moodFullCastOn ? ', full cast checked for hidden last-10 overlaps' : '';
-  container.innerHTML = '<p style="font-size:0.75rem;color:#64748b;margin-bottom:0.75rem;">Found ' + verified.length + ' verified show' + (verified.length > 1 ? 's' : '') + ' matching your mood' + fullCastNote3 + '. Click a drama to add it to My Dramas.</p>';
+  container.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">Found ' + verified.length + ' verified show' + (verified.length > 1 ? 's' : '') + ' matching your mood' + fullCastNote3 + '. Click a drama to add it to My Dramas.</p>';
   var grid = document.createElement('div'); grid.className = 'rec-grid';
   verified.forEach(function(rec) {
     var card = document.createElement('div'); card.className = 'rec-card';
@@ -4593,7 +4618,7 @@ async function runMoodSearch() {
     var info = document.createElement('div'); info.className = 'rec-info';
     var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = rec.name + (rec.year ? ' (' + rec.year + ')' : '');
     var ratingRow = document.createElement('div');
-    ratingRow.style.cssText = 'font-size:0.68rem;color:#fbbf24;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
+    ratingRow.style.cssText = 'font-size:0.68rem;color:#ddaa55;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
     if (typeof rec.imdbRating === 'number') {
       var imdbTag = document.createElement('span'); imdbTag.style.cssText = 'font-size:0.55rem;background:rgba(245,197,24,0.15);border:1px solid rgba(245,197,24,0.3);color:#f5c518;border-radius:3px;padding:0.05rem 0.3rem;'; imdbTag.textContent = 'IMDb';
       ratingRow.appendChild(imdbTag);
@@ -4605,10 +4630,10 @@ async function runMoodSearch() {
       var rt2 = document.createElement('span'); rt2.textContent = '\u2605 ' + rec.rating.toFixed(1) + '/10' + (rec.voteCount ? ' (' + rec.voteCount + ')' : '');
       ratingRow.appendChild(rt2);
     } else {
-      ratingRow.textContent = 'No rating yet'; ratingRow.style.color = '#64748b';
+      ratingRow.textContent = 'No rating yet'; ratingRow.style.color = '#8b8797';
     }
-    var genreRow = document.createElement('div'); genreRow.style.cssText = 'font-size:0.65rem;color:#818cf8;margin-bottom:0.3rem;'; genreRow.textContent = rec.genres && rec.genres.length ? rec.genres.join(', ') : '';
-    var reasonRow = document.createElement('div'); reasonRow.style.cssText = 'font-size:0.68rem;color:#38bdf8;margin-bottom:0.3rem;font-style:italic;';
+    var genreRow = document.createElement('div'); genreRow.style.cssText = 'font-size:0.65rem;color:#9296d6;margin-bottom:0.3rem;'; genreRow.textContent = rec.genres && rec.genres.length ? rec.genres.join(', ') : '';
+    var reasonRow = document.createElement('div'); reasonRow.style.cssText = 'font-size:0.68rem;color:#4fa8d4;margin-bottom:0.3rem;font-style:italic;';
     renderTextWithActorTooltips(reasonRow, rec.reason ? ('"' + rec.reason + '"') : '');
     info.appendChild(title); info.appendChild(ratingRow);
     if (genreRow.textContent) info.appendChild(genreRow);
@@ -4638,7 +4663,7 @@ async function runMoodSearch() {
 
 // --- Shared renderer for AI-verified show cards (AI Picks, AI Similar Shows) ---
 function renderAiRecCards(container, verified, introText) {
-  container.innerHTML = '<p style="font-size:0.75rem;color:#64748b;margin-bottom:0.75rem;">' + introText + '</p>';
+  container.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">' + introText + '</p>';
   var grid = document.createElement('div'); grid.className = 'rec-grid';
   verified.forEach(function(rec) {
     var card = document.createElement('div'); card.className = 'rec-card';
@@ -4648,7 +4673,7 @@ function renderAiRecCards(container, verified, introText) {
     var info = document.createElement('div'); info.className = 'rec-info';
     var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = rec.name + (rec.year ? ' (' + rec.year + ')' : '');
     var ratingRow = document.createElement('div');
-    ratingRow.style.cssText = 'font-size:0.68rem;color:#fbbf24;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
+    ratingRow.style.cssText = 'font-size:0.68rem;color:#ddaa55;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
     if (typeof rec.imdbRating === 'number') {
       var imdbTag = document.createElement('span'); imdbTag.style.cssText = 'font-size:0.55rem;background:rgba(245,197,24,0.15);border:1px solid rgba(245,197,24,0.3);color:#f5c518;border-radius:3px;padding:0.05rem 0.3rem;'; imdbTag.textContent = 'IMDb';
       ratingRow.appendChild(imdbTag);
@@ -4660,10 +4685,10 @@ function renderAiRecCards(container, verified, introText) {
       var rt2 = document.createElement('span'); rt2.textContent = '\u2605 ' + rec.rating.toFixed(1) + '/10' + (rec.voteCount ? ' (' + rec.voteCount + ')' : '');
       ratingRow.appendChild(rt2);
     } else {
-      ratingRow.textContent = 'No rating yet'; ratingRow.style.color = '#64748b';
+      ratingRow.textContent = 'No rating yet'; ratingRow.style.color = '#8b8797';
     }
-    var genreRow = document.createElement('div'); genreRow.style.cssText = 'font-size:0.65rem;color:#818cf8;margin-bottom:0.3rem;'; genreRow.textContent = rec.genres && rec.genres.length ? rec.genres.join(', ') : '';
-    var reasonRow = document.createElement('div'); reasonRow.style.cssText = 'font-size:0.68rem;color:#38bdf8;margin-bottom:0.3rem;font-style:italic;';
+    var genreRow = document.createElement('div'); genreRow.style.cssText = 'font-size:0.65rem;color:#9296d6;margin-bottom:0.3rem;'; genreRow.textContent = rec.genres && rec.genres.length ? rec.genres.join(', ') : '';
+    var reasonRow = document.createElement('div'); reasonRow.style.cssText = 'font-size:0.68rem;color:#4fa8d4;margin-bottom:0.3rem;font-style:italic;';
     renderTextWithActorTooltips(reasonRow, rec.reason ? ('"' + rec.reason + '"') : '');
     info.appendChild(title); info.appendChild(ratingRow);
     if (genreRow.textContent) info.appendChild(genreRow);
@@ -4740,7 +4765,7 @@ async function runAiPicks() {
   var container = document.getElementById('airecResults');
   var btn = document.getElementById('airecBtn');
   if (!getGeminiKey()) { document.getElementById('airecKeyWarning').classList.remove('hidden'); return; }
-  if (!getTmdbKey()) { container.innerHTML = '<p style="color:#64748b;">A TMDB API key is also needed to verify results. Add one in Settings.</p>'; return; }
+  if (!getTmdbKey()) { container.innerHTML = '<p style="color:#8b8797;">A TMDB API key is also needed to verify results. Add one in Settings.</p>'; return; }
 
   var airecFavOnlyOn = document.getElementById('airecFavOnlyToggle').checked;
   if (airecFavOnlyOn && !getFavoriteActors().length) {
@@ -4750,7 +4775,7 @@ async function runAiPicks() {
 
   var howMany = Math.max(1, Math.min(24, parseInt(document.getElementById('airecCount').value, 10) || 5));
   btn.textContent = 'Asking Gemini...'; btn.disabled = true;
-  container.innerHTML = '<p style="color:#64748b;font-size:0.85rem;">Analyzing your Actor Directory...</p>';
+  container.innerHTML = '<p style="color:#8b8797;font-size:0.85rem;">Analyzing your Actor Directory...</p>';
 
   var available = allActorsMap().filter(function(a) { return !a.inRecent10; }).sort(function(a, b) { return a.lastIdx - b.lastIdx; });
   if (airecFavOnlyOn) {
@@ -4784,14 +4809,14 @@ async function runAiPicks() {
   }
   var suggestions = parseGeminiJsonArray(res.text);
   if (!suggestions || !suggestions.length) {
-    container.innerHTML = '<p style="color:#64748b;">Gemini did not return usable suggestions. Please try again.</p>';
+    container.innerHTML = '<p style="color:#8b8797;">Gemini did not return usable suggestions. Please try again.</p>';
     btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
     return;
   }
   btn.textContent = 'Verifying on TMDB...';
   var verified = await verifyGeminiSuggestions(suggestions);
   if (!verified.length) {
-    container.innerHTML = explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try again - Gemini\'s wording can vary between attempts.</p>';
+    container.innerHTML = explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again - Gemini\'s wording can vary between attempts.</p>';
     btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
     return;
   }
@@ -4799,7 +4824,7 @@ async function runAiPicks() {
     btn.textContent = 'Checking favorite actors...';
     verified = await filterToFavoriteActorsOnly(verified, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
     if (!verified.length) {
-      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - Gemini\'s suggestions did not actually feature one of your favorites this time']) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try again - Gemini sometimes drifts from the instruction.</p>';
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - Gemini\'s suggestions did not actually feature one of your favorites this time']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again - Gemini sometimes drifts from the instruction.</p>';
       btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
       return;
     }
@@ -4826,7 +4851,7 @@ function renderAiSimilarSourcePicker() {
   var grid = document.getElementById('aiSimilarSourceGrid');
   grid.innerHTML = '';
   if (!withTmdb.length) {
-    var msg = document.createElement('p'); msg.style.cssText = 'font-size:0.78rem;color:#64748b;grid-column:1/-1;padding:0.75rem 0;';
+    var msg = document.createElement('p'); msg.style.cssText = 'font-size:0.78rem;color:#8b8797;grid-column:1/-1;padding:0.75rem 0;';
     msg.textContent = 'None of your dramas were added via TMDB search yet.';
     grid.appendChild(msg); return;
   }
@@ -4855,10 +4880,10 @@ async function runAiSimilar() {
   var container = document.getElementById('aisimilarResults');
   var btn = document.getElementById('aisimilarBtn');
   if (!getGeminiKey()) { document.getElementById('aisimilarKeyWarning').classList.remove('hidden'); return; }
-  if (!getTmdbKey()) { container.innerHTML = '<p style="color:#64748b;">A TMDB API key is also needed to verify results. Add one in Settings.</p>'; return; }
+  if (!getTmdbKey()) { container.innerHTML = '<p style="color:#8b8797;">A TMDB API key is also needed to verify results. Add one in Settings.</p>'; return; }
 
   var sources = dramas.filter(function(d) { return selectedAiSimilarSources.has(d.id); });
-  if (!sources.length) { container.innerHTML = '<p style="color:#64748b;">Pick at least one drama above first.</p>'; return; }
+  if (!sources.length) { container.innerHTML = '<p style="color:#8b8797;">Pick at least one drama above first.</p>'; return; }
   var aisimilarFavOnlyOn = document.getElementById('aisimilarFavOnlyToggle').checked;
   if (aisimilarFavOnlyOn && !getFavoriteActors().length) {
     container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
@@ -4866,7 +4891,7 @@ async function runAiSimilar() {
   }
 
   btn.textContent = 'Asking Gemini...'; btn.disabled = true;
-  container.innerHTML = '<p style="color:#64748b;font-size:0.85rem;">Thinking of similar dramas...</p>';
+  container.innerHTML = '<p style="color:#8b8797;font-size:0.85rem;">Thinking of similar dramas...</p>';
 
   var watchedTitles = dramas.map(function(d) { return d.title; });
   var prompt = 'You are a Korean drama recommendation assistant. The user enjoyed these Korean dramas: ' + sources.map(function(s) { return s.title + (s.year ? ' (' + s.year + ')' : ''); }).join(', ') + '.\n\n' +
@@ -4882,14 +4907,14 @@ async function runAiSimilar() {
   }
   var suggestions = parseGeminiJsonArray(res.text);
   if (!suggestions || !suggestions.length) {
-    container.innerHTML = '<p style="color:#64748b;">Gemini did not return usable suggestions. Please try again.</p>';
+    container.innerHTML = '<p style="color:#8b8797;">Gemini did not return usable suggestions. Please try again.</p>';
     btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
     return;
   }
   btn.textContent = 'Verifying on TMDB...';
   var verified = await verifyGeminiSuggestions(suggestions);
   if (!verified.length) {
-    container.innerHTML = explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try selecting different source dramas, or try again.</p>';
+    container.innerHTML = explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try selecting different source dramas, or try again.</p>';
     btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
     return;
   }
@@ -4897,7 +4922,7 @@ async function runAiSimilar() {
     btn.textContent = 'Checking favorite actors...';
     verified = await filterToFavoriteActorsOnly(verified, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
     if (!verified.length) {
-      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - Gemini\'s suggestions did not actually feature one of your favorites this time']) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try again, or try different source dramas.</p>';
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - Gemini\'s suggestions did not actually feature one of your favorites this time']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again, or try different source dramas.</p>';
       btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
       return;
     }
@@ -4969,12 +4994,12 @@ function computeOverlapForFixedOrder(candidates, useCrew) {
 }
 
 function renderAiOrderResults(container, order, introText) {
-  container.innerHTML = '<p style="font-size:0.75rem;color:#64748b;margin-bottom:0.75rem;">' + introText + '</p>';
+  container.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">' + introText + '</p>';
   order.forEach(function(entry, i) {
     var card = document.createElement('div');
-    card.style.cssText = 'display:flex;gap:0.85rem;align-items:center;background:#1a1a2e;border:1px solid rgba(56,189,248,0.25);border-radius:12px;padding:0.85rem;margin-bottom:0.75rem;';
+    card.style.cssText = 'display:flex;gap:0.85rem;align-items:center;background:#16131f;border:1px solid rgba(79,168,212,0.25);border-radius:12px;padding:0.85rem;margin-bottom:0.75rem;';
     var numEl = document.createElement('div');
-    numEl.style.cssText = 'font-size:1.3rem;font-weight:bold;color:#38bdf8;width:32px;text-align:center;flex-shrink:0;';
+    numEl.style.cssText = 'font-size:1.3rem;font-weight:bold;color:#4fa8d4;width:32px;text-align:center;flex-shrink:0;';
     numEl.textContent = '#' + (i + 1);
     var img = document.createElement('img');
     img.style.cssText = 'width:56px;height:80px;border-radius:8px;object-fit:cover;flex-shrink:0;';
@@ -4983,10 +5008,10 @@ function renderAiOrderResults(container, order, introText) {
     var info = document.createElement('div'); info.style.flex = '1';
     var titleEl = document.createElement('div'); titleEl.style.cssText = 'font-weight:bold;font-size:0.95rem;margin-bottom:0.2rem;'; titleEl.textContent = entry.item.name + (entry.item.year ? ' (' + entry.item.year + ')' : '');
     var overlapEl = document.createElement('div');
-    if (entry.overlapCount === 0) { overlapEl.style.cssText = 'font-size:0.72rem;color:#10b981;'; overlapEl.textContent = 'Verified: no repeats from your last 10 shows'; }
+    if (entry.overlapCount === 0) { overlapEl.style.cssText = 'font-size:0.72rem;color:#4fae85;'; overlapEl.textContent = 'Verified: no repeats from your last 10 shows'; }
     else { overlapEl.style.cssText = 'font-size:0.72rem;color:#f59e0b;'; renderTextWithActorTooltips(overlapEl, 'Verified: shares ' + entry.overlapCount + ' name' + (entry.overlapCount > 1 ? 's' : '') + ' with recent shows (' + entry.overlapNames.slice(0, 3).join(', ') + ')'); }
     var reasonEl = document.createElement('div');
-    reasonEl.style.cssText = 'font-size:0.68rem;color:#38bdf8;font-style:italic;margin-top:0.15rem;';
+    reasonEl.style.cssText = 'font-size:0.68rem;color:#4fa8d4;font-style:italic;margin-top:0.15rem;';
     if (entry.reason) renderTextWithActorTooltips(reasonEl, 'Gemini: "' + entry.reason + '"');
     info.appendChild(titleEl); info.appendChild(overlapEl);
     if (entry.reason) info.appendChild(reasonEl);
@@ -5013,12 +5038,12 @@ async function runAiWatchPlanner() {
   var container = document.getElementById('aioptimizerResults');
   var btn = document.getElementById('aioptimizerBtn');
   if (!getGeminiKey()) { document.getElementById('aioptimizerKeyWarning').classList.remove('hidden'); return; }
-  if (!getTmdbKey()) { container.innerHTML = '<p style="color:#64748b;">A TMDB API key is also needed to verify results. Add one in Settings.</p>'; return; }
+  if (!getTmdbKey()) { container.innerHTML = '<p style="color:#8b8797;">A TMDB API key is also needed to verify results. Add one in Settings.</p>'; return; }
 
   var howMany = Math.max(1, Math.min(24, parseInt(document.getElementById('aioptimizerCount').value, 10) || 5));
   var useCrew = document.getElementById('aioptimizerCrewToggle').checked;
   btn.textContent = 'Asking Gemini...'; btn.disabled = true;
-  container.innerHTML = '<p style="color:#64748b;font-size:0.85rem;">Planning your next shows...</p>';
+  container.innerHTML = '<p style="color:#8b8797;font-size:0.85rem;">Planning your next shows...</p>';
 
   var available = allActorsMap().filter(function(a) { return !a.inRecent10; }).sort(function(a, b) { return a.lastIdx - b.lastIdx; }).slice(0, 15);
   var genreCounts = {};
@@ -5041,7 +5066,7 @@ async function runAiWatchPlanner() {
   }
   var suggestions = parseGeminiJsonArray(res.text);
   if (!suggestions || !suggestions.length) {
-    container.innerHTML = '<p style="color:#64748b;">Gemini did not return a usable plan. Please try again.</p>';
+    container.innerHTML = '<p style="color:#8b8797;">Gemini did not return a usable plan. Please try again.</p>';
     btn.textContent = 'Let AI Plan My Next Shows'; btn.disabled = false;
     return;
   }
@@ -5049,7 +5074,7 @@ async function runAiWatchPlanner() {
   btn.textContent = 'Verifying on TMDB...';
   var verified = await verifyGeminiSuggestions(suggestions); // preserves Gemini's order since it processes suggestions sequentially
   if (!verified.length) {
-    container.innerHTML = explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">Try again - Gemini\'s wording can vary between attempts.</p>';
+    container.innerHTML = explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again - Gemini\'s wording can vary between attempts.</p>';
     btn.textContent = 'Let AI Plan My Next Shows'; btn.disabled = false;
     return;
   }
@@ -5173,14 +5198,14 @@ function showRetroactiveSuggestions(suggestions) {
   list.innerHTML = '';
   suggestions.forEach(function(s, i) {
     var row = document.createElement('label');
-    row.style.cssText = 'display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0;border-bottom:1px solid #2a2a45;cursor:pointer;';
+    row.style.cssText = 'display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0;border-bottom:1px solid #2a2432;cursor:pointer;';
     var checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = true; checkbox.setAttribute('data-idx', i);
     checkbox.style.cssText = 'width:18px;height:18px;flex-shrink:0;';
     var img = document.createElement('img'); img.src = ph(s.actorName, s.actorPhoto); img.style.cssText = 'width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;';
     img.onerror = function() { this.src = ph(s.actorName, ''); };
     var info = document.createElement('div');
     var n = document.createElement('div'); n.style.cssText = 'font-weight:bold;font-size:0.85rem;'; n.textContent = s.actorName;
-    var m = document.createElement('div'); m.style.cssText = 'font-size:0.72rem;color:#64748b;'; m.textContent = 'Also in: ' + s.targetDramaTitle;
+    var m = document.createElement('div'); m.style.cssText = 'font-size:0.72rem;color:#8b8797;'; m.textContent = 'Also in: ' + s.targetDramaTitle;
     info.appendChild(n); info.appendChild(m);
     row.appendChild(checkbox); row.appendChild(img); row.appendChild(info);
     list.appendChild(row);
@@ -5205,7 +5230,7 @@ function applyRetroSelections() {
     target.cast.push({ name: s.actorName, role: 'Supporting', photo: s.actorPhoto || '', tmdbId: s.actorTmdbId || '' });
     appliedCount++;
   });
-  if (appliedCount) { saveData(); render(); renderDir(); showBanner('Added ' + appliedCount + ' actor connection(s)!', '#10b981', 'rgba(16,185,129,0.1)'); }
+  if (appliedCount) { saveData(); render(); renderDir(); showBanner('Added ' + appliedCount + ' actor connection(s)!', '#4fae85', 'rgba(79,174,133,0.1)'); }
   closeRetroModal();
 }
 
@@ -5323,7 +5348,7 @@ async function confirmAddToWatchlist() {
 // without needing to mark it watched or re-search it manually.
 async function addRecToWatchlist(rec, btnEl) {
   if (watchlist.some(function(w) { return w.tmdbId === rec.id; })) {
-    showBanner('Already on your watchlist!', '#a78bfa', 'rgba(168,85,247,0.1)');
+    showBanner('Already on your watchlist!', '#a78bfa', 'rgba(214,92,123,0.1)');
     return;
   }
   var originalText = btnEl ? btnEl.textContent : '';
@@ -5338,7 +5363,7 @@ async function addRecToWatchlist(rec, btnEl) {
   });
   saveWatchlistData();
   if (btnEl) { btnEl.textContent = '\u2713 Added!'; setTimeout(function() { btnEl.textContent = originalText; btnEl.disabled = false; }, 1500); }
-  else { showBanner('Added to watchlist!', '#10b981', 'rgba(16,185,129,0.1)'); }
+  else { showBanner('Added to watchlist!', '#4fae85', 'rgba(79,174,133,0.1)'); }
 }
 
 function removeFromWatchlist(id) {
@@ -5390,7 +5415,7 @@ function renderWatchlistGenreGrid() {
   var ids = Object.keys(genreIdsPresent).filter(function(gid) { return TMDB_TV_GENRES[gid]; });
   grid.innerHTML = '';
   if (!ids.length) {
-    var msg = document.createElement('p'); msg.style.cssText = 'font-size:0.75rem;color:#64748b;'; msg.textContent = 'No genres yet - add some dramas to your watchlist first.';
+    var msg = document.createElement('p'); msg.style.cssText = 'font-size:0.75rem;color:#8b8797;'; msg.textContent = 'No genres yet - add some dramas to your watchlist first.';
     grid.appendChild(msg); return;
   }
   ids.sort(function(a, b) { return TMDB_TV_GENRES[a].localeCompare(TMDB_TV_GENRES[b]); });
@@ -5398,7 +5423,7 @@ function renderWatchlistGenreGrid() {
     var isSelected = selectedWatchlistGenres.has(gid);
     var pill = document.createElement('div');
     pill.textContent = TMDB_TV_GENRES[gid];
-    pill.style.cssText = 'cursor:pointer;font-size:0.72rem;padding:0.3rem 0.7rem;border-radius:999px;border:1px solid ' + (isSelected ? '#a855f7' : '#2a2a45') + ';background:' + (isSelected ? 'rgba(168,85,247,0.25)' : '#13131f') + ';color:' + (isSelected ? '#c084fc' : '#94a3b8') + ';';
+    pill.style.cssText = 'cursor:pointer;font-size:0.72rem;padding:0.3rem 0.7rem;border-radius:999px;border:1px solid ' + (isSelected ? '#d65c7b' : '#2a2432') + ';background:' + (isSelected ? 'rgba(214,92,123,0.25)' : '#121017') + ';color:' + (isSelected ? '#e9879c' : '#a29dae') + ';';
     pill.onclick = (function(g, el) {
       return function() {
         if (selectedWatchlistGenres.has(g)) selectedWatchlistGenres.delete(g); else selectedWatchlistGenres.add(g);
@@ -5435,7 +5460,7 @@ function renderWatchlist() {
   var grid = document.getElementById('watchlistGrid');
   grid.innerHTML = '';
   if (!watchlist.length) {
-    grid.innerHTML = '<p style="text-align:center;color:#64748b;padding:2rem;grid-column:1/-1;">Nothing on your watchlist yet. Click "+ Add to Watchlist" to search TMDB and add a drama you want to watch.</p>';
+    grid.innerHTML = '<p style="text-align:center;color:#8b8797;padding:2rem;grid-column:1/-1;">Nothing on your watchlist yet. Click "+ Add to Watchlist" to search TMDB and add a drama you want to watch.</p>';
     return;
   }
   if (!filtered.length) {
@@ -5457,13 +5482,13 @@ function renderWatchlist() {
     var info = document.createElement('div'); info.className = 'rec-info';
     var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = item.title + (item.year ? ' (' + item.year + ')' : '');
     var ratingRow = document.createElement('div');
-    ratingRow.style.cssText = 'font-size:0.68rem;color:#fbbf24;margin-bottom:0.25rem;';
+    ratingRow.style.cssText = 'font-size:0.68rem;color:#ddaa55;margin-bottom:0.25rem;';
     ratingRow.textContent = (typeof item.rating === 'number' && item.voteCount > 0) ? ('\u2605 ' + item.rating.toFixed(1) + '/10') : 'No rating yet';
     var genreRow = document.createElement('div');
-    genreRow.style.cssText = 'font-size:0.65rem;color:#818cf8;margin-bottom:0.3rem;';
+    genreRow.style.cssText = 'font-size:0.65rem;color:#9296d6;margin-bottom:0.3rem;';
     genreRow.textContent = (item.genreIds || []).map(function(g) { return TMDB_TV_GENRES[g]; }).filter(Boolean).join(', ');
     var overlapRow = document.createElement('div');
-    overlapRow.style.cssText = 'font-size:0.65rem;margin-bottom:0.3rem;color:' + (hasOverlap ? '#f43f5e' : '#10b981') + ';';
+    overlapRow.style.cssText = 'font-size:0.65rem;margin-bottom:0.3rem;color:' + (hasOverlap ? '#e0605a' : '#4fae85') + ';';
     overlapRow.textContent = hasOverlap ? '\u26A0 May share a cast member with your last 10' : '\u2713 No overlap with your last 10';
     info.appendChild(title); info.appendChild(ratingRow);
     if (genreRow.textContent) info.appendChild(genreRow);
