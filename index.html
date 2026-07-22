@@ -1963,6 +1963,48 @@ function makeFavActorBtn(displayName) {
   };
   return btn;
 }
+// Lets you stop tracking one actor entirely - across every drama in your library - just on this
+// profile. Handy since new profiles start as a copy of whoever's data they were seeded from:
+// everyone can trim their tracked actors down to who they actually care about (e.g. leads only)
+// without affecting anyone else's copy of the same shows.
+// Note: this only affects YOUR tracking (whether they count toward your "last 10", and whether
+// they're one of the actors your Recommendations search actively looks for). It's deliberately
+// NOT the same as the "Exclude Actors" list on the Recommendations page, which is a stronger,
+// permanent "never suggest me this actor" block - removing someone here just means you're not
+// tracking them, so a show they're in can still turn up later if it surfaces for another reason
+// (e.g. a co-star you do track, or a different actor having a great show after a mediocre one).
+function makeRemoveActorBtn(dramaId, displayName) {
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'rm-actor-btn';
+  btn.textContent = '\u00d7';
+  btn.title = 'Stop tracking ' + displayName + ' - removes them from all your dramas (just for you; still fine to appear via other recommendations later)';
+  btn.style.cssText = 'position:absolute;top:0.25rem;left:0.25rem;background:rgba(10,10,20,0.55);border:none;border-radius:50%;width:22px;height:22px;font-size:0.95rem;line-height:20px;padding:0;cursor:pointer;color:#a29dae;z-index:2;';
+  btn.onmouseenter = function() { btn.style.color = '#dc5678'; };
+  btn.onmouseleave = function() { btn.style.color = '#a29dae'; };
+  btn.onclick = function(e) {
+    e.stopPropagation();
+    removeActorEverywhere(displayName);
+  };
+  return btn;
+}
+function removeActorEverywhere(displayName) {
+  var key = displayName.toLowerCase().trim();
+  var removedFrom = [];
+  dramas.forEach(function(d) {
+    var idx = d.cast.findIndex(function(a) { return a.name.toLowerCase().trim() === key; });
+    if (idx !== -1) { removedFrom.push({ dramaId: d.id, idx: idx, actor: d.cast[idx] }); d.cast.splice(idx, 1); }
+  });
+  saveData(); render();
+  var showCount = removedFrom.length;
+  showUndoToast('Stopped tracking ' + displayName + ' (' + showCount + ' show' + (showCount === 1 ? '' : 's') + ')', function() {
+    removedFrom.forEach(function(r) {
+      var d2 = dramas.find(function(x) { return x.id === r.dramaId; });
+      if (d2) d2.cast.splice(Math.min(r.idx, d2.cast.length), 0, r.actor);
+    });
+    saveData(); render();
+  }, 6);
+}
 // "Only my favorite actors" is one shared setting (per profile) used by every recommendation
 // tab - Recommendations, Similar Shows, AI Mood Search, AI Picks, AI Similar Shows. Toggling it
 // in any one tab updates the others too, so it stays consistent wherever you look.
@@ -3816,12 +3858,12 @@ function render() {
       var inR10 = r10names.has(a.name.toLowerCase().trim());
       var ac = document.createElement('div'); ac.className = 'actor-card ' + (inR10 ? 'red' : 'green');
       ac.style.position = 'relative';
-      if (isFavoriteActor(a.name)) ac.style.boxShadow = '0 0 0 2px #e0605a';
+      if (isFavoriteActor(a.name)) ac.style.boxShadow = '0 0 0 2px #dc5678';
       var ai = document.createElement('img'); ai.className = 'actor-photo'; ai.src = ph(a.name, a.photo); ai.alt = a.name;
       ai.onerror = function() { this.src = ph(a.name, ''); };
       var an = document.createElement('div'); an.className = 'actor-lbl'; an.textContent = a.name;
       var ar = document.createElement('div'); ar.className = 'role-pill ' + (a.role === 'Lead' ? 'lead' : 'supp'); ar.textContent = a.role;
-      ac.appendChild(ai); ac.appendChild(an); ac.appendChild(ar); ac.appendChild(makeFavActorBtn(a.name)); scroll.appendChild(ac);
+      ac.appendChild(ai); ac.appendChild(an); ac.appendChild(ar); ac.appendChild(makeFavActorBtn(a.name)); ac.appendChild(makeRemoveActorBtn(drama.id, a.name)); scroll.appendChild(ac);
     });
     card.appendChild(top); card.appendChild(scroll);
 
