@@ -22,9 +22,9 @@
     }
     html { scroll-behavior: smooth; }
     body { font-family: var(--font-body); background: #0a0a0f; color: #ededf3; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-    ::selection { background: rgba(214,92,123,0.35); color: #fff; }
+    ::selection { background: rgba(220,86,120,0.35); color: #fff; }
     a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
-      outline: 2px solid #e9879c; outline-offset: 2px; border-radius: 4px;
+      outline: 2px solid #f16f8b; outline-offset: 2px; border-radius: 4px;
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
@@ -32,11 +32,11 @@
     .header {
       position: relative; overflow: hidden;
       background:
-        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(214,92,123,0.20), transparent 65%),
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(220,86,120,0.20), transparent 65%),
         linear-gradient(135deg,#170a1f,#0d0a12,#0a1420);
       padding: 2.25rem 1rem 1.5rem; text-align: center; border-bottom: 1px solid #2a2432;
     }
-    .title { font-family: var(--font-display); font-size: 2rem; font-weight: 600; letter-spacing: -0.01em; background: linear-gradient(120deg,#f0a6b8,#ddaa55); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.3rem; position: relative; }
+    .title { font-family: var(--font-display); font-size: 2rem; font-weight: 600; letter-spacing: -0.01em; background: linear-gradient(120deg,#f0a6b8,#e6a842); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.3rem; position: relative; }
     .subtitle { color: #8b8797; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.18em; position: relative; }
     #banner { display:none; margin-top:0.5rem; font-size:0.8rem; padding:0.25rem 0.75rem; border-radius:6px; }
     .hdr-btns-wrap { margin-top:0.85rem; }
@@ -50,7 +50,7 @@
     .hdr-tabs::-webkit-scrollbar-thumb { background:#2a2432; border-radius:999px; }
     .hdr-tab {
       flex-shrink:0; width:auto; margin:0; white-space:nowrap;
-      background:rgba(214,92,123,0.15); border:1px solid transparent; border-radius:999px;
+      background:rgba(220,86,120,0.15); border:1px solid transparent; border-radius:999px;
       padding:0.45rem 0.95rem; font-size:0.78rem; font-weight:500; color:#ededf3;
     }
     .hdr-utils { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; padding-top:0.5rem; border-top:1px solid #2a2432; }
@@ -62,27 +62,27 @@
     .hdr-util-accent { color:#4fa8d4; border-color:rgba(79,168,212,0.35); }
     .container { max-width:1000px; margin:0 auto; padding:1.5rem 1rem; }
     .box { background:linear-gradient(160deg,#1c1626,#14111d); border:1px solid #2a2432; border-radius:14px; padding:1.25rem; margin-bottom:1.5rem; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
-    .sec-title { font-family:var(--font-display); font-weight:600; color:#e9879c; font-size:1.05rem; margin-bottom:0.6rem; letter-spacing:-0.005em; }
+    .sec-title { font-family:var(--font-display); font-weight:600; color:#f16f8b; font-size:1.05rem; margin-bottom:0.6rem; letter-spacing:-0.005em; }
     input, select, textarea { width:100%; background:#121017; border:1px solid #2a2432; border-radius:9px; padding:0.65rem 0.9rem; color:#ededf3; font-size:0.9rem; font-family:var(--font-body); margin-bottom:0.5rem; outline:none; transition:border-color 0.15s ease; }
-    input:focus, select:focus, textarea:focus { border-color:#d65c7b; }
-    button { background:linear-gradient(135deg,#d65c7b,#a8496a); border:none; border-radius:9px; padding:0.65rem 1.2rem; color:white; font-size:0.85rem; font-weight:600; cursor:pointer; font-family:var(--font-body); width:100%; margin-top:0.5rem; transition:filter 0.15s ease, transform 0.1s ease; }
+    input:focus, select:focus, textarea:focus { border-color:#dc5678; }
+    button { background:linear-gradient(135deg,#dc5678,#a8496a); border:none; border-radius:9px; padding:0.65rem 1.2rem; color:white; font-size:0.85rem; font-weight:600; cursor:pointer; font-family:var(--font-body); width:100%; margin-top:0.5rem; transition:filter 0.15s ease, transform 0.1s ease; }
     button:hover { filter:brightness(1.1); }
     button:active { transform:translateY(1px); }
     button:disabled { opacity:0.4; cursor:default; filter:none; transform:none; }
-    .btn-sm { background:rgba(214,92,123,0.15); border:1px solid #e9879c; color:#e9879c; font-size:0.75rem; padding:0.4rem 0.8rem; font-weight:500; }
+    .btn-sm { background:rgba(220,86,120,0.15); border:1px solid #f16f8b; color:#f16f8b; font-size:0.75rem; padding:0.4rem 0.8rem; font-weight:500; }
     .btn-del { background:rgba(224,96,90,0.15); border:1px solid #e0605a; color:#e0605a; }
     .btn-green { background:rgba(79,174,133,0.15); border:1px solid #4fae85; color:#4fae85; }
-    .btn-gold { background:rgba(221,170,85,0.15); border:1px solid #ddaa55; color:#ddaa55; }
+    .btn-gold { background:rgba(230,168,66,0.15); border:1px solid #e6a842; color:#e6a842; }
     .drama-list { display:flex; flex-direction:column; gap:1rem; }
     .drama-card { position:relative; background:#16131f; border:1px solid #2a2432; border-radius:14px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,0.22); transition:border-color 0.15s ease, transform 0.18s ease, box-shadow 0.18s ease; }
-    .drama-card.active { border-color:rgba(214,92,123,0.5); }
-    .drama-card.active::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:linear-gradient(180deg,#e9879c,#d65c7b); }
+    .drama-card.active { border-color:rgba(220,86,120,0.5); }
+    .drama-card.active::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:linear-gradient(180deg,#f16f8b,#dc5678); }
     .drama-card.old { opacity:0.55; }
     .drama-card:hover { box-shadow:0 12px 26px rgba(0,0,0,0.32); transform:translateY(-2px); }
     .drama-top { display:flex; gap:1.1rem; padding:1.1rem 1.1rem 1.1rem 1.35rem; align-items:flex-start; }
     .drama-poster { width:92px; height:132px; border-radius:9px; object-fit:cover; flex-shrink:0; border:2px solid #2a2432; box-shadow:0 6px 16px rgba(0,0,0,0.35); }
-    .drama-card.active .drama-poster { border-color:rgba(214,92,123,0.5); }
-    .active-badge { display:inline-flex; align-items:center; gap:0.3rem; background:rgba(214,92,123,0.18); border:1px solid rgba(214,92,123,0.4); border-radius:999px; padding:0.15rem 0.6rem; font-size:0.6rem; font-weight:700; color:#e9879c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem; }
+    .drama-card.active .drama-poster { border-color:rgba(220,86,120,0.5); }
+    .active-badge { display:inline-flex; align-items:center; gap:0.3rem; background:rgba(220,86,120,0.18); border:1px solid rgba(220,86,120,0.4); border-radius:999px; padding:0.15rem 0.6rem; font-size:0.6rem; font-weight:700; color:#f16f8b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem; }
     .active-badge::before { content:'●'; font-size:0.55rem; }
     .actor-scroll { display:flex; gap:0.75rem; overflow-x:auto; padding:0 1rem 1rem; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
     .actor-scroll::-webkit-scrollbar { display:none; }
@@ -95,17 +95,24 @@
     .actor-lbl { font-size:0.72rem; font-weight:bold; margin-bottom:0.2rem; word-break:break-word; line-height:1.3; }
     .actor-card.red .actor-lbl { color:#e0605a; }
     .actor-card.green .actor-lbl { color:#4fae85; }
-    .fav-chip { display:flex; align-items:center; gap:0.4rem; background:rgba(214,92,123,0.12); border:1px solid rgba(214,92,123,0.35); border-radius:999px; padding:0.28rem 0.7rem 0.28rem 0.3rem; font-size:0.74rem; max-width:100%; transition:background 0.15s ease; }
-    .fav-chip:hover { background:rgba(214,92,123,0.2); }
-    .fav-group summary { cursor:pointer; list-style:none; display:flex; align-items:center; gap:0.5rem; font-size:0.68rem; letter-spacing:0.13em; text-transform:uppercase; color:#e9879c; font-weight:700; user-select:none; }
+    .fav-chip { display:flex; align-items:center; gap:0.4rem; background:rgba(220,86,120,0.12); border:1px solid rgba(220,86,120,0.35); border-radius:999px; padding:0.28rem 0.7rem 0.28rem 0.3rem; font-size:0.74rem; max-width:100%; transition:background 0.15s ease; }
+    .fav-chip:hover { background:rgba(220,86,120,0.2); }
+    .fav-group summary { cursor:pointer; list-style:none; display:flex; align-items:center; gap:0.5rem; font-size:0.68rem; letter-spacing:0.13em; text-transform:uppercase; color:#f16f8b; font-weight:700; user-select:none; }
     .fav-group summary::-webkit-details-marker { display:none; }
     .fav-group summary::after { content:'\2304'; font-size:1rem; color:#8b8797; margin-left:auto; transition:transform 0.2s ease; text-transform:none; letter-spacing:0; }
     .fav-group[open] summary::after { transform:rotate(180deg); }
     .fav-group::-webkit-scrollbar { width:5px; }
-    .fav-count-badge { background:rgba(214,92,123,0.18); color:#e9879c; border-radius:999px; padding:0.12rem 0.55rem; font-size:0.65rem; text-transform:none; letter-spacing:0; font-weight:700; }
+    #chkResults, #recResults, #similarResults, #moodResults, #airecResults, #aisimilarResults, #aioptimizerResults {
+      max-height:68vh; overflow-y:auto; overflow-x:hidden; padding-right:0.3rem; scroll-behavior:smooth;
+    }
+    #chkResults::-webkit-scrollbar, #recResults::-webkit-scrollbar, #similarResults::-webkit-scrollbar,
+    #moodResults::-webkit-scrollbar, #airecResults::-webkit-scrollbar, #aisimilarResults::-webkit-scrollbar, #aioptimizerResults::-webkit-scrollbar { width:6px; }
+    #chkResults::-webkit-scrollbar-thumb, #recResults::-webkit-scrollbar-thumb, #similarResults::-webkit-scrollbar-thumb,
+    #moodResults::-webkit-scrollbar-thumb, #airecResults::-webkit-scrollbar-thumb, #aisimilarResults::-webkit-scrollbar-thumb, #aioptimizerResults::-webkit-scrollbar-thumb { background:#2a2432; border-radius:999px; }
+    .fav-count-badge { background:rgba(220,86,120,0.18); color:#f16f8b; border-radius:999px; padding:0.12rem 0.55rem; font-size:0.65rem; text-transform:none; letter-spacing:0; font-weight:700; }
     .fav-chip-photo { width:20px; height:20px; border-radius:50%; object-fit:cover; flex-shrink:0; }
     .role-pill { font-size:0.6rem; padding:0.1rem 0.4rem; border-radius:999px; white-space:nowrap; }
-    .lead { background:rgba(221,170,85,0.15); color:#ddaa55; }
+    .lead { background:rgba(230,168,66,0.15); color:#e6a842; }
     .supp { background:rgba(108,111,176,0.15); color:#9296d6; }
     .dir-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:0.9rem; margin-top:0.9rem; }
     .dir-card { position:relative; background:#121017; border:1.5px solid #2a2432; border-radius:14px; padding:1rem 0.85rem; text-align:center; transition:transform 0.15s ease, box-shadow 0.15s ease; }
@@ -127,10 +134,10 @@
     .field-lbl { display:block; font-size:0.72rem; color:#8b8797; margin-bottom:0.3rem; text-transform:uppercase; }
     .cast-row { background:#0a0a0f; border:1px solid #2a2432; border-radius:8px; padding:0.75rem; margin-bottom:0.75rem; }
     .ac-wrap { position:relative; }
-    .ac-list { position:absolute; top:calc(100% + 2px); left:0; right:0; background:#16131f; border:1px solid #d65c7b; border-radius:8px; z-index:300; max-height:260px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,0.5); }
+    .ac-list { position:absolute; top:calc(100% + 2px); left:0; right:0; background:#16131f; border:1px solid #dc5678; border-radius:8px; z-index:300; max-height:260px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,0.5); }
     .ac-item { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0.75rem; cursor:pointer; border-bottom:1px solid #2a2432; }
     .ac-item:last-child { border-bottom:none; }
-    .ac-item:hover, .ac-item.hi { background:rgba(214,92,123,0.2); }
+    .ac-item:hover, .ac-item.hi { background:rgba(220,86,120,0.2); }
     .ac-item img { width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0; }
     .ac-item .ac-poster { width:30px; height:42px; border-radius:4px; object-fit:cover; flex-shrink:0; }
     .ac-n { font-size:0.85rem; font-weight:bold; }
@@ -142,11 +149,11 @@
     .set-badge { display:inline-block; background:#e0605a; color:white; border-radius:999px; font-size:0.6rem; padding:0.1rem 0.4rem; margin-left:0.3rem; }
     .toggle-row { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.6rem 0; }
     .set-group { border:1px solid #2a2432; border-radius:11px; margin-bottom:0.6rem; overflow:hidden; background:#121017; }
-    .set-group summary { list-style:none; cursor:pointer; padding:0.8rem 0.95rem; font-size:0.85rem; font-weight:600; color:#e9879c; display:flex; align-items:center; justify-content:space-between; user-select:none; transition:background 0.15s ease; }
+    .set-group summary { list-style:none; cursor:pointer; padding:0.8rem 0.95rem; font-size:0.85rem; font-weight:600; color:#f16f8b; display:flex; align-items:center; justify-content:space-between; user-select:none; transition:background 0.15s ease; }
     .set-group summary::-webkit-details-marker { display:none; }
     .set-group summary::after { content:'\2304'; font-size:0.9rem; color:#8b8797; transition:transform 0.2s ease; margin-left:0.5rem; }
     .set-group[open] summary::after { transform:rotate(180deg); }
-    .set-group summary:hover { background:rgba(214,92,123,0.08); }
+    .set-group summary:hover { background:rgba(220,86,120,0.08); }
     .set-group[open] summary { border-bottom:1px solid #2a2432; }
     .set-group-body { padding:0.9rem 0.95rem 1rem; }
     .set-group-body form:last-child p:last-child { margin-bottom:0; }
@@ -156,9 +163,9 @@
     .toggle-switch input { opacity:0; width:0; height:0; }
     .toggle-slider { position:absolute; inset:0; background:#2a2432; border-radius:999px; transition:0.2s; }
     .toggle-slider:before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#ededf3; border-radius:50%; transition:0.2s; }
-    .toggle-switch input:checked + .toggle-slider { background:linear-gradient(135deg,#d65c7b,#6c6fb0); }
+    .toggle-switch input:checked + .toggle-slider { background:linear-gradient(135deg,#dc5678,#6c6fb0); }
     .toggle-switch input:checked + .toggle-slider:before { transform:translateX(20px); }
-    .score-pill { display:inline-block; font-size:0.7rem; font-weight:bold; padding:0.15rem 0.5rem; border-radius:999px; background:rgba(214,92,123,0.2); border:1px solid rgba(214,92,123,0.4); color:#e9879c; margin-bottom:0.3rem; }
+    .score-pill { display:inline-block; font-size:0.7rem; font-weight:bold; padding:0.15rem 0.5rem; border-radius:999px; background:rgba(220,86,120,0.2); border:1px solid rgba(220,86,120,0.4); color:#f16f8b; margin-bottom:0.3rem; }
     .gem-pill { display:inline-block; font-size:0.7rem; font-weight:bold; padding:0.15rem 0.5rem; border-radius:999px; background:rgba(79,168,212,0.15); border:1px solid rgba(79,168,212,0.4); color:#4fa8d4; margin-bottom:0.3rem; margin-right:0.3rem; }
     .tmdb-link-badge {
       display:inline-flex; align-items:center; gap:0.25rem; font-size:0.65rem; font-weight:bold;
@@ -169,11 +176,11 @@
     .tmdb-link-badge:hover { background:rgba(1,180,228,0.28); }
     .watchlist-add-badge {
       display:inline-flex; align-items:center; gap:0.25rem; font-size:0.65rem; font-weight:bold;
-      padding:0.15rem 0.5rem; border-radius:999px; background:rgba(214,92,123,0.15);
-      border:1px solid rgba(214,92,123,0.35); color:#e9879c;
+      padding:0.15rem 0.5rem; border-radius:999px; background:rgba(220,86,120,0.15);
+      border:1px solid rgba(220,86,120,0.35); color:#f16f8b;
       margin-bottom:0.3rem; margin-right:0.3rem; cursor:pointer;
     }
-    .watchlist-add-badge:hover { background:rgba(214,92,123,0.28); }
+    .watchlist-add-badge:hover { background:rgba(220,86,120,0.28); }
     .trailer-badge {
       display:inline-flex; align-items:center; gap:0.25rem; font-size:0.65rem; font-weight:bold;
       padding:0.15rem 0.5rem; border-radius:999px; background:rgba(239,68,68,0.15);
@@ -200,10 +207,23 @@
     .undo-toast span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .undo-toast button {
       width:auto; margin:0; padding:0.35rem 0.9rem; font-size:0.72rem; font-weight:bold;
-      background:linear-gradient(135deg,#d65c7b,#6c6fb0); border:none; border-radius:999px;
+      background:linear-gradient(135deg,#dc5678,#6c6fb0); border:none; border-radius:999px;
       color:white; cursor:pointer; flex-shrink:0;
     }
     .actor-tip { position:relative; border-bottom:1px dotted #4fa8d4; color:#4fa8d4; cursor:help; }
+    #confirmModal { z-index:150; }
+    .notify-toast {
+      position:fixed; top:1.1rem; left:50%; transform:translateX(-50%);
+      background:#1b1620; border:1px solid #2a2432; border-radius:12px;
+      padding:0.75rem 1.1rem; display:flex; align-items:center; gap:0.6rem;
+      box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:900; font-size:0.82rem; color:#ededf3;
+      max-width:88vw; animation:notify-in 0.2s ease;
+    }
+    .notify-toast.error { border-color:rgba(224,96,90,0.5); }
+    .notify-toast.success { border-color:rgba(79,174,133,0.5); }
+    .notify-toast.info { border-color:rgba(79,168,212,0.5); }
+    .notify-toast-icon { font-size:0.95rem; flex-shrink:0; }
+    @keyframes notify-in { from { opacity:0; transform:translate(-50%,-8px); } to { opacity:1; transform:translate(-50%,0); } }
     .actor-tip .tip-card {
       position:absolute; bottom:135%; left:50%; transform:translateX(-50%);
       display:flex; align-items:flex-start; gap:0.5rem;
@@ -223,11 +243,11 @@
     .role-writer { background:rgba(79,168,212,0.12); color:#4fa8d4; }
     .sync-box { font-size:0.78rem; padding:0.6rem 0.85rem; border-radius:8px; margin-bottom:0.85rem; line-height:1.6; }
     .sync-ok   { background:rgba(79,174,133,0.1); border:1px solid rgba(79,174,133,0.3); color:#4fae85; }
-    .sync-warn { background:rgba(221,170,85,0.1);  border:1px solid rgba(221,170,85,0.3);  color:#ddaa55; }
-    .sync-info { background:rgba(214,92,123,0.1); border:1px solid rgba(214,92,123,0.3); color:#e9879c; }
+    .sync-warn { background:rgba(230,168,66,0.1);  border:1px solid rgba(230,168,66,0.3);  color:#e6a842; }
+    .sync-info { background:rgba(220,86,120,0.1); border:1px solid rgba(220,86,120,0.3); color:#f16f8b; }
     .rec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.1rem; margin-top:1.1rem; }
     .rec-card { background:#121017; border:1px solid #2a2432; border-radius:16px; overflow:hidden; cursor:pointer; transition:border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease; }
-    .rec-card:hover { border-color:#d65c7b; transform:translateY(-4px); box-shadow:0 14px 30px rgba(0,0,0,0.4); }
+    .rec-card:hover { border-color:#dc5678; transform:translateY(-4px); box-shadow:0 14px 30px rgba(0,0,0,0.4); }
     .rec-poster { width:100%; aspect-ratio:2/3; object-fit:cover; display:block; background:#0a0a0f; transition:transform 0.4s ease; }
     .rec-card:hover .rec-poster { transform:scale(1.05); }
     .rec-info { padding:0.85rem 0.85rem 0.9rem; position:relative; }
@@ -237,7 +257,7 @@
     .tmdb-badge { font-size:0.6rem; background:rgba(1,180,228,0.15); border:1px solid rgba(1,180,228,0.3); color:#01b4e4; border-radius:4px; padding:0.1rem 0.4rem; margin-left:0.4rem; vertical-align:middle; }
     .cast-select-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:0.5rem; margin:0.5rem 0 1rem; }
     .cast-select-item { display:flex; flex-direction:column; align-items:center; padding:0.5rem; background:#0a0a0f; border:2px solid #2a2432; border-radius:8px; cursor:pointer; text-align:center; }
-    .cast-select-item.selected { border-color:#d65c7b; background:rgba(214,92,123,0.1); }
+    .cast-select-item.selected { border-color:#dc5678; background:rgba(220,86,120,0.1); }
     .cast-select-item img { width:50px; height:50px; border-radius:50%; object-fit:cover; margin-bottom:0.3rem; }
     .cast-select-item .csn { font-size:0.7rem; font-weight:bold; }
     .cast-select-item .csc { font-size:0.6rem; color:#8b8797; }
@@ -342,15 +362,30 @@
   <button onclick="performUndo()">Undo</button>
 </div>
 
+<div id="notifyToast" class="notify-toast hidden">
+  <span id="notifyToastIcon" class="notify-toast-icon"></span>
+  <span id="notifyToastMsg"></span>
+</div>
+
+<div id="confirmModal" class="modal">
+  <div class="modal-inner" style="max-width:400px;">
+    <p id="confirmModalMsg" style="font-size:0.9rem;line-height:1.5;margin-bottom:1.25rem;"></p>
+    <div class="row">
+      <button class="btn-del" onclick="_resolveConfirm(false)">Cancel</button>
+      <button id="confirmModalOk" onclick="_resolveConfirm(true)">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <div class="header">
   <h1 class="title">K-Drama Cast Checker</h1>
   <p class="subtitle" id="spaceSubtitle">Track actors across your last 10 dramas</p>
   <div id="hdrProfileBar" style="display:flex;justify-content:center;align-items:center;gap:0.5rem;margin-top:0.6rem;font-size:0.75rem;color:#a29dae;">
-    <span>&#128100; <b id="hdrProfileName" style="color:#e9879c;"></b>'s watchlist</span>
+    <span>&#128100; <b id="hdrProfileName" style="color:#f16f8b;"></b>'s watchlist</span>
     <button class="btn-sm" onclick="switchUser()" style="width:auto;margin:0;padding:0.25rem 0.6rem;font-size:0.65rem;">Switch User</button>
   </div>
   <div id="turnWidget" class="hidden" style="text-align:center;margin-top:0.5rem;">
-    <span id="turnWidgetText" style="font-size:0.8rem;color:#ddaa55;font-weight:bold;"></span>
+    <span id="turnWidgetText" style="font-size:0.8rem;color:#e6a842;font-weight:bold;"></span>
     <button class="btn-sm" onclick="advanceTurn()" style="width:auto;margin:0 0 0 0.5rem;padding:0.25rem 0.6rem;font-size:0.65rem;">I Picked - Pass Turn</button>
   </div>
   <div id="banner" style="display:none;"></div>
@@ -398,14 +433,14 @@
 
 <div class="container">
   <div id="backupReminder" class="hidden" style="max-width:700px;margin:0 auto 1.25rem;background:#1b1620;border:1px solid #2a2432;border-radius:10px;padding:0.7rem 1rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-    <span id="backupReminderText" style="flex:1;font-size:0.78rem;color:#e9879c;min-width:200px;"></span>
+    <span id="backupReminderText" style="flex:1;font-size:0.78rem;color:#f16f8b;min-width:200px;"></span>
     <button class="btn-sm" onclick="exportMyData()" style="width:auto;margin:0;">Export Now</button>
     <button class="btn-sm" onclick="dismissBackupReminder(false)" style="width:auto;margin:0;">Remind Me Later</button>
   </div>
   <!-- Dramas Tab -->
   <div id="page-dramas">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#e9879c;">Your Watched Dramas</h3>
+      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#f16f8b;">Your Watched Dramas</h3>
       <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
         <span id="dramaCount" style="background:#16131f;border:1px solid #2a2432;border-radius:999px;padding:0.2rem 0.6rem;font-size:0.7rem;color:#8b8797;"></span>
         <button class="btn-sm" onclick="scanLibrary()" id="scanLibraryBtn" style="width:auto;margin:0;">Scan My Library</button>
@@ -427,7 +462,7 @@
   <!-- Watchlist Tab -->
   <div id="page-watchlist" class="hidden">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#e9879c;">Watchlist</h3>
+      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#f16f8b;">Watchlist</h3>
       <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
         <span id="watchlistCount" style="background:#16131f;border:1px solid #2a2432;border-radius:999px;padding:0.2rem 0.6rem;font-size:0.7rem;color:#8b8797;"></span>
         <button onclick="openWatchlistModal()" style="width:auto;margin:0;">+ Add to Watchlist</button>
@@ -464,7 +499,7 @@
   <!-- Skipped Shows Tab -->
   <div id="page-skipped" class="hidden">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#e9879c;">Skipped Shows</h3>
+      <h3 style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#f16f8b;">Skipped Shows</h3>
       <span id="skippedCount" style="background:#16131f;border:1px solid #2a2432;border-radius:999px;padding:0.2rem 0.6rem;font-size:0.7rem;color:#8b8797;"></span>
     </div>
     <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Shows you've dismissed with "Skip" on a recommendation card, across Recommendations, Similar Shows, AI Mood Search, AI Picks, and AI Similar Shows. Restore any of these to let them be suggested again.</p>
@@ -1194,6 +1229,40 @@ function showBanner(msg, color, bg) {
   b._t = setTimeout(function() { b.style.display = 'none'; }, 4000);
 }
 
+// Replaces window.alert() with a small dismissible toast that sits above modals, so validation
+// messages are still visible even if they happen while a modal (e.g. Settings) is open.
+var _notifyIcons = { error: '\u26a0\ufe0f', success: '\u2705', info: '\u2139\ufe0f' };
+function notify(msg, type) {
+  type = type || 'error';
+  var el = document.getElementById('notifyToast');
+  document.getElementById('notifyToastIcon').textContent = _notifyIcons[type] || _notifyIcons.error;
+  document.getElementById('notifyToastMsg').textContent = msg;
+  el.className = 'notify-toast ' + type;
+  clearTimeout(el._t);
+  el._t = setTimeout(function() { el.classList.add('hidden'); }, 4500);
+}
+
+// Replaces window.confirm() with a Promise-based custom modal in the app's own style.
+// Usage: customConfirm('Are you sure?').then(function(ok) { if (ok) { ...do the thing... } });
+var _confirmResolve = null;
+function customConfirm(message, opts) {
+  opts = opts || {};
+  return new Promise(function(resolve) {
+    _confirmResolve = resolve;
+    document.getElementById('confirmModalMsg').textContent = message;
+    var okBtn = document.getElementById('confirmModalOk');
+    okBtn.textContent = opts.okText || 'Confirm';
+    okBtn.className = opts.danger ? 'btn-del' : '';
+    document.getElementById('confirmModal').classList.add('open');
+  });
+}
+function _resolveConfirm(val) {
+  document.getElementById('confirmModal').classList.remove('open');
+  var fn = _confirmResolve;
+  _confirmResolve = null;
+  if (fn) fn(val);
+}
+
 // --- Tabs ---
 var currentTab = 'dramas';
 function buttonIdsForPage(name) {
@@ -1216,14 +1285,14 @@ function openTab(name) {
     if (el) el.classList.add('hidden');
     buttonIdsForPage(p).forEach(function(bid) {
       var btn = document.getElementById(bid);
-      if (btn) btn.style.background = 'rgba(214,92,123,0.15)';
+      if (btn) btn.style.background = 'rgba(220,86,120,0.15)';
     });
   });
   var page = document.getElementById('page-' + name);
   if (page) page.classList.remove('hidden');
   buttonIdsForPage(name).forEach(function(bid) {
     var btn = document.getElementById(bid);
-    if (btn) btn.style.background = 'linear-gradient(135deg,#d65c7b,#6c6fb0)';
+    if (btn) btn.style.background = 'linear-gradient(135deg,#dc5678,#6c6fb0)';
   });
   currentTab = name;
   if (name === 'dir') renderDir();
@@ -1304,7 +1373,7 @@ function loadLocal() {
   }
   return null;
 }
-function saveLocal(data) { var pid = getActiveProfileId(); try { localStorage.setItem('kdc_d_' + pid, JSON.stringify(data)); } catch(e) { alert('Save failed: ' + e.message); } }
+function saveLocal(data) { var pid = getActiveProfileId(); try { localStorage.setItem('kdc_d_' + pid, JSON.stringify(data)); } catch(e) { notify('Save failed: ' + e.message); } }
 
 function loadLocalWatchlist() {
   var pid = getActiveProfileId();
@@ -1383,7 +1452,7 @@ function cancelRestoreSync() {
 async function attemptRestoreSync() {
   var token = document.getElementById('restoreGhToken').value.trim();
   var gistId = document.getElementById('restoreGhGistId').value.trim();
-  if (!token || !gistId) { alert('Enter both the GitHub token and the Gist ID.'); return; }
+  if (!token || !gistId) { notify('Enter both the GitHub token and the Gist ID.'); return; }
   var btn = document.getElementById('restoreSyncSubmitBtn');
   var originalText = btn.textContent;
   btn.textContent = 'Connecting...'; btn.disabled = true;
@@ -1413,11 +1482,11 @@ async function attemptRestoreSync() {
       msgEl.style.color = '#4fae85'; msgEl.style.background = 'rgba(79,174,133,0.1)';
     } else {
       msgEl.textContent = 'Connected, but no new profiles were found in that Gist.';
-      msgEl.style.color = '#a78bfa'; msgEl.style.background = 'rgba(214,92,123,0.1)';
+      msgEl.style.color = '#a78bfa'; msgEl.style.background = 'rgba(220,86,120,0.1)';
     }
     msgEl.classList.remove('hidden');
   } catch(e) {
-    alert("Couldn't connect - double check the token and Gist ID, and that the token still has access to this Gist.");
+    notify("Couldn't connect - double check the token and Gist ID, and that the token still has access to this Gist.");
   } finally {
     btn.textContent = originalText; btn.disabled = false;
   }
@@ -1442,10 +1511,10 @@ function attemptProfileLogin() {
 function createNewProfile() {
   var name = document.getElementById('newProfileName').value.trim();
   var pin = document.getElementById('newProfilePin').value.trim();
-  if (!name) { alert('Enter a name.'); return; }
-  if (pin.length < 4) { alert('Password should be at least 4 characters.'); return; }
+  if (!name) { notify('Enter a name.'); return; }
+  if (pin.length < 4) { notify('Password should be at least 4 characters.'); return; }
   var profiles = getProfiles();
-  if (profiles.some(function(p) { return p.name.toLowerCase() === name.toLowerCase(); })) { alert('That name is already taken - pick another.'); return; }
+  if (profiles.some(function(p) { return p.name.toLowerCase() === name.toLowerCase(); })) { notify('That name is already taken - pick another.'); return; }
   var id = 'p_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
   profiles.push({ id: id, name: name, pinHash: simpleHash(pin) });
   saveProfiles(profiles);
@@ -1539,24 +1608,25 @@ function handleImportFile(input) {
   var reader = new FileReader();
   reader.onload = function(e) {
     var data;
-    try { data = JSON.parse(e.target.result); } catch(err) { alert('That file is not valid JSON.'); input.value = ''; return; }
+    try { data = JSON.parse(e.target.result); } catch(err) { notify('That file is not valid JSON.'); input.value = ''; return; }
     importBackupData(data);
     input.value = '';
   };
-  reader.onerror = function() { alert('Could not read that file.'); input.value = ''; };
+  reader.onerror = function() { notify('Could not read that file.'); input.value = ''; };
   reader.readAsText(file);
 }
 function importBackupData(data) {
-  if (!data || typeof data !== 'object') { alert("That doesn't look like a valid K-Drama Cast Checker backup file."); return; }
+  if (!data || typeof data !== 'object') { notify("That doesn't look like a valid K-Drama Cast Checker backup file."); return; }
   var dImport = Array.isArray(data.dramas) ? data.dramas : [];
   var wImport = Array.isArray(data.watchlist) ? data.watchlist : [];
   var fImport = Array.isArray(data.favoriteActors) ? data.favoriteActors : [];
   var sImport = Array.isArray(data.skippedShows) ? data.skippedShows : [];
-  if (!dImport.length && !wImport.length && !fImport.length && !sImport.length) { alert('This file does not contain any recognizable data to import.'); return; }
+  if (!dImport.length && !wImport.length && !fImport.length && !sImport.length) { notify('This file does not contain any recognizable data to import.'); return; }
 
   var msg = 'This backup has ' + dImport.length + ' drama(s), ' + wImport.length + ' watchlist item(s), ' + fImport.length + ' favorite actor(s), and ' + sImport.length + ' skipped show(s).\n\n' +
     'This will MERGE into your current profile (' + (currentProfile() ? currentProfile().name : '') + ') - adding anything you don\'t already have, without deleting anything you currently have. Continue?';
-  if (!confirm(msg)) return;
+  customConfirm(msg, { okText: 'Import' }).then(function(ok) {
+  if (!ok) return;
 
   var addedDramas = 0, addedWatchlist = 0, addedFavorites = 0, addedSkipped = 0;
 
@@ -1577,6 +1647,7 @@ function importBackupData(data) {
 
   saveData(); saveWatchlistData(); render(); renderWatchlist();
   showBanner('Imported: +' + addedDramas + ' dramas, +' + addedWatchlist + ' watchlist, +' + addedFavorites + ' favorite actors, +' + addedSkipped + ' skipped shows', '#4fae85', 'rgba(79,174,133,0.1)');
+  });
 }
 
 // --- Whose Turn to Pick? ---
@@ -1670,7 +1741,7 @@ function renderTurnSettingsSection() {
         var lbl = document.createElement('span');
         lbl.style.flex = '1';
         lbl.textContent = (i + 1) + '. ' + p.name + (i === t.index ? ' \u2190 current turn' : '');
-        if (i === t.index) lbl.style.color = '#ddaa55';
+        if (i === t.index) lbl.style.color = '#e6a842';
         var upBtn = document.createElement('button'); upBtn.className = 'btn-sm'; upBtn.textContent = '\u2191';
         upBtn.style.cssText = 'width:auto;margin:0;padding:0.2rem 0.5rem;';
         upBtn.disabled = i === 0;
@@ -1788,9 +1859,9 @@ function readProfileDataCounts(profileId) {
 }
 function renameProfile(id, newName) {
   newName = (newName || '').trim();
-  if (!newName) { alert('Name cannot be empty.'); renderProfileManageList(); return; }
+  if (!newName) { notify('Name cannot be empty.'); renderProfileManageList(); return; }
   var profiles = getProfiles();
-  if (profiles.some(function(p) { return p.id !== id && p.name.toLowerCase() === newName.toLowerCase(); })) { alert('That name is already taken - pick another.'); renderProfileManageList(); return; }
+  if (profiles.some(function(p) { return p.id !== id && p.name.toLowerCase() === newName.toLowerCase(); })) { notify('That name is already taken - pick another.'); renderProfileManageList(); return; }
   var p = profiles.find(function(x) { return x.id === id; });
   if (!p) return;
   p.name = newName;
@@ -1802,7 +1873,8 @@ function renameProfile(id, newName) {
   showBanner('Renamed to ' + newName, '#4fae85', 'rgba(79,174,133,0.1)');
 }
 function deleteProfile(id, name) {
-  if (!confirm('Delete "' + name + '"? This removes their My Dramas, Watchlist, and Favorite Actors from this device - you\'ll have a few seconds to undo right after.')) return;
+  customConfirm('Delete "' + name + '"? This removes their My Dramas, Watchlist, and Favorite Actors from this device - you\'ll have a few seconds to undo right after.', { okText: 'Delete', danger: true }).then(function(ok) {
+  if (!ok) return;
   var profiles = getProfiles();
   var idx = profiles.findIndex(function(p) { return p.id === id; });
   if (idx === -1) return;
@@ -1832,6 +1904,7 @@ function deleteProfile(id, name) {
     try { dataKeys.forEach(function(k) { if (snapshot[k] !== null) localStorage.setItem(k, snapshot[k]); }); } catch(e) {}
     if (wasActive) renderProfileGate(); else renderProfileManageList();
   }, 8);
+  });
 }
 
 
@@ -1885,7 +1958,7 @@ function makeFavActorBtn(displayName) {
     btn.style.color = nowFav ? '#e0605a' : '#a29dae';
     btn.title = nowFav ? 'Remove from your favorite actors' : 'Mark as one of your favorite actors';
     var card = btn.closest('.actor-card, .dir-card');
-    if (card) card.style.boxShadow = nowFav ? '0 0 0 2px #d65c7b' : '';
+    if (card) card.style.boxShadow = nowFav ? '0 0 0 2px #dc5678' : '';
     if (typeof renderFavActorsStrip === 'function') renderFavActorsStrip();
   };
   return btn;
@@ -2142,7 +2215,7 @@ async function syncNow() {
   var c = getGistCreds();
   var btns = [document.getElementById('syncNowBtn'), document.getElementById('syncNowBtnAi')];
   if (!c.token || !c.gistId) {
-    showBanner('Sync is not set up yet - open Settings to connect.', '#a78bfa', 'rgba(214,92,123,0.1)');
+    showBanner('Sync is not set up yet - open Settings to connect.', '#a78bfa', 'rgba(220,86,120,0.1)');
     return;
   }
   btns.forEach(function(b) { if (b) { b.textContent = '⏳ Syncing...'; b.disabled = true; } });
@@ -2152,7 +2225,7 @@ async function syncNow() {
     render(); renderDir(); renderCrewDir(); renderWatchlist();
     showBanner('✓ Synced! Loaded ' + dramas.length + ' drama(s) from the cloud.', '#4fae85', 'rgba(79,174,133,0.1)');
   } else {
-    showBanner('Could not reach the cloud. Check your connection and try again.', '#f59e0b', 'rgba(221,170,85,0.1)');
+    showBanner('Could not reach the cloud. Check your connection and try again.', '#f59e0b', 'rgba(230,168,66,0.1)');
   }
   btns.forEach(function(b) { if (b) { b.textContent = '🔄 Sync Now'; b.disabled = false; } });
 }
@@ -2162,9 +2235,9 @@ async function saveData() {
   saveLocal(dramas);
   var c = getGistCreds();
   if (c.token && c.gistId) {
-    showBanner('Syncing...', '#ddaa55', 'rgba(221,170,85,0.1)');
+    showBanner('Syncing...', '#e6a842', 'rgba(230,168,66,0.1)');
     var ok = await pushGist();
-    showBanner(ok ? 'Saved and synced to all devices!' : 'Saved locally (cloud sync failed)', ok ? '#4fae85' : '#f59e0b', ok ? 'rgba(79,174,133,0.1)' : 'rgba(221,170,85,0.1)');
+    showBanner(ok ? 'Saved and synced to all devices!' : 'Saved locally (cloud sync failed)', ok ? '#4fae85' : '#f59e0b', ok ? 'rgba(79,174,133,0.1)' : 'rgba(230,168,66,0.1)');
   } else {
     showBanner('Saved ' + dramas.length + ' drama(s)', '#4fae85', 'rgba(79,174,133,0.1)');
   }
@@ -2174,9 +2247,9 @@ async function saveWatchlistData() {
   saveLocalWatchlist(watchlist);
   var c = getGistCreds();
   if (c.token && c.gistId) {
-    showBanner('Syncing watchlist...', '#ddaa55', 'rgba(221,170,85,0.1)');
+    showBanner('Syncing watchlist...', '#e6a842', 'rgba(230,168,66,0.1)');
     var ok = await pushGist();
-    showBanner(ok ? 'Watchlist synced to all devices!' : 'Saved locally (cloud sync failed)', ok ? '#4fae85' : '#f59e0b', ok ? 'rgba(79,174,133,0.1)' : 'rgba(221,170,85,0.1)');
+    showBanner(ok ? 'Watchlist synced to all devices!' : 'Saved locally (cloud sync failed)', ok ? '#4fae85' : '#f59e0b', ok ? 'rgba(79,174,133,0.1)' : 'rgba(230,168,66,0.1)');
   } else {
     showBanner('Saved ' + watchlist.length + ' watchlist item(s)', '#4fae85', 'rgba(79,174,133,0.1)');
   }
@@ -2279,7 +2352,7 @@ async function selectTmdbDrama(show) {
   // Load cast + crew together via aggregate_credits, which reflects the FULL cast across all
   // seasons/episodes (matching TMDB's "View More" list) rather than the short top-billed list
   // the basic /credits endpoint returns.
-  showBanner('Loading cast from TMDB...', '#ddaa55', 'rgba(221,170,85,0.1)');
+  showBanner('Loading cast from TMDB...', '#e6a842', 'rgba(230,168,66,0.1)');
   var agg = await tmdbGet('/tv/' + show.id + '/aggregate_credits');
   if (agg && agg.cast && agg.cast.length) {
     var cast = agg.cast.slice(0, 50);
@@ -2290,7 +2363,7 @@ async function selectTmdbDrama(show) {
     document.getElementById('mFullCast').value = JSON.stringify(fullCastData);
     showBanner('Cast loaded (' + cast.length + ' members)! Select who to track.', '#4fae85', 'rgba(79,174,133,0.1)');
   } else {
-    showBanner('Could not load cast. Add manually below.', '#f59e0b', 'rgba(221,170,85,0.1)');
+    showBanner('Could not load cast. Add manually below.', '#f59e0b', 'rgba(230,168,66,0.1)');
   }
   // Load crew (directors/writers) - only shown/used if the user has Track Writers & Directors enabled,
   // but we fetch it regardless so the data is there and ready if they turn it on later
@@ -2908,7 +2981,7 @@ async function getRecommendations() {
     var info = document.createElement('div'); info.className = 'rec-info';
     var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = rec.name + (rec.year ? ' (' + rec.year + ')' : '');
     var ratingRow = document.createElement('div');
-    ratingRow.style.cssText = 'font-size:0.68rem;color:#ddaa55;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
+    ratingRow.style.cssText = 'font-size:0.68rem;color:#e6a842;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
     if (typeof rec.imdbRating === 'number') {
       var imdbTag = document.createElement('span');
       imdbTag.style.cssText = 'font-size:0.55rem;background:rgba(245,197,24,0.15);border:1px solid rgba(245,197,24,0.3);color:#f5c518;border-radius:3px;padding:0.05rem 0.3rem;';
@@ -2933,7 +3006,7 @@ async function getRecommendations() {
     var genreRow = document.createElement('div');
     genreRow.style.cssText = 'font-size:0.65rem;color:#9296d6;margin-bottom:0.3rem;';
     genreRow.textContent = rec.genres && rec.genres.length ? rec.genres.join(', ') : '';
-    var agoLbl = document.createElement('div'); agoLbl.style.cssText = 'font-size:0.62rem;color:#e9879c;margin-bottom:0.2rem;';
+    var agoLbl = document.createElement('div'); agoLbl.style.cssText = 'font-size:0.62rem;color:#f16f8b;margin-bottom:0.2rem;';
     agoLbl.textContent = ago > 0 ? (ago + ' drama' + (ago > 1 ? 's' : '') + ' since last seen') : 'Never seen yet';
     var actors = document.createElement('div'); actors.className = 'rec-actors';
     renderTextWithActorTooltips(actors, rec.actors.length + ' available actor' + (rec.actors.length > 1 ? 's' : '') + ': ' + rec.actors.join(', '));
@@ -2955,12 +3028,12 @@ async function getRecommendations() {
     card.appendChild(img); card.appendChild(info);
     card.onclick = (function(r) {
       return function() {
-        if (confirm('Add "' + r.name + '" to My Dramas (mark as watched)?')) {
+        customConfirm('Add "' + r.name + '" to My Dramas (mark as watched)?').then(function(ok) { if (ok) {
           openModal(null);
           document.getElementById('tmdbSearch').value = r.name;
           selectTmdbDrama({ id: r.id, name: r.name, first_air_date: r.year + '-01-01', poster_path: r.poster ? r.poster.replace(TMDB_IMG_LG, '') : '' });
           openTab('dramas');
-        }
+        } });
       };
     })(rec);
     grid.appendChild(card);
@@ -3141,7 +3214,7 @@ async function getSimilarShows() {
     var info = document.createElement('div'); info.className = 'rec-info';
     var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = rec.name + (rec.year ? ' (' + rec.year + ')' : '');
     var ratingRow = document.createElement('div');
-    ratingRow.style.cssText = 'font-size:0.68rem;color:#ddaa55;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
+    ratingRow.style.cssText = 'font-size:0.68rem;color:#e6a842;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
     if (typeof rec.imdbRating === 'number') {
       var imdbTag = document.createElement('span');
       imdbTag.style.cssText = 'font-size:0.55rem;background:rgba(245,197,24,0.15);border:1px solid rgba(245,197,24,0.3);color:#f5c518;border-radius:3px;padding:0.05rem 0.3rem;';
@@ -3161,7 +3234,7 @@ async function getSimilarShows() {
     var genreRow = document.createElement('div');
     genreRow.style.cssText = 'font-size:0.65rem;color:#9296d6;margin-bottom:0.3rem;';
     genreRow.textContent = rec.genres && rec.genres.length ? rec.genres.join(', ') : '';
-    var srcLbl = document.createElement('div'); srcLbl.style.cssText = 'font-size:0.62rem;color:#e9879c;margin-bottom:0.3rem;';
+    var srcLbl = document.createElement('div'); srcLbl.style.cssText = 'font-size:0.62rem;color:#f16f8b;margin-bottom:0.3rem;';
     srcLbl.textContent = 'Similar to: ' + rec.sources.join(', ');
     if (isHiddenGem(rec)) {
       var gemPill2 = document.createElement('div'); gemPill2.className = 'gem-pill'; gemPill2.textContent = '\uD83D\uDC8E Hidden Gem';
@@ -3177,12 +3250,12 @@ async function getSimilarShows() {
     card.appendChild(img); card.appendChild(info);
     card.onclick = (function(r) {
       return function() {
-        if (confirm('Add "' + r.name + '" to My Dramas (mark as watched)?')) {
+        customConfirm('Add "' + r.name + '" to My Dramas (mark as watched)?').then(function(ok) { if (ok) {
           openModal(null);
           document.getElementById('tmdbSearch').value = r.name;
           selectTmdbDrama({ id: r.id, name: r.name, first_air_date: r.year + '-01-01', poster_path: r.poster ? r.poster.replace(TMDB_IMG_LG, '') : '' });
           openTab('dramas');
-        }
+        } });
       };
     })(rec);
     grid.appendChild(card);
@@ -3217,7 +3290,7 @@ async function initApp() {
   syncFavOnlyToggles();
   renderTurnWidget();
 
-  showBanner('Loading...', '#ddaa55', 'rgba(221,170,85,0.1)');
+  showBanner('Loading...', '#e6a842', 'rgba(230,168,66,0.1)');
   openTab('dramas');
   watchlist = loadLocalWatchlist(); // local fallback; pullGist() below will refresh this if synced
   var c = getGistCreds();
@@ -3229,7 +3302,7 @@ async function initApp() {
     } else {
       dramas = loadLocal() || [];
       if (dramas.length > 0) { pushGist(); showBanner('Loaded ' + dramas.length + ' dramas (uploaded to cloud)', '#4fae85', 'rgba(79,174,133,0.1)'); }
-      else showBanner('No dramas yet. Add your first drama!', '#a78bfa', 'rgba(214,92,123,0.1)');
+      else showBanner('No dramas yet. Add your first drama!', '#a78bfa', 'rgba(220,86,120,0.1)');
     }
     setSyncBadge(false);
   } else {
@@ -3653,14 +3726,14 @@ function saveDrama() {
   var popularity = popularityRaw ? parseFloat(popularityRaw) : null;
   var fullCast = null;
   if (fullCastRaw) { try { fullCast = JSON.parse(fullCastRaw); } catch(e) { fullCast = null; } }
-  if (!title) { alert('Please enter a drama title'); return; }
+  if (!title) { notify('Please enter a drama title'); return; }
   var cast = [];
   document.querySelectorAll('#castList .cast-row').forEach(function(r) {
     var n = r.querySelector('[data-name]').value.trim();
     var tidField = r.querySelector('[data-tmdbid]');
     if (n) cast.push({ name: n, role: r.querySelector('select').value, photo: r.querySelector('[data-photo]').value.trim(), tmdbId: tidField ? tidField.value.trim() : '' });
   });
-  if (!cast.length) { alert('Please add at least one actor'); return; }
+  if (!cast.length) { notify('Please add at least one actor'); return; }
   var crew = [];
   document.querySelectorAll('#crewList .cast-row').forEach(function(r) {
     var n = r.querySelector('[data-cname]').value.trim();
@@ -3806,9 +3879,9 @@ function renderCompletionBar(container, watched, total) {
   var denom = Math.max(total, watched);
   container.innerHTML = '';
   var barWrap = document.createElement('div'); barWrap.style.cssText = 'width:100%;background:#0a0a0f;border-radius:999px;height:6px;overflow:hidden;margin:0.35rem 0 0.2rem;';
-  var barFill = document.createElement('div'); barFill.style.cssText = 'height:100%;background:linear-gradient(90deg,#d65c7b,#6c6fb0);width:' + pct + '%;';
+  var barFill = document.createElement('div'); barFill.style.cssText = 'height:100%;background:linear-gradient(90deg,#dc5678,#6c6fb0);width:' + pct + '%;';
   barWrap.appendChild(barFill);
-  var label = document.createElement('div'); label.style.cssText = 'font-size:0.6rem;color:#e9879c;';
+  var label = document.createElement('div'); label.style.cssText = 'font-size:0.6rem;color:#f16f8b;';
   label.textContent = watched + '/' + denom + ' shows watched (' + pct + '%)';
   container.appendChild(barWrap); container.appendChild(label);
 }
@@ -3856,7 +3929,7 @@ function renderDir() {
     var label = a.inRecent10 ? 'In last 10' : (ago <= 0 ? 'Available' : ago + ' drama' + (ago > 1 ? 's' : '') + ' ago');
     var card = document.createElement('div'); card.className = 'dir-card ' + (a.inRecent10 ? 'bad' : 'good');
     card.style.position = 'relative';
-    if (isFavoriteActor(a.name)) card.style.boxShadow = '0 0 0 2px #d65c7b';
+    if (isFavoriteActor(a.name)) card.style.boxShadow = '0 0 0 2px #dc5678';
     var img = document.createElement('img'); img.className = 'dir-photo'; img.src = ph(a.name, a.photo); img.alt = a.name;
     img.onerror = function() { this.src = ph(a.name, ''); };
     var name = document.createElement('div'); name.className = 'dir-name'; name.textContent = a.name;
@@ -3938,10 +4011,10 @@ function statBarList(title, subtitle, items, opts) {
     var lblRow = document.createElement('div'); lblRow.style.cssText = 'display:flex;justify-content:space-between;gap:0.5rem;font-size:0.78rem;margin-bottom:0.2rem;';
     var lbl = document.createElement('span'); lbl.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
     lbl.textContent = item.label + (item.tag ? '' : '');
-    var cnt = document.createElement('span'); cnt.style.cssText = 'color:#e9879c;font-weight:bold;flex-shrink:0;'; cnt.textContent = item.countLabel || item.count;
+    var cnt = document.createElement('span'); cnt.style.cssText = 'color:#f16f8b;font-weight:bold;flex-shrink:0;'; cnt.textContent = item.countLabel || item.count;
     lblRow.appendChild(lbl); lblRow.appendChild(cnt);
     var barBg = document.createElement('div'); barBg.style.cssText = 'background:#0a0a0f;border-radius:999px;height:7px;overflow:hidden;';
-    var barFill = document.createElement('div'); barFill.style.cssText = 'height:100%;background:linear-gradient(90deg,#d65c7b,#6c6fb0);width:' + Math.max(4, Math.round((item.count / maxCount) * 100)) + '%;';
+    var barFill = document.createElement('div'); barFill.style.cssText = 'height:100%;background:linear-gradient(90deg,#dc5678,#6c6fb0);width:' + Math.max(4, Math.round((item.count / maxCount) * 100)) + '%;';
     barBg.appendChild(barFill);
     barCol.appendChild(lblRow); barCol.appendChild(barBg);
     if (item.tag) {
@@ -3983,7 +4056,7 @@ function renderStats() {
   tiles.forEach(function(t) {
     var tile = document.createElement('div');
     tile.style.cssText = 'background:#121017;border:1px solid #2a2432;border-radius:10px;padding:0.9rem 0.6rem;text-align:center;';
-    var num = document.createElement('div'); num.style.cssText = 'font-size:1.5rem;font-weight:bold;color:#e9879c;'; num.textContent = t.n;
+    var num = document.createElement('div'); num.style.cssText = 'font-size:1.5rem;font-weight:bold;color:#f16f8b;'; num.textContent = t.n;
     var lbl = document.createElement('div'); lbl.style.cssText = 'font-size:0.62rem;color:#8b8797;text-transform:uppercase;letter-spacing:0.05em;margin-top:0.2rem;'; lbl.textContent = t.l;
     tile.appendChild(num); tile.appendChild(lbl);
     tileGrid.appendChild(tile);
@@ -4297,13 +4370,13 @@ function saveAllSettings() {
 async function connectGist() {
   var token = document.getElementById('ghToken').value.trim();
   var gistId = document.getElementById('ghGistId').value.trim();
-  if (!token || !gistId) { alert('Please enter both Token and Gist ID'); return; }
+  if (!token || !gistId) { notify('Please enter both Token and Gist ID'); return; }
   var s = getSettings(); s.ghToken = token; s.ghGistId = gistId; saveSettings2(s);
   document.getElementById('gistResult').innerHTML = '<div class="sync-box sync-warn">Testing...</div>';
   var cloud = await pullGist();
   if (cloud !== null) {
     if (cloud.length > 0) {
-      var use = confirm('Connected! GitHub has ' + cloud.length + ' dramas. This device has ' + dramas.length + '. OK = use GitHub data. Cancel = push local data.');
+      var use = await customConfirm('Connected! GitHub has ' + cloud.length + ' dramas. This device has ' + dramas.length + '. Use GitHub data, or push this device\'s data instead?', { okText: 'Use GitHub Data' });
       if (use) { dramas = cloud; saveLocal(dramas); render(); } else { await pushGist(); }
     } else { await pushGist(); }
     document.getElementById('gistResult').innerHTML = '<div class="sync-box sync-ok">Connected! ' + dramas.length + ' dramas synced.</div>';
@@ -4313,12 +4386,13 @@ async function connectGist() {
   }
 }
 
-function disconnectSync() {
-  if (!confirm('Disconnect sync?')) return;
+async function disconnectSync() {
+  var ok = await customConfirm('Disconnect sync?', { okText: 'Disconnect', danger: true });
+  if (!ok) return;
   var s = getSettings(); s.ghToken = ''; s.ghGistId = ''; saveSettings2(s);
   setSyncBadge(true);
   document.getElementById('syncStatus').innerHTML = '<div class="sync-box sync-info">Sync disconnected.</div>';
-  showBanner('Sync disconnected.', '#f59e0b', 'rgba(221,170,85,0.1)');
+  showBanner('Sync disconnected.', '#f59e0b', 'rgba(230,168,66,0.1)');
 }
 
 function exportData() {
@@ -4333,8 +4407,10 @@ function importData(e) {
     try {
       var data = JSON.parse(ev.target.result);
       if (!Array.isArray(data)) throw new Error('Invalid format');
-      if (confirm('Import ' + data.length + ' dramas? This replaces current data.')) { dramas = data; saveData(); render(); }
-    } catch(err) { alert('Could not read file: ' + err.message); }
+      customConfirm('Import ' + data.length + ' dramas? This replaces current data.', { okText: 'Replace', danger: true }).then(function(ok) {
+        if (ok) { dramas = data; saveData(); render(); }
+      });
+    } catch(err) { notify('Could not read file: ' + err.message); }
   };
   reader.readAsText(file);
 }
@@ -4441,7 +4517,7 @@ function renderOrderResults(container, order, useCrew, introText) {
     var card = document.createElement('div');
     card.style.cssText = 'display:flex;gap:0.85rem;align-items:center;background:#16131f;border:1px solid #2a2432;border-radius:12px;padding:0.85rem;margin-bottom:0.75rem;';
     var numEl = document.createElement('div');
-    numEl.style.cssText = 'font-size:1.3rem;font-weight:bold;color:#e9879c;width:32px;text-align:center;flex-shrink:0;';
+    numEl.style.cssText = 'font-size:1.3rem;font-weight:bold;color:#f16f8b;width:32px;text-align:center;flex-shrink:0;';
     numEl.textContent = '#' + (i + 1);
     var img = document.createElement('img');
     img.style.cssText = 'width:56px;height:80px;border-radius:8px;object-fit:cover;flex-shrink:0;';
@@ -4461,12 +4537,12 @@ function renderOrderResults(container, order, useCrew, introText) {
     addBtn.className = 'btn-sm'; addBtn.textContent = '+ Add to My Dramas'; addBtn.style.cssText = 'width:auto;margin-top:0.4rem;padding:0.25rem 0.6rem;font-size:0.65rem;';
     addBtn.onclick = (function(it) {
       return function() {
-        if (confirm('Add "' + it.name + '" to My Dramas (mark as watched)?')) {
+        customConfirm('Add "' + it.name + '" to My Dramas (mark as watched)?').then(function(ok) { if (ok) {
           openModal(null);
           document.getElementById('tmdbSearch').value = it.name;
           selectTmdbDrama({ id: it.id, name: it.name, first_air_date: (it.year || '') + '-01-01', poster_path: it.poster ? it.poster.replace(TMDB_IMG_LG, '') : '' });
           openTab('dramas');
-        }
+        } });
       };
     })(entry.item);
     info.appendChild(addBtn);
@@ -4709,7 +4785,7 @@ async function runMoodSearch() {
     var info = document.createElement('div'); info.className = 'rec-info';
     var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = rec.name + (rec.year ? ' (' + rec.year + ')' : '');
     var ratingRow = document.createElement('div');
-    ratingRow.style.cssText = 'font-size:0.68rem;color:#ddaa55;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
+    ratingRow.style.cssText = 'font-size:0.68rem;color:#e6a842;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
     if (typeof rec.imdbRating === 'number') {
       var imdbTag = document.createElement('span'); imdbTag.style.cssText = 'font-size:0.55rem;background:rgba(245,197,24,0.15);border:1px solid rgba(245,197,24,0.3);color:#f5c518;border-radius:3px;padding:0.05rem 0.3rem;'; imdbTag.textContent = 'IMDb';
       ratingRow.appendChild(imdbTag);
@@ -4736,12 +4812,12 @@ async function runMoodSearch() {
     card.appendChild(img); card.appendChild(info);
     card.onclick = (function(r) {
       return function() {
-        if (confirm('Add "' + r.name + '" to My Dramas (mark as watched)?')) {
+        customConfirm('Add "' + r.name + '" to My Dramas (mark as watched)?').then(function(ok) { if (ok) {
           openModal(null);
           document.getElementById('tmdbSearch').value = r.name;
           selectTmdbDrama({ id: r.id, name: r.name, first_air_date: (r.year || '') + '-01-01', poster_path: r.poster ? r.poster.replace(TMDB_IMG_LG, '') : '' });
           openTab('dramas');
-        }
+        } });
       };
     })(rec);
     grid.appendChild(card);
@@ -4764,7 +4840,7 @@ function renderAiRecCards(container, verified, introText) {
     var info = document.createElement('div'); info.className = 'rec-info';
     var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = rec.name + (rec.year ? ' (' + rec.year + ')' : '');
     var ratingRow = document.createElement('div');
-    ratingRow.style.cssText = 'font-size:0.68rem;color:#ddaa55;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
+    ratingRow.style.cssText = 'font-size:0.68rem;color:#e6a842;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.3rem;';
     if (typeof rec.imdbRating === 'number') {
       var imdbTag = document.createElement('span'); imdbTag.style.cssText = 'font-size:0.55rem;background:rgba(245,197,24,0.15);border:1px solid rgba(245,197,24,0.3);color:#f5c518;border-radius:3px;padding:0.05rem 0.3rem;'; imdbTag.textContent = 'IMDb';
       ratingRow.appendChild(imdbTag);
@@ -4791,12 +4867,12 @@ function renderAiRecCards(container, verified, introText) {
     card.appendChild(img); card.appendChild(info);
     card.onclick = (function(r) {
       return function() {
-        if (confirm('Add "' + r.name + '" to My Dramas (mark as watched)?')) {
+        customConfirm('Add "' + r.name + '" to My Dramas (mark as watched)?').then(function(ok) { if (ok) {
           openModal(null);
           document.getElementById('tmdbSearch').value = r.name;
           selectTmdbDrama({ id: r.id, name: r.name, first_air_date: (r.year || '') + '-01-01', poster_path: r.poster ? r.poster.replace(TMDB_IMG_LG, '') : '' });
           openTab('dramas');
-        }
+        } });
       };
     })(rec);
     grid.appendChild(card);
@@ -5110,12 +5186,12 @@ function renderAiOrderResults(container, order, introText) {
     addBtn.className = 'btn-sm'; addBtn.textContent = '+ Add to My Dramas'; addBtn.style.cssText = 'width:auto;margin-top:0.4rem;padding:0.25rem 0.6rem;font-size:0.65rem;';
     addBtn.onclick = (function(it) {
       return function() {
-        if (confirm('Add "' + it.name + '" to My Dramas (mark as watched)?')) {
+        customConfirm('Add "' + it.name + '" to My Dramas (mark as watched)?').then(function(ok) { if (ok) {
           openModal(null);
           document.getElementById('tmdbSearch').value = it.name;
           selectTmdbDrama({ id: it.id, name: it.name, first_air_date: (it.year || '') + '-01-01', poster_path: it.poster ? it.poster.replace(TMDB_IMG_LG, '') : '' });
           openTab('dramas');
-        }
+        } });
       };
     })(entry.item);
     info.appendChild(addBtn);
@@ -5327,7 +5403,7 @@ function applyRetroSelections() {
 
 // --- Scan My Library (one-time backfill) ---
 async function scanLibrary() {
-  if (!getTmdbKey()) { alert('Please add a TMDB API key in Settings first - scanning needs it to fetch full cast lists.'); return; }
+  if (!getTmdbKey()) { notify('Please add a TMDB API key in Settings first - scanning needs it to fetch full cast lists.', 'info'); return; }
   // Refetch ALL TMDB-linked dramas, not just ones missing data - dramas added before this fix
   // may have an incomplete cast cached from TMDB's shorter endpoint, so a full rescan corrects those too.
   var needsFetch = dramas.filter(function(d) { return d.tmdbId; });
@@ -5335,7 +5411,8 @@ async function scanLibrary() {
   var original = btn.textContent;
 
   if (needsFetch.length) {
-    if (!confirm('This will (re)fetch the full cast list for ' + needsFetch.length + ' drama(s) from TMDB, one request each - this also corrects any incomplete cast data cached before this fix. Continue?')) return;
+    var proceed = await customConfirm('This will (re)fetch the full cast list for ' + needsFetch.length + ' drama(s) from TMDB, one request each - this also corrects any incomplete cast data cached before this fix. Continue?', { okText: 'Scan' });
+    if (!proceed) return;
     btn.disabled = true;
     for (var i = 0; i < needsFetch.length; i++) {
       btn.textContent = 'Scanning ' + (i + 1) + '/' + needsFetch.length + '...';
@@ -5352,7 +5429,7 @@ async function scanLibrary() {
   var found = checkRetroactiveMatches(dramas);
   btn.textContent = original;
   btn.disabled = false;
-  if (!found.length) alert('Scan complete! No missing connections found - your library is fully cross-checked.');
+  if (!found.length) notify('Scan complete! No missing connections found - your library is fully cross-checked.', 'success');
 }
 
 // --- Watchlist ---
@@ -5417,7 +5494,7 @@ async function confirmAddToWatchlist() {
   if (!watchlistSelectedShow) return;
   var show = watchlistSelectedShow;
   if (watchlist.some(function(w) { return w.tmdbId === show.id; })) {
-    alert('This drama is already on your watchlist.');
+    notify('This drama is already on your watchlist.', 'info');
     return;
   }
   var btn = document.getElementById('watchlistConfirmBtn');
@@ -5439,7 +5516,7 @@ async function confirmAddToWatchlist() {
 // without needing to mark it watched or re-search it manually.
 async function addRecToWatchlist(rec, btnEl) {
   if (watchlist.some(function(w) { return w.tmdbId === rec.id; })) {
-    showBanner('Already on your watchlist!', '#a78bfa', 'rgba(214,92,123,0.1)');
+    showBanner('Already on your watchlist!', '#a78bfa', 'rgba(220,86,120,0.1)');
     return;
   }
   var originalText = btnEl ? btnEl.textContent : '';
@@ -5514,7 +5591,7 @@ function renderWatchlistGenreGrid() {
     var isSelected = selectedWatchlistGenres.has(gid);
     var pill = document.createElement('div');
     pill.textContent = TMDB_TV_GENRES[gid];
-    pill.style.cssText = 'cursor:pointer;font-size:0.72rem;padding:0.3rem 0.7rem;border-radius:999px;border:1px solid ' + (isSelected ? '#d65c7b' : '#2a2432') + ';background:' + (isSelected ? 'rgba(214,92,123,0.25)' : '#121017') + ';color:' + (isSelected ? '#e9879c' : '#a29dae') + ';';
+    pill.style.cssText = 'cursor:pointer;font-size:0.72rem;padding:0.3rem 0.7rem;border-radius:999px;border:1px solid ' + (isSelected ? '#dc5678' : '#2a2432') + ';background:' + (isSelected ? 'rgba(220,86,120,0.25)' : '#121017') + ';color:' + (isSelected ? '#f16f8b' : '#a29dae') + ';';
     pill.onclick = (function(g, el) {
       return function() {
         if (selectedWatchlistGenres.has(g)) selectedWatchlistGenres.delete(g); else selectedWatchlistGenres.add(g);
@@ -5573,7 +5650,7 @@ function renderWatchlist() {
     var info = document.createElement('div'); info.className = 'rec-info';
     var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = item.title + (item.year ? ' (' + item.year + ')' : '');
     var ratingRow = document.createElement('div');
-    ratingRow.style.cssText = 'font-size:0.68rem;color:#ddaa55;margin-bottom:0.25rem;';
+    ratingRow.style.cssText = 'font-size:0.68rem;color:#e6a842;margin-bottom:0.25rem;';
     ratingRow.textContent = (typeof item.rating === 'number' && item.voteCount > 0) ? ('\u2605 ' + item.rating.toFixed(1) + '/10') : 'No rating yet';
     var genreRow = document.createElement('div');
     genreRow.style.cssText = 'font-size:0.65rem;color:#9296d6;margin-bottom:0.3rem;';
