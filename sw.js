@@ -11,7 +11,11 @@
 // falls back to the cached copy if there's no connection at all - so updates show up
 // immediately, and offline viewing still works exactly the same.
 
-const CACHE_NAME = 'kdrama-cast-checker-v3';
+// v4: the network-first fetch was still letting the browser's own ordinary HTTP cache decide
+// whether to actually hit the network or just quietly reuse a recent response - an extra caching
+// layer sitting underneath this service worker's own cache. Forcing cache:'reload' bypasses that
+// layer too, so "network-first" now really means "always actually ask the server first".
+const CACHE_NAME = 'kdrama-cast-checker-v4';
 const APP_SHELL = [
   './',
   './index.html',
@@ -45,7 +49,7 @@ self.addEventListener('fetch', function(event) {
   if (url.origin !== self.location.origin) return; // API calls (TMDB etc.) go straight to network, uncached
 
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: 'reload' })
       .then(function(response) {
         if (response && response.status === 200) {
           var copy = response.clone();
