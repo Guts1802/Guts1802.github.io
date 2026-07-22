@@ -1518,6 +1518,13 @@ function createNewProfile() {
   var id = 'p_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
   profiles.push({ id: id, name: name, pinHash: simpleHash(pin) });
   saveProfiles(profiles);
+
+  // New profiles start as a copy of Shaffick's library (dramas, watchlist, favorite actors,
+  // skipped shows) so people don't have to manually re-add every drama already watched together.
+  // This is a one-time copy at creation - from then on, each profile's data is fully independent,
+  // so editing/removing things afterward (like trimming down to leads-only) never affects Shaffick's copy.
+  seedProfileFromShaffick(id);
+
   setActiveProfileId(id);
   document.getElementById('profileGate').classList.remove('open');
   initApp();
@@ -1811,6 +1818,7 @@ async function renderProfileManageList() {
   }
 
   box.innerHTML = '';
+  var shaffickProfile = profiles.find(function(p) { return p.name.toLowerCase() === 'shaffick'; });
   profiles.forEach(function(p) {
     var wrap = document.createElement('div');
     wrap.style.cssText = 'margin-bottom:0.65rem;padding-bottom:0.65rem;border-bottom:1px solid #2a2432;';
@@ -1845,7 +1853,41 @@ async function renderProfileManageList() {
     delBtn.onclick = function() { deleteProfile(p.id, p.name); };
     row.appendChild(input); row.appendChild(saveBtn); row.appendChild(delBtn);
     wrap.appendChild(row);
+
+    // Lets you fix an already-created, still-empty profile without deleting and recreating it -
+    // copies Shaffick's current library (dramas, watchlist, favorite actors, skipped shows) into it.
+    if (shaffickProfile && p.id !== shaffickProfile.id) {
+      var copyBtn = document.createElement('button');
+      copyBtn.className = 'btn-sm'; copyBtn.textContent = "Copy Shaffick's Library into this profile";
+      copyBtn.style.cssText = 'width:auto;margin-top:0.4rem;font-size:0.68rem;';
+      copyBtn.onclick = function() { copyShaffickLibraryTo(p.id, p.name); };
+      wrap.appendChild(copyBtn);
+    }
+
     box.appendChild(wrap);
+  });
+}
+// Shared by both "create a new profile" (automatic) and the manual "Copy Shaffick's Library"
+// button in Manage Profiles (for profiles that already exist but started out empty).
+function seedProfileFromShaffick(targetId) {
+  var profiles = getProfiles();
+  var source = profiles.find(function(p) { return p.id !== targetId && p.name.toLowerCase() === 'shaffick'; });
+  if (!source) return false;
+  ['kdc_d_', 'kdc_watchlist_', 'kdc_fav_actors_', 'kdc_fav_only_', 'kdc_skipped_'].forEach(function(prefix) {
+    try {
+      var v = localStorage.getItem(prefix + source.id);
+      if (v !== null) localStorage.setItem(prefix + targetId, v);
+    } catch(e) {}
+  });
+  return true;
+}
+function copyShaffickLibraryTo(profileId, profileName) {
+  customConfirm('Copy Shaffick\'s current library (dramas, watchlist, favorite actors, skipped shows) into "' + profileName + '"? This replaces anything already in that profile on this device.', { okText: 'Copy', danger: true }).then(function(ok) {
+    if (!ok) return;
+    var didIt = seedProfileFromShaffick(profileId);
+    if (!didIt) { notify('No profile named "Shaffick" was found.'); return; }
+    showBanner("Copied Shaffick's library into " + profileName + '.', '#4fae85', 'rgba(79,174,133,0.1)');
+    renderProfileManageList();
   });
 }
 // Reads drama/watchlist counts for a given profile id directly from this device's local
