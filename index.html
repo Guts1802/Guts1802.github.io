@@ -399,6 +399,7 @@
       <button onclick="openTab('check')" id="tab-check" class="hdr-tab">Check Cast</button>
       <button onclick="openTab('rec')" id="tab-rec" class="hdr-tab">Recommendations</button>
       <button onclick="openTab('similar')" id="tab-similar" class="hdr-tab">Similar Shows</button>
+      <button onclick="openTab('lookup')" id="tab-lookup" class="hdr-tab">By Actor/Writer</button>
       <button onclick="openTab('stats')" id="tab-stats" class="hdr-tab">Stats</button>
       <button onclick="openTab('optimizer')" id="tab-optimizer" class="hdr-tab">Watch Optimizer</button>
       <button onclick="openTab('mood')" id="tab-mood" class="hdr-tab">✨ AI Mood Search</button>
@@ -695,6 +696,74 @@
 
       <button onclick="getSimilarShows()" id="similarBtn">Find Similar Dramas</button>
       <div id="similarResults" style="margin-top:1rem;"></div>
+    </div>
+  </div>
+
+  <!-- By Actor/Writer Lookup Tab -->
+  <div id="page-lookup" class="hidden">
+    <div class="box">
+      <h3 class="sec-title">Find Shows By Actor/Director/Writer</h3>
+      <p style="font-size:0.8rem;color:#8b8797;margin-bottom:0.75rem;">
+        Pick one or more actors (and, if crew tracking is on, directors/writers) to see every Korean drama they're
+        in that you have not watched yet. Green = available now, Red = conflicts with your last 10.
+        <span class="tmdb-badge">TMDB</span>
+      </p>
+      <div id="lookupTmdbKeyWarning" class="sync-warn sync-box hidden">
+        TMDB API key not set. Go to Settings to add it. It is free and instant to get at themoviedb.org
+      </div>
+
+      <label class="field-lbl">Select Actors</label>
+      <input id="lookupActorSearch" placeholder="Search actor..." oninput="renderLookupActorGrid()">
+      <div id="lookupActorGrid" class="cast-select-grid" style="max-height:220px;overflow-y:auto;margin-bottom:0.5rem;"></div>
+      <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">Tap an actor to select them. Tap again to deselect.</p>
+
+      <div id="lookupCrewSection">
+        <label class="field-lbl">Select Directors/Writers</label>
+        <input id="lookupCrewSearch" placeholder="Search director or writer..." oninput="renderLookupCrewGrid()">
+        <div id="lookupCrewGrid" class="cast-select-grid" style="max-height:220px;overflow-y:auto;margin-bottom:0.5rem;"></div>
+        <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">Tap a director/writer to select them. Tap again to deselect.</p>
+      </div>
+      <p id="lookupCrewOffNote" class="hidden" style="font-size:0.68rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">Enable "Avoid Recent Directors/Writers" in Settings to also select directors/writers here.</p>
+
+      <button class="btn-sm" onclick="toggleLookupAdvanced()" id="lookupAdvancedBtn" style="width:auto;margin-bottom:0.75rem;">Show Advanced Filters</button>
+
+      <div id="lookupAdvancedSection" class="hidden">
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Check full cast for last-10 overlap</div>
+            <div class="toggle-sub">Off by default. The quick green/red check only looks at the person(s) you selected. Turning this on fetches each show's full cast so a hidden co-star from your last 10 is caught too - slower, more thorough.</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="lookupFullCastToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Hidden Gems only</div>
+            <div class="toggle-sub">Off by default. Shows only highly rated dramas (7.5+) with relatively few votes - keeps your person selection above.</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="lookupHiddenGemsToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Only my favorite actors</div>
+            <div class="toggle-sub">Off by default. Restricts results to shows that also star an actor you've hearted. This toggle is shared across every recommendation tab.</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="lookupFavOnlyToggle" onchange="onFavOnlyToggleChange(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <button onclick="getPersonLookup()" id="lookupBtn">Find Unwatched Shows</button>
+      <div id="lookupResults" style="margin-top:1rem;"></div>
     </div>
   </div>
 
@@ -1279,7 +1348,7 @@ function buttonIdsForPage(name) {
 }
 
 function openTab(name) {
-  var pages = ['dramas','watchlist','skipped','dir','rec','check','similar','stats','optimizer','mood','airec','aisimilar','aioptimizer'];
+  var pages = ['dramas','watchlist','skipped','dir','rec','check','similar','lookup','stats','optimizer','mood','airec','aisimilar','aioptimizer'];
   pages.forEach(function(p) {
     var el = document.getElementById('page-' + p);
     if (el) el.classList.add('hidden');
@@ -1312,6 +1381,15 @@ function openTab(name) {
     var noKey2 = !getTmdbKey();
     document.getElementById('similarKeyWarning').classList.toggle('hidden', !noKey2);
     renderSimilarSourcePicker();
+  }
+  if (name === 'lookup') {
+    var noKey3 = !getTmdbKey();
+    document.getElementById('lookupTmdbKeyWarning').classList.toggle('hidden', !noKey3);
+    var crewOn2 = isTrackCrewOn();
+    document.getElementById('lookupCrewSection').classList.toggle('hidden', !crewOn2);
+    document.getElementById('lookupCrewOffNote').classList.toggle('hidden', crewOn2);
+    renderLookupActorGrid();
+    if (crewOn2) renderLookupCrewGrid();
   }
   if (name === 'watchlist') renderWatchlist();
   if (name === 'skipped') renderSkippedShowsPage();
@@ -2058,7 +2136,7 @@ function setFavOnlyOn(on) {
   var pid = getActiveProfileId();
   try { localStorage.setItem('kdc_fav_only_' + pid, on ? '1' : '0'); } catch(e) {}
 }
-var FAV_ONLY_TOGGLE_IDS = ['recFavOnlyToggle', 'similarFavOnlyToggle', 'moodFavOnlyToggle', 'airecFavOnlyToggle', 'aisimilarFavOnlyToggle'];
+var FAV_ONLY_TOGGLE_IDS = ['recFavOnlyToggle', 'similarFavOnlyToggle', 'moodFavOnlyToggle', 'airecFavOnlyToggle', 'aisimilarFavOnlyToggle', 'lookupFavOnlyToggle'];
 function syncFavOnlyToggles() {
   var on = getFavOnlyOn();
   FAV_ONLY_TOGGLE_IDS.forEach(function(id) { var el = document.getElementById(id); if (el) el.checked = on; });
@@ -2716,6 +2794,304 @@ function renderExcludeGrid() {
   });
 }
 
+// --- By Actor/Writer Lookup ---
+// Session-only selection state (not persisted) for which actors/crew the lookup tab is
+// currently searching for - mirrors the pattern used by selectedSimilarSources.
+var selectedLookupActors = new Set(); // lowercased actor names
+var selectedLookupCrew = new Set(); // lowercased director/writer names
+
+function renderLookupActorGrid() {
+  var search = (document.getElementById('lookupActorSearch').value || '').trim().toLowerCase();
+  var actors = allActorsMap()
+    .filter(function(a) { return !search || a.name.toLowerCase().indexOf(search) !== -1; })
+    .sort(function(a, b) { return a.name.localeCompare(b.name); });
+
+  var grid = document.getElementById('lookupActorGrid');
+  grid.innerHTML = '';
+  if (!actors.length) {
+    var msg = document.createElement('p');
+    msg.style.cssText = 'font-size:0.75rem;color:#8b8797;grid-column:1/-1;padding:0.5rem 0;';
+    msg.textContent = dramas.length ? 'No actors match your search.' : 'Add some dramas first to see actors here.';
+    grid.appendChild(msg);
+    return;
+  }
+  actors.forEach(function(actor) {
+    var key = actor.name.toLowerCase().trim();
+    var isSelected = selectedLookupActors.has(key);
+    var item = document.createElement('div');
+    item.className = 'cast-select-item' + (isSelected ? ' selected' : '');
+    var img = document.createElement('img');
+    img.src = ph(actor.name, actor.photo);
+    img.onerror = function() { this.src = ph(actor.name, ''); };
+    var nameEl = document.createElement('div'); nameEl.className = 'csn'; nameEl.textContent = actor.name;
+    var metaEl = document.createElement('div'); metaEl.className = 'csc'; metaEl.textContent = actor.inRecent10 ? 'In last 10' : 'Available';
+    item.appendChild(img); item.appendChild(nameEl); item.appendChild(metaEl);
+    item.onclick = (function(k, el) {
+      return function() {
+        if (selectedLookupActors.has(k)) { selectedLookupActors.delete(k); el.classList.remove('selected'); }
+        else { selectedLookupActors.add(k); el.classList.add('selected'); }
+      };
+    })(key, item);
+    grid.appendChild(item);
+  });
+}
+
+function renderLookupCrewGrid() {
+  var search = (document.getElementById('lookupCrewSearch').value || '').trim().toLowerCase();
+  var crew = allCrewMap()
+    .filter(function(c) { return !search || c.name.toLowerCase().indexOf(search) !== -1; })
+    .sort(function(a, b) { return a.name.localeCompare(b.name); });
+
+  var grid = document.getElementById('lookupCrewGrid');
+  grid.innerHTML = '';
+  if (!crew.length) {
+    var msg = document.createElement('p');
+    msg.style.cssText = 'font-size:0.75rem;color:#8b8797;grid-column:1/-1;padding:0.5rem 0;';
+    msg.textContent = dramas.length ? 'No directors/writers match your search.' : 'Add some dramas with tracked crew first to see them here.';
+    grid.appendChild(msg);
+    return;
+  }
+  crew.forEach(function(c) {
+    var key = c.name.toLowerCase().trim();
+    var isSelected = selectedLookupCrew.has(key);
+    var item = document.createElement('div');
+    item.className = 'cast-select-item' + (isSelected ? ' selected' : '');
+    var img = document.createElement('img');
+    img.src = ph(c.name, c.photo);
+    img.onerror = function() { this.src = ph(c.name, ''); };
+    var nameEl = document.createElement('div'); nameEl.className = 'csn'; nameEl.textContent = c.name;
+    var metaEl = document.createElement('div'); metaEl.className = 'csc'; metaEl.textContent = (c.inRecent10 ? 'In last 10' : 'Available') + ' \u2022 ' + c.role;
+    item.appendChild(img); item.appendChild(nameEl); item.appendChild(metaEl);
+    item.onclick = (function(k, el) {
+      return function() {
+        if (selectedLookupCrew.has(k)) { selectedLookupCrew.delete(k); el.classList.remove('selected'); }
+        else { selectedLookupCrew.add(k); el.classList.add('selected'); }
+      };
+    })(key, item);
+    grid.appendChild(item);
+  });
+}
+
+// Tags each item's .conflict / .conflictWith with a real full-cast check (fetches each show's
+// full cast and looks for any overlap with the last-10 TRACKED actors), without removing anything
+// from the list - unlike filterOutLast10CastOverlap, which is used elsewhere to drop conflicts.
+async function annotateFullCastOverlap(items, onProgress) {
+  var r10Names = recent10Names();
+  var actorsByKey = null; // resolved lazily, only if an overlap is actually found
+  for (var i = 0; i < items.length; i++) {
+    if (onProgress) onProgress(i + 1, items.length);
+    var names = await fetchTopCastNames(items[i].id, 50);
+    var overlapKey = names.find(function(n) { return r10Names.has(n); });
+    if (overlapKey) {
+      items[i].conflict = true;
+      if (!actorsByKey) {
+        actorsByKey = {};
+        allActorsMap().forEach(function(a) { actorsByKey[a.name.toLowerCase().trim()] = a.name; });
+      }
+      items[i].conflictWith = actorsByKey[overlapKey] || overlapKey;
+    }
+  }
+}
+
+async function getPersonLookup() {
+  var key = getTmdbKey();
+  if (!key) { document.getElementById('lookupTmdbKeyWarning').classList.remove('hidden'); return; }
+
+  var actorNames = Array.from(selectedLookupActors);
+  var crewNames = isTrackCrewOn() ? Array.from(selectedLookupCrew) : [];
+  var container = document.getElementById('lookupResults');
+  if (!actorNames.length && !crewNames.length) {
+    container.innerHTML = explainEmptyResults(['Select at least one actor' + (isTrackCrewOn() ? ', director, or writer' : '') + ' above first.']);
+    return;
+  }
+
+  var btn = document.getElementById('lookupBtn');
+  btn.textContent = 'Searching TMDB...';
+  btn.disabled = true;
+  container.innerHTML = '<p style="color:#8b8797;font-size:0.85rem;">Looking up unwatched shows...</p>';
+
+  var watchedTitles = new Set(dramas.map(function(d) { return d.title.toLowerCase().trim(); }));
+  var watchedTmdbIds = new Set(dramas.filter(function(d) { return d.tmdbId; }).map(function(d) { return String(d.tmdbId); }));
+  var actorMapAll = allActorsMap();
+  var crewMapAll = allCrewMap();
+  var r10Names = recent10Names();
+  var crewR10 = crewR10NamesSet();
+
+  async function resolvePersonIdFor(name, knownId) {
+    if (knownId) return knownId;
+    var personData = await tmdbGet('/search/person?query=' + encodeURIComponent(name));
+    if (!personData || !personData.results || !personData.results.length) return null;
+    return personData.results[0].id;
+  }
+
+  function qualifies(show) {
+    if (!show.name) return false;
+    var titleLower = show.name.toLowerCase().trim();
+    if (watchedTitles.has(titleLower)) return false; // already watched
+    if (watchedTmdbIds.has(String(show.id))) return false; // already watched (matched by TMDB id)
+    if (show.origin_country && show.origin_country.length && show.origin_country.indexOf('KR') === -1) return false; // not Korean
+    if (show.genre_ids && show.genre_ids.some(function(g) { return EXCLUDE_GENRES.indexOf(g) !== -1; })) return false; // skip reality/talk/news/doc
+    if (!show.first_air_date) return false; // skip unaired/unknown
+    return true;
+  }
+
+  var showMap = {};
+  function addToShowMap(show, personName, viaCrew) {
+    var id = show.id;
+    if (!showMap[id]) {
+      var genreNames = (show.genre_ids || []).map(function(g) { return TMDB_TV_GENRES[g]; }).filter(Boolean);
+      showMap[id] = {
+        id: id, name: show.name,
+        poster: show.poster_path ? (TMDB_IMG_LG + show.poster_path) : '',
+        year: show.first_air_date ? show.first_air_date.substring(0, 4) : '',
+        rating: typeof show.vote_average === 'number' ? show.vote_average : null,
+        voteCount: show.vote_count || 0,
+        genres: genreNames, genreIds: show.genre_ids || [],
+        popularity: typeof show.popularity === 'number' ? show.popularity : 0,
+        actors: [], crewMatches: [], conflict: false, conflictWith: null
+      };
+    }
+    var entry = showMap[id];
+    if (viaCrew) { if (entry.crewMatches.indexOf(personName) === -1) entry.crewMatches.push(personName); }
+    else { if (entry.actors.indexOf(personName) === -1) entry.actors.push(personName); }
+  }
+
+  btn.textContent = 'Fetching credits...';
+  for (var i = 0; i < actorNames.length; i++) {
+    var known = actorMapAll.find(function(a) { return a.name.toLowerCase().trim() === actorNames[i]; });
+    if (!known) continue;
+    var pid = await resolvePersonIdFor(known.name, known.tmdbId);
+    if (!pid) continue;
+    var credits = await tmdbGet('/person/' + pid + '/tv_credits');
+    if (!credits || !credits.cast) continue;
+    credits.cast.filter(qualifies).forEach(function(show) { addToShowMap(show, known.name, false); });
+  }
+  for (var j = 0; j < crewNames.length; j++) {
+    var knownC = crewMapAll.find(function(c) { return c.name.toLowerCase().trim() === crewNames[j]; });
+    if (!knownC) continue;
+    var pid2 = await resolvePersonIdFor(knownC.name, knownC.tmdbId);
+    if (!pid2) continue;
+    var credits2 = await tmdbGet('/person/' + pid2 + '/tv_credits');
+    if (!credits2 || !credits2.crew) continue;
+    credits2.crew.filter(function(c) { return c.department === 'Directing' || c.department === 'Writing'; })
+      .filter(qualifies).forEach(function(show) { addToShowMap(show, knownC.name, true); });
+  }
+
+  var results = Object.values(showMap);
+  if (!results.length) {
+    container.innerHTML = explainEmptyResults(['No unwatched Korean dramas were found for the selected people, or everything TMDB returned was already in your library.']);
+    btn.textContent = 'Find Unwatched Shows'; btn.disabled = false;
+    return;
+  }
+
+  // Quick green/red tag (no extra fetches): conflict if the selected person themself is
+  // currently in your last 10. This is the "last 10 shows logic" the highlighting is based on.
+  results.forEach(function(r) {
+    var conflictActor = r.actors.find(function(n) { return r10Names.has(n.toLowerCase().trim()); });
+    var conflictCrew = !conflictActor && r.crewMatches.find(function(n) { return crewR10.has(n.toLowerCase().trim()); });
+    if (conflictActor) { r.conflict = true; r.conflictWith = conflictActor; }
+    else if (conflictCrew) { r.conflict = true; r.conflictWith = conflictCrew; }
+  });
+
+  var fullCastOn = document.getElementById('lookupFullCastToggle').checked;
+  if (fullCastOn) {
+    await annotateFullCastOverlap(results, function(done, total) { btn.textContent = 'Checking full cast (' + done + '/' + total + ')...'; });
+  }
+
+  results = filterOutSkipped(results);
+
+  var favOnlyOn = document.getElementById('lookupFavOnlyToggle').checked;
+  if (favOnlyOn) {
+    if (!getFavoriteActors().length) {
+      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on, but you have not hearted any favorite actors yet - tap the \u2661 on an actor in My Dramas or the Actor Directory first.']);
+      btn.textContent = 'Find Unwatched Shows'; btn.disabled = false;
+      return;
+    }
+    btn.textContent = 'Checking favorite actors...';
+    results = await filterToFavoriteActorsOnly(results, function(done, total) { btn.textContent = 'Checking favorites (' + done + '/' + total + ')...'; });
+  }
+
+  var hiddenGemsOn = document.getElementById('lookupHiddenGemsToggle').checked;
+  if (hiddenGemsOn) results = filterHiddenGems(results);
+
+  if (!results.length) {
+    var reasons = [];
+    if (fullCastOn) reasons.push('"Check full cast for last-10 overlap" is on - some candidates may have been excluded');
+    if (favOnlyOn) reasons.push('"Only my favorite actors" is on - none of the results also star a favorited actor');
+    if (hiddenGemsOn) reasons.push('"Hidden Gems only" is on - needs rating 7.5+ with under 1,000 votes');
+    if (!reasons.length) reasons.push('You previously skipped all of the candidates found this time.');
+    container.innerHTML = explainEmptyResults(reasons);
+    btn.textContent = 'Find Unwatched Shows'; btn.disabled = false;
+    return;
+  }
+
+  // Available shows first, then by rating
+  results.sort(function(a, b) {
+    if (a.conflict !== b.conflict) return a.conflict ? 1 : -1;
+    return (b.rating || 0) - (a.rating || 0);
+  });
+
+  renderLookupResults(results, container);
+  btn.textContent = 'Refresh Results';
+  btn.disabled = false;
+}
+
+function renderLookupResults(results, container) {
+  var conflictCount = results.filter(function(r) { return r.conflict; }).length;
+  var availableCount = results.length - conflictCount;
+  container.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">Found ' + results.length + ' unwatched show' + (results.length === 1 ? '' : 's') +
+    ' - <span style="color:#4fae85;">' + availableCount + ' available</span>, <span style="color:#e0605a;">' + conflictCount + ' conflict' + (conflictCount === 1 ? '' : 's') + ' with your last 10</span>. Click a show to add it to My Dramas.</p>';
+  var grid = document.createElement('div');
+  grid.className = 'rec-grid';
+  results.forEach(function(rec) {
+    var card = document.createElement('div'); card.className = 'rec-card';
+    card.style.border = '2px solid ' + (rec.conflict ? '#e0605a' : '#4fae85');
+    var img = document.createElement('img'); img.className = 'rec-poster';
+    img.src = rec.poster || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(rec.name) + '&background=1a1a2e&color=c084fc&size=200');
+    img.onerror = function() { this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(rec.name) + '&background=1a1a2e&color=c084fc&size=200'; };
+    var info = document.createElement('div'); info.className = 'rec-info';
+    var title = document.createElement('div'); title.className = 'rec-title'; title.textContent = rec.name + (rec.year ? ' (' + rec.year + ')' : '');
+    var statusPill = document.createElement('div');
+    statusPill.style.cssText = 'font-size:0.65rem;font-weight:bold;margin-bottom:0.25rem;color:' + (rec.conflict ? '#e0605a' : '#4fae85') + ';';
+    statusPill.textContent = rec.conflict ? ('Conflict - ' + rec.conflictWith + ' is in your last 10') : 'Available now';
+    var ratingRow = document.createElement('div');
+    ratingRow.style.cssText = 'font-size:0.68rem;color:#e6a842;margin-bottom:0.25rem;';
+    ratingRow.textContent = (rec.rating && rec.voteCount > 0) ? ('\u2605 ' + rec.rating.toFixed(1) + '/10 (' + rec.voteCount + ')') : 'No rating yet';
+    var genreRow = document.createElement('div');
+    genreRow.style.cssText = 'font-size:0.65rem;color:#9296d6;margin-bottom:0.3rem;';
+    genreRow.textContent = rec.genres && rec.genres.length ? rec.genres.join(', ') : '';
+    var peopleRow = document.createElement('div'); peopleRow.className = 'rec-actors';
+    var peopleParts = [];
+    if (rec.actors.length) peopleParts.push(rec.actors.join(', '));
+    if (rec.crewMatches.length) peopleParts.push(rec.crewMatches.join(', ') + ' (Director/Writer)');
+    renderTextWithActorTooltips(peopleRow, peopleParts.join(' \u2022 '));
+    if (isHiddenGem(rec)) {
+      var gemPill = document.createElement('div'); gemPill.className = 'gem-pill'; gemPill.textContent = '\uD83D\uDC8E Hidden Gem';
+      info.appendChild(gemPill);
+    }
+    info.appendChild(title); info.appendChild(statusPill); info.appendChild(ratingRow);
+    if (genreRow.textContent) info.appendChild(genreRow);
+    info.appendChild(peopleRow);
+    info.appendChild(createTmdbLinkBadge(rec.id));
+    info.appendChild(createTrailerBadge(rec.id));
+    info.appendChild(createWatchlistAddBadge(rec));
+    info.appendChild(createSkipBadge(rec, card));
+    card.appendChild(img); card.appendChild(info);
+    card.onclick = (function(r) {
+      return function() {
+        customConfirm('Add "' + r.name + '" to My Dramas (mark as watched)?').then(function(ok) { if (ok) {
+          openModal(null);
+          document.getElementById('tmdbSearch').value = r.name;
+          selectTmdbDrama({ id: r.id, name: r.name, first_air_date: r.year + '-01-01', poster_path: r.poster ? r.poster.replace(TMDB_IMG_LG, '') : '' });
+          openTab('dramas');
+        } });
+      };
+    })(rec);
+    grid.appendChild(card);
+  });
+  container.appendChild(grid);
+}
+
 // --- Recommendations ---
 // --- Smart Score ---
 function isSmartScoreOn() { return !!getSettings().smartScore; }
@@ -2738,6 +3114,14 @@ function toggleSimilarAdvanced() {
   var btn = document.getElementById('similarAdvancedBtn');
   if (sec.classList.contains('hidden')) { sec.classList.remove('hidden'); btn.textContent = 'Hide Advanced Options'; }
   else { sec.classList.add('hidden'); btn.textContent = 'Show Advanced Options'; }
+}
+
+// Toggles the collapsible "Advanced Filters" section on the By Actor/Writer lookup tab
+function toggleLookupAdvanced() {
+  var sec = document.getElementById('lookupAdvancedSection');
+  var btn = document.getElementById('lookupAdvancedBtn');
+  if (sec.classList.contains('hidden')) { sec.classList.remove('hidden'); btn.textContent = 'Hide Advanced Filters'; }
+  else { sec.classList.add('hidden'); btn.textContent = 'Show Advanced Filters'; }
 }
 
 function onSmartScoreToggle(val) {
@@ -3817,13 +4201,24 @@ function saveDrama() {
     var tidField = r.querySelector('[data-tmdbid]');
     if (n) cast.push({ name: n, role: r.querySelector('select').value, photo: r.querySelector('[data-photo]').value.trim(), tmdbId: tidField ? tidField.value.trim() : '' });
   });
-  if (!cast.length) { notify('Please add at least one actor'); return; }
   var crew = [];
   document.querySelectorAll('#crewList .cast-row').forEach(function(r) {
     var n = r.querySelector('[data-cname]').value.trim();
     var tidField = r.querySelector('[data-ctmdbid]');
     if (n) crew.push({ name: n, role: r.querySelector('select').value, photo: r.querySelector('[data-cphoto]').value.trim(), tmdbId: tidField ? tidField.value.trim() : '' });
   });
+  // Cast is normally required (it's what powers the whole repeat-actor tracking feature), but if
+  // TMDB genuinely returned no cast (or none was typed in manually), don't block the save - there's
+  // nothing here that could ever impact last-10 tracking anyway, so a plain "are you sure" is enough.
+  if (!cast.length) {
+    customConfirm('No actors were found or entered for "' + title + '" - since there\'s nothing to track for repeat-cast checking, save it anyway with no cast?').then(function(ok) {
+      if (ok) finishSaveDrama(title, year, poster, tmdbId, genreIds, popularity, fullCast, cast, crew);
+    });
+    return;
+  }
+  finishSaveDrama(title, year, poster, tmdbId, genreIds, popularity, fullCast, cast, crew);
+}
+function finishSaveDrama(title, year, poster, tmdbId, genreIds, popularity, fullCast, cast, crew) {
   var obj = { id: editId || Date.now(), title: title, year: year, poster: poster, tmdbId: tmdbId, genreIds: genreIds, popularity: popularity, fullCast: fullCast, cast: cast, crew: crew };
   if (editId) { var idx = dramas.findIndex(function(d) { return d.id === editId; }); dramas[idx] = obj; }
   else dramas.push(obj);
