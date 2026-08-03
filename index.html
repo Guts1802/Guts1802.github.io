@@ -21,7 +21,16 @@
       --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
     html { scroll-behavior: smooth; }
-    body { font-family: var(--font-body); background: #0a0a0f; color: #ededf3; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { font-family: var(--font-body); background: #0a0a0f; color: #ededf3; min-height: 100vh; -webkit-font-smoothing: antialiased; overscroll-behavior-y: contain; }
+    * { -webkit-tap-highlight-color: transparent; }
+    /* iOS scroll feel: momentum scrolling + containment on every scrollable region in the app
+       (grids, modals, tab strips) so background content doesn't rubber-band/scroll-chain behind
+       them, and inner scroll areas get native momentum instead of feeling stiff/laggy. */
+    [style*="overflow-y:auto"], [style*="overflow-x:auto"] {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
     ::selection { background: rgba(220,86,120,0.35); color: #fff; }
     a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
       outline: 2px solid #f16f8b; outline-offset: 2px; border-radius: 4px;
@@ -41,7 +50,7 @@
     #banner { display:none; margin-top:0.5rem; font-size:0.8rem; padding:0.25rem 0.75rem; border-radius:6px; }
     .hdr-btns-wrap { margin-top:0.85rem; }
     .hdr-tabs {
-      display:flex; gap:0.4rem; overflow-x:auto; -webkit-overflow-scrolling:touch;
+      display:flex; gap:0.4rem; overflow-x:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain;
       padding:0.2rem 0.15rem 0.55rem; justify-content:flex-start; scrollbar-width:thin;
       mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent);
     }
@@ -84,7 +93,7 @@
     .drama-card.active .drama-poster { border-color:rgba(220,86,120,0.5); }
     .active-badge { display:inline-flex; align-items:center; gap:0.3rem; background:rgba(220,86,120,0.18); border:1px solid rgba(220,86,120,0.4); border-radius:999px; padding:0.15rem 0.6rem; font-size:0.6rem; font-weight:700; color:#f16f8b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem; }
     .active-badge::before { content:'●'; font-size:0.55rem; }
-    .actor-scroll { display:flex; gap:0.75rem; overflow-x:auto; padding:0 1rem 1rem; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    .actor-scroll { display:flex; gap:0.75rem; overflow-x:auto; padding:0 1rem 1rem; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; scrollbar-width:none; }
     .actor-scroll::-webkit-scrollbar { display:none; }
     .actor-card { display:flex; flex-direction:column; align-items:center; min-width:88px; padding:0.65rem 0.5rem; background:#121017; border:2px solid #2a2432; border-radius:12px; text-align:center; flex-shrink:0; }
     .actor-card.red { border-color:#e0605a; background:rgba(224,96,90,0.1); }
@@ -102,12 +111,13 @@
     .fav-group summary::after { content:'\2304'; font-size:1rem; color:#8b8797; margin-left:auto; transition:transform 0.2s ease; text-transform:none; letter-spacing:0; }
     .fav-group[open] summary::after { transform:rotate(180deg); }
     .fav-group::-webkit-scrollbar { width:5px; }
-    #chkResults, #recResults, #similarResults, #moodResults, #airecResults, #aisimilarResults, #aioptimizerResults {
+    #chkResults, #recResults, #similarResults, #lookupResults, #moodResults, #airecResults, #aisimilarResults, #aioptimizerResults {
       max-height:68vh; overflow-y:auto; overflow-x:hidden; padding-right:0.3rem; scroll-behavior:smooth;
+      -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain;
     }
-    #chkResults::-webkit-scrollbar, #recResults::-webkit-scrollbar, #similarResults::-webkit-scrollbar,
+    #chkResults::-webkit-scrollbar, #recResults::-webkit-scrollbar, #similarResults::-webkit-scrollbar, #lookupResults::-webkit-scrollbar,
     #moodResults::-webkit-scrollbar, #airecResults::-webkit-scrollbar, #aisimilarResults::-webkit-scrollbar, #aioptimizerResults::-webkit-scrollbar { width:6px; }
-    #chkResults::-webkit-scrollbar-thumb, #recResults::-webkit-scrollbar-thumb, #similarResults::-webkit-scrollbar-thumb,
+    #chkResults::-webkit-scrollbar-thumb, #recResults::-webkit-scrollbar-thumb, #similarResults::-webkit-scrollbar-thumb, #lookupResults::-webkit-scrollbar-thumb,
     #moodResults::-webkit-scrollbar-thumb, #airecResults::-webkit-scrollbar-thumb, #aisimilarResults::-webkit-scrollbar-thumb, #aioptimizerResults::-webkit-scrollbar-thumb { background:#2a2432; border-radius:999px; }
     .fav-count-badge { background:rgba(220,86,120,0.18); color:#f16f8b; border-radius:999px; padding:0.12rem 0.55rem; font-size:0.65rem; text-transform:none; letter-spacing:0; font-weight:700; }
     .fav-chip-photo { width:20px; height:20px; border-radius:50%; object-fit:cover; flex-shrink:0; }
@@ -128,13 +138,13 @@
     .dir-status-pill { display:inline-block; font-size:0.62rem; font-weight:700; padding:0.15rem 0.55rem; border-radius:999px; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:0.3rem; }
     .dir-card.bad .dir-status-pill { background:rgba(224,96,90,0.15); color:#e0605a; }
     .dir-card.good .dir-status-pill { background:rgba(79,174,133,0.15); color:#4fae85; }
-    .modal { display:none; position:fixed; inset:0; background:rgba(6,4,9,0.82); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); z-index:100; overflow-y:auto; }
+    .modal { display:none; position:fixed; inset:0; background:rgba(6,4,9,0.82); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); z-index:100; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; }
     .modal.open { display:block; }
     .modal-inner { background:#16131f; border:1px solid #2a2432; border-radius:18px; padding:1.5rem; width:calc(100% - 2rem); max-width:580px; margin:2rem auto; box-shadow:0 24px 60px rgba(0,0,0,0.5); }
     .field-lbl { display:block; font-size:0.72rem; color:#8b8797; margin-bottom:0.3rem; text-transform:uppercase; }
     .cast-row { background:#0a0a0f; border:1px solid #2a2432; border-radius:8px; padding:0.75rem; margin-bottom:0.75rem; }
     .ac-wrap { position:relative; }
-    .ac-list { position:absolute; top:calc(100% + 2px); left:0; right:0; background:#16131f; border:1px solid #dc5678; border-radius:8px; z-index:300; max-height:260px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,0.5); }
+    .ac-list { position:absolute; top:calc(100% + 2px); left:0; right:0; background:#16131f; border:1px solid #dc5678; border-radius:8px; z-index:300; max-height:260px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; box-shadow:0 8px 24px rgba(0,0,0,0.5); }
     .ac-item { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0.75rem; cursor:pointer; border-bottom:1px solid #2a2432; }
     .ac-item:last-child { border-bottom:none; }
     .ac-item:hover, .ac-item.hi { background:rgba(220,86,120,0.2); }
@@ -1311,6 +1321,38 @@ function notify(msg, type) {
   el._t = setTimeout(function() { el.classList.add('hidden'); }, 4500);
 }
 
+// --- Body scroll lock (for modals) ---
+// iOS Safari lets the page behind a fixed-position modal keep scrolling/rubber-banding, which is
+// the main reason scrolling can feel janky/laggy on iPhone - the background jumps or bounces
+// while a modal is open, and the whole page can jump when it closes. Locking the body to its
+// current scroll position while any modal is open (and restoring it after) fixes that. Counter-
+// based since modals can stack (e.g. a customConfirm dialog opened on top of Settings).
+var _modalLockCount = 0;
+var _scrollLockY = 0;
+function lockBodyScroll() {
+  if (_modalLockCount === 0) {
+    _scrollLockY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + _scrollLockY + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+  }
+  _modalLockCount++;
+}
+function unlockBodyScroll() {
+  if (_modalLockCount === 0) return;
+  _modalLockCount--;
+  if (_modalLockCount === 0) {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, _scrollLockY);
+  }
+}
+
 // Replaces window.confirm() with a Promise-based custom modal in the app's own style.
 // Usage: customConfirm('Are you sure?').then(function(ok) { if (ok) { ...do the thing... } });
 var _confirmResolve = null;
@@ -1322,11 +1364,13 @@ function customConfirm(message, opts) {
     var okBtn = document.getElementById('confirmModalOk');
     okBtn.textContent = opts.okText || 'Confirm';
     okBtn.className = opts.danger ? 'btn-del' : '';
+    lockBodyScroll();
     document.getElementById('confirmModal').classList.add('open');
   });
 }
 function _resolveConfirm(val) {
   document.getElementById('confirmModal').classList.remove('open');
+  unlockBodyScroll();
   var fn = _confirmResolve;
   _confirmResolve = null;
   if (fn) fn(val);
@@ -1584,6 +1628,7 @@ function attemptProfileLogin() {
   }
   setActiveProfileId(p.id);
   document.getElementById('profileGate').classList.remove('open');
+  unlockBodyScroll();
   initApp();
 }
 function createNewProfile() {
@@ -1605,6 +1650,7 @@ function createNewProfile() {
 
   setActiveProfileId(id);
   document.getElementById('profileGate').classList.remove('open');
+  unlockBodyScroll();
   initApp();
 }
 // --- Backup / Export ---
@@ -1866,6 +1912,7 @@ function switchUser() {
   setActiveProfileId('');
   watchlist = [];
   document.getElementById('profileGate').classList.add('open');
+  lockBodyScroll();
   renderProfileGate();
 }
 
@@ -1951,7 +1998,7 @@ function seedProfileFromShaffick(targetId) {
   var profiles = getProfiles();
   var source = profiles.find(function(p) { return p.id !== targetId && p.name.toLowerCase() === 'shaffick'; });
   if (!source) return false;
-  ['kdc_d_', 'kdc_watchlist_', 'kdc_fav_actors_', 'kdc_fav_only_', 'kdc_skipped_'].forEach(function(prefix) {
+  ['kdc_d_', 'kdc_watchlist_', 'kdc_fav_actors_', 'kdc_fav_only_', 'kdc_skipped_', 'kdc_excluded_'].forEach(function(prefix) {
     try {
       var v = localStorage.getItem(prefix + source.id);
       if (v !== null) localStorage.setItem(prefix + targetId, v);
@@ -2002,7 +2049,7 @@ function deleteProfile(id, name) {
   var wasActive = getActiveProfileId() === id;
 
   // Snapshot everything tied to this profile so it can be fully restored on undo.
-  var dataKeys = ['kdc_d_' + id, 'kdc_watchlist_' + id, 'kdc_fav_actors_' + id, 'kdc_fav_only_' + id, 'kdc_skipped_' + id];
+  var dataKeys = ['kdc_d_' + id, 'kdc_watchlist_' + id, 'kdc_fav_actors_' + id, 'kdc_fav_only_' + id, 'kdc_skipped_' + id, 'kdc_excluded_' + id];
   var snapshot = {};
   dataKeys.forEach(function(k) { try { snapshot[k] = localStorage.getItem(k); } catch(e) { snapshot[k] = null; } });
 
@@ -2185,7 +2232,7 @@ function gistHdrs() { var c = getGistCreds(); return { 'Authorization': 'Bearer 
 function syncableSettingsPayload() {
   var s = getSettings();
   return {
-    trackCrew: !!s.trackCrew, smartScore: !!s.smartScore, excludedActors: s.excludedActors || [],
+    trackCrew: !!s.trackCrew, smartScore: !!s.smartScore,
     turnOrder: s.turnOrder || [], turnIndex: typeof s.turnIndex === 'number' ? s.turnIndex : 0, turnHistory: s.turnHistory || [],
     profiles: getProfiles()
   };
@@ -2267,12 +2314,14 @@ async function pushGist() {
     var allDramas = await fetchAllDramasFromGist();
     var allFavorites = await fetchAllFromGistFile('kdrama-favorites.json');
     var allSkipped = await fetchAllFromGistFile('kdrama-skipped.json');
+    var allExcluded = await fetchAllFromGistFile('kdrama-excluded.json');
     var pid = getActiveProfileId();
     if (pid) {
       allWatchlists[pid] = watchlist;
       allDramas[pid] = dramas;
       allFavorites[pid] = getFavoriteActors();
       allSkipped[pid] = getSkippedShows();
+      allExcluded[pid] = getExcludedActors();
     }
     var r = await fetch(gistUrl(), {
       method: 'PATCH', headers: gistHdrs(), cache: 'no-store',
@@ -2281,7 +2330,8 @@ async function pushGist() {
         'kdrama-settings.json': { content: JSON.stringify(syncableSettingsPayload()) },
         'kdrama-watchlist.json': { content: JSON.stringify(allWatchlists) },
         'kdrama-favorites.json': { content: JSON.stringify(allFavorites) },
-        'kdrama-skipped.json': { content: JSON.stringify(allSkipped) }
+        'kdrama-skipped.json': { content: JSON.stringify(allSkipped) },
+        'kdrama-excluded.json': { content: JSON.stringify(allExcluded) }
       } })
     });
     return r.ok;
@@ -2363,6 +2413,17 @@ async function pullGist() {
             var localSkipIds = new Set(localSkipped.map(function(s) { return s.id; }));
             parsedSk[pidF].forEach(function(s) { if (s && typeof s.id !== 'undefined' && !localSkipIds.has(s.id)) { localSkipped.push(s); localSkipIds.add(s.id); } });
             saveSkippedShows(localSkipped);
+          }
+        } catch(e) {}
+      }
+      var exf = j.files && j.files['kdrama-excluded.json'] ? j.files['kdrama-excluded.json'].content : null;
+      if (exf) {
+        try {
+          var parsedEx = JSON.parse(exf);
+          if (parsedEx && !Array.isArray(parsedEx) && Array.isArray(parsedEx[pidF])) {
+            var localExcluded = getExcludedActors();
+            parsedEx[pidF].forEach(function(name) { if (localExcluded.indexOf(name) === -1) localExcluded.push(name); });
+            setExcludedActorsLocal(localExcluded);
           }
         } catch(e) {}
       }
@@ -2751,8 +2812,34 @@ function actorFilterAC(inputEl) {
 }
 
 // --- Exclude Actors (checkbox grid) ---
-function getExcludedActors() { var s = getSettings(); return s.excludedActors || []; }
-function setExcludedActors(arr) { var s = getSettings(); s.excludedActors = arr; saveSettings2(s); pushGist(); }
+function getExcludedActors() {
+  var pid = getActiveProfileId();
+  try { var d = JSON.parse(localStorage.getItem('kdc_excluded_' + pid) || '[]'); return Array.isArray(d) ? d : []; } catch(e) { return []; }
+}
+function setExcludedActorsLocal(arr) {
+  var pid = getActiveProfileId();
+  try { localStorage.setItem('kdc_excluded_' + pid, JSON.stringify(arr)); } catch(e) {}
+}
+function setExcludedActors(arr) { setExcludedActorsLocal(arr); pushGist(); }
+// One-time migration: exclusions used to be a single per-device setting shared by every profile
+// on that device. Existing users would otherwise silently lose their list the moment this per-
+// profile version ships, so on first load for a given profile, adopt whatever was in the old
+// device-wide setting (if that profile doesn't already have its own list) and then clear the old
+// setting so it doesn't keep getting offered to every other profile on this device too.
+function migrateExcludedActorsToProfile(pid) {
+  if (!pid) return;
+  try {
+    if (localStorage.getItem('kdc_excluded_' + pid) !== null) return; // already has its own list
+    var s = getSettings();
+    if (s.excludedActors && s.excludedActors.length) {
+      localStorage.setItem('kdc_excluded_' + pid, JSON.stringify(s.excludedActors));
+    }
+    if (typeof s.excludedActors !== 'undefined') {
+      delete s.excludedActors;
+      saveSettings2(s);
+    }
+  } catch(e) {}
+}
 
 function renderExcludeGrid() {
   var search = (document.getElementById('excludeSearch').value || '').trim().toLowerCase();
@@ -3749,12 +3836,15 @@ async function initApp() {
   var activeProfile = profiles.find(function(p) { return p.id === getActiveProfileId(); });
   if (!activeProfile) {
     document.getElementById('profileGate').classList.add('open');
+    lockBodyScroll();
     renderProfileGate();
     return;
   }
   document.getElementById('profileGate').classList.remove('open');
+  unlockBodyScroll();
   var nameEl = document.getElementById('hdrProfileName');
   if (nameEl) nameEl.textContent = activeProfile.name;
+  migrateExcludedActorsToProfile(activeProfile.id);
   syncFavOnlyToggles();
   renderTurnWidget();
 
@@ -4176,8 +4266,9 @@ function openModal(drama) {
   if (drama && drama.crew && drama.crew.length) drama.crew.forEach(function(c) { addCrewRow(c); });
 
   document.getElementById('modal').classList.add('open');
+  lockBodyScroll();
 }
-function closeModal() { document.getElementById('modal').classList.remove('open'); closeAllAC(); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); unlockBodyScroll(); closeAllAC(); }
 document.getElementById('modal').onclick = function(e) { if (e.target === this) closeModal(); };
 
 // --- Save Drama ---
@@ -4819,10 +4910,11 @@ function openSettings() {
     '<div class="sync-box sync-ok">Sync connected via GitHub Gist</div>' :
     '<div class="sync-box sync-info">Not synced. Enter GitHub credentials below to sync across devices.</div>';
   document.getElementById('settingsModal').classList.add('open');
+  lockBodyScroll();
   renderProfileManageList();
   renderTurnSettingsSection();
 }
-function closeSettings() { document.getElementById('settingsModal').classList.remove('open'); }
+function closeSettings() { document.getElementById('settingsModal').classList.remove('open'); unlockBodyScroll(); }
 document.getElementById('settingsModal').onclick = function(e) { if (e.target === this) closeSettings(); };
 
 function saveAllSettings() {
@@ -5857,8 +5949,9 @@ function showRetroactiveSuggestions(suggestions) {
     list.appendChild(row);
   });
   document.getElementById('retroModal').classList.add('open');
+  lockBodyScroll();
 }
-function closeRetroModal() { document.getElementById('retroModal').classList.remove('open'); }
+function closeRetroModal() { document.getElementById('retroModal').classList.remove('open'); unlockBodyScroll(); }
 document.getElementById('retroModal').onclick = function(e) { if (e.target === this) closeRetroModal(); };
 
 function applyRetroSelections() {
@@ -5920,8 +6013,9 @@ function openWatchlistModal() {
   document.getElementById('watchlistPreview').classList.add('hidden');
   document.getElementById('watchlistConfirmBtn').disabled = true;
   document.getElementById('watchlistModal').classList.add('open');
+  lockBodyScroll();
 }
-function closeWatchlistModal() { document.getElementById('watchlistModal').classList.remove('open'); closeAllAC(); }
+function closeWatchlistModal() { document.getElementById('watchlistModal').classList.remove('open'); unlockBodyScroll(); closeAllAC(); }
 document.getElementById('watchlistModal').onclick = function(e) { if (e.target === this) closeWatchlistModal(); };
 
 var watchlistSearchTimer = null;
