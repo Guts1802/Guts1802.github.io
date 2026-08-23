@@ -5199,9 +5199,13 @@ async function generateOptimalOrder() {
 
 // --- AI Mood Search (Gemini) ---
 // Fully isolated: every call is wrapped so a Gemini failure/quota limit only affects this tab.
-async function callGemini(promptText) {
+// The "high demand" 503 Google returns when a model is overloaded is well documented as usually
+// clearing up within seconds - so retry a couple of times with a short backoff before actually
+// surfacing an error, instead of failing on the very first blip.
+async function callGemini(promptText, _attempt) {
   var key = getGeminiKey();
   if (!key) return { ok: false, error: 'no-key' };
+  _attempt = _attempt || 1;
   try {
     var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=' + encodeURIComponent(key), {
       method: 'POST',
@@ -5209,6 +5213,10 @@ async function callGemini(promptText) {
       body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }], generationConfig: { temperature: 0.8 } })
     });
     if (res.status === 429) return { ok: false, error: 'quota' };
+    if (res.status === 503 && _attempt < 3) {
+      await new Promise(function(resolve) { setTimeout(resolve, _attempt * 1500); }); // 1.5s, then 3s
+      return callGemini(promptText, _attempt + 1);
+    }
     if (!res.ok) {
       var errBody = null;
       try { errBody = await res.json(); } catch(e) {}
