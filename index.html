@@ -243,7 +243,7 @@
       transition:opacity 0.15s ease; z-index:80;
       box-shadow:0 4px 12px rgba(0,0,0,0.5);
     }
-    .actor-tip:hover .tip-card { opacity:1; visibility:visible; }
+    .actor-tip:hover .tip-card, .actor-tip.tip-open .tip-card { opacity:1; visibility:visible; }
     .tip-card .tip-photo { width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #4fa8d4; background:#121017; flex-shrink:0; }
     .tip-card .tip-info { text-align:left; white-space:normal; }
     .tip-card .tip-name { font-size:0.75rem; font-weight:bold; color:#ededf3; line-height:1.2; margin-bottom:0.15rem; }
@@ -400,6 +400,15 @@
   </div>
   <div id="banner" style="display:none;"></div>
 
+  <div id="whatsNewBanner" class="hidden" style="max-width:640px;margin:0.5rem auto 0;text-align:left;">
+    <div style="background:#16131f;border:1px solid rgba(230,168,66,0.35);border-radius:12px;padding:0.9rem 1rem;position:relative;">
+      <button onclick="dismissWhatsNew()" style="position:absolute;top:0.5rem;right:0.6rem;background:none;border:none;color:#8b8797;font-size:1rem;cursor:pointer;width:auto;padding:0.2rem 0.4rem;margin:0;">&#10005;</button>
+      <div style="font-weight:bold;color:#e6a842;font-size:0.85rem;margin-bottom:0.4rem;">&#10024; What's New</div>
+      <ul id="whatsNewList" style="margin:0 1.1rem 0.6rem 0;padding:0;font-size:0.78rem;color:#c9c5d4;line-height:1.5;"></ul>
+      <button class="btn-sm" onclick="dismissWhatsNew()" style="width:auto;margin:0;padding:0.3rem 0.7rem;font-size:0.7rem;">Got it</button>
+    </div>
+  </div>
+
   <div id="hdrButtonsMain" class="hdr-btns-wrap">
     <div class="hdr-tabs">
       <button onclick="openTab('dramas')" id="tab-dramas" class="hdr-tab">My Dramas</button>
@@ -413,6 +422,7 @@
       <button onclick="openTab('stats')" id="tab-stats" class="hdr-tab">Stats</button>
       <button onclick="openTab('optimizer')" id="tab-optimizer" class="hdr-tab">Watch Optimizer</button>
       <button onclick="openTab('mood')" id="tab-mood" class="hdr-tab">✨ AI Mood Search</button>
+
     </div>
     <div class="hdr-utils">
       <button onclick="openSettings()" class="hdr-util-btn">⚙️ Settings <span id="setBadge" class="set-badge">!</span></button>
@@ -460,7 +470,7 @@
     </div>
     <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Made a mistake with the order you watched things? Use "More recent" / "Older" on each card to fix it - this changes which dramas count as your last 10.</p>
     <p style="font-size:0.7rem;color:#8b8797;margin-bottom:0.75rem;font-style:italic;">Adding a drama via TMDB now automatically checks if any tracked actors also appear in your other dramas. Use "Scan My Library" once to backfill this check across dramas you added before this feature existed.</p>
-    <input id="dramaSearch" placeholder="Search your dramas by title..." oninput="render()" style="margin-bottom:0.75rem;">
+    <input id="dramaSearch" placeholder="Search your dramas by title..." oninput="debouncedRender()" style="margin-bottom:0.75rem;">
     <details id="favActorsBox" class="box fav-group hidden" style="margin-bottom:1rem;">
       <summary>&#9829; Your Favorite Actors <span id="favActorsCount" class="fav-count-badge"></span></summary>
       <div id="favActorsGrid" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.85rem;max-height:240px;overflow-y:auto;padding-right:0.15rem;"></div>
@@ -484,7 +494,7 @@
     <div class="box">
       <button class="btn-sm" onclick="toggleWatchlistFilters()" id="watchlistFiltersBtn" style="width:auto;margin-bottom:0.75rem;">Show Filters</button>
       <div id="watchlistFiltersSection" class="hidden">
-        <input id="watchlistSearch" placeholder="Search by title..." oninput="renderWatchlist()" style="margin-bottom:0.75rem;">
+        <input id="watchlistSearch" placeholder="Search by title..." oninput="debouncedRenderWatchlist()" style="margin-bottom:0.75rem;">
 
         <label class="field-lbl">Genres (leave all unchecked to show every genre)</label>
         <div id="watchlistGenreGrid" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.9rem;"></div>
@@ -514,7 +524,7 @@
       <span id="skippedCount" style="background:#16131f;border:1px solid #2a2432;border-radius:999px;padding:0.2rem 0.6rem;font-size:0.7rem;color:#8b8797;"></span>
     </div>
     <p style="font-size:0.72rem;color:#8b8797;margin-bottom:0.75rem;">Shows you've dismissed with "Skip" on a recommendation card, across Recommendations, Similar Shows, AI Mood Search, AI Picks, and AI Similar Shows. Restore any of these to let them be suggested again.</p>
-    <input id="skippedSearch" placeholder="Search skipped shows by title..." oninput="renderSkippedShowsPage()" style="margin-bottom:0.75rem;">
+    <input id="skippedSearch" placeholder="Search skipped shows by title..." oninput="debouncedRenderSkippedShowsPage()" style="margin-bottom:0.75rem;">
     <div id="skippedGrid" class="rec-grid"></div>
   </div>
 
@@ -523,14 +533,14 @@
     <div class="box">
       <h3 class="sec-title">Actor Directory</h3>
       <p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">Red = In last 10 (avoid) &nbsp; Green = Available (safe to watch) &nbsp; Sorted by longest unseen first</p>
-      <input id="dirSearch" placeholder="Search actor..." oninput="renderDir()">
+      <input id="dirSearch" placeholder="Search actor..." oninput="debouncedRenderDir()">
       <div id="dirGrid" class="dir-grid"></div>
     </div>
 
     <div id="crewDirBox" class="box">
       <h3 class="sec-title">Writers &amp; Directors</h3>
       <p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">Red = In last 10 &nbsp; Green = Available &nbsp; Sorted by longest unseen first</p>
-      <input id="crewDirSearch" placeholder="Search director or writer..." oninput="renderCrewDir()">
+      <input id="crewDirSearch" placeholder="Search director or writer..." oninput="debouncedRenderCrewDir()">
       <div id="crewDirGrid" class="dir-grid"></div>
     </div>
   </div>
@@ -546,13 +556,13 @@
       </div>
       <label class="field-lbl">Cast</label>
       <div class="ac-wrap">
-        <input id="chkCast" placeholder="Auto-fills from TMDB, or type actor names comma separated" autocomplete="off" oninput="chkCastAC(this)">
+        <input id="chkCast" placeholder="Auto-fills from TMDB, or type actor names comma separated" autocomplete="off" oninput="debouncedChkCastAC(this)">
       </div>
 
       <div id="chkCrewField" class="hidden">
         <label class="field-lbl">Director/Writer</label>
         <div class="ac-wrap">
-          <input id="chkCrew" placeholder="Auto-fills from TMDB, or type names comma separated" autocomplete="off" oninput="chkCrewAC(this)">
+          <input id="chkCrew" placeholder="Auto-fills from TMDB, or type names comma separated" autocomplete="off" oninput="debouncedChkCrewAC(this)">
         </div>
       </div>
       <p id="chkCrewOffNote" class="hidden" style="font-size:0.68rem;color:#8b8797;margin-bottom:0.5rem;font-style:italic;">Enable "Avoid Recent Directors/Writers" in Settings to also check crew here.</p>
@@ -580,11 +590,11 @@
       <div id="recAdvancedSection" class="hidden">
         <label class="field-lbl">Filter by actor name (optional)</label>
         <div class="ac-wrap">
-          <input id="recActorFilter" placeholder="e.g., Kim Soo-hyun - leave blank for all available actors" autocomplete="off" oninput="actorFilterAC(this)">
+          <input id="recActorFilter" placeholder="e.g., Kim Soo-hyun - leave blank for all available actors" autocomplete="off" oninput="debouncedActorFilterAC(this)">
         </div>
 
         <label class="field-lbl">Exclude actors (optional)</label>
-        <input id="excludeSearch" placeholder="Search actor to exclude..." oninput="renderExcludeGrid()">
+        <input id="excludeSearch" placeholder="Search actor to exclude..." oninput="debouncedRenderExcludeGrid()">
         <div id="excludeGrid" class="cast-select-grid" style="max-height:220px;overflow-y:auto;margin-bottom:0.5rem;"></div>
         <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">Tap an actor to exclude them from recommendations. Tap again to include them back. Your exclusions are remembered next time.</p>
 
@@ -663,7 +673,7 @@
       </div>
 
       <label class="field-lbl">Search your watched dramas</label>
-      <input id="similarSourceSearch" placeholder="Search to filter the list below..." oninput="renderSimilarSourcePicker()">
+      <input id="similarSourceSearch" placeholder="Search to filter the list below..." oninput="debouncedRenderSimilarSourcePicker()">
       <div id="similarSourceGrid" class="cast-select-grid" style="max-height:280px;overflow-y:auto;margin-bottom:0.5rem;"></div>
       <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">Tap one or more dramas to base the search on. Only dramas added via TMDB search can be used here.</p>
 
@@ -723,13 +733,13 @@
       </div>
 
       <label class="field-lbl">Select Actors</label>
-      <input id="lookupActorSearch" placeholder="Search actor..." oninput="renderLookupActorGrid()">
+      <input id="lookupActorSearch" placeholder="Search actor..." oninput="debouncedRenderLookupActorGrid()">
       <div id="lookupActorGrid" class="cast-select-grid" style="max-height:220px;overflow-y:auto;margin-bottom:0.5rem;"></div>
       <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">Tap an actor to select them. Tap again to deselect.</p>
 
       <div id="lookupCrewSection">
         <label class="field-lbl">Select Directors/Writers</label>
-        <input id="lookupCrewSearch" placeholder="Search director or writer..." oninput="renderLookupCrewGrid()">
+        <input id="lookupCrewSearch" placeholder="Search director or writer..." oninput="debouncedRenderLookupCrewGrid()">
         <div id="lookupCrewGrid" class="cast-select-grid" style="max-height:220px;overflow-y:auto;margin-bottom:0.5rem;"></div>
         <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">Tap a director/writer to select them. Tap again to deselect.</p>
       </div>
@@ -960,7 +970,7 @@
       </div>
 
       <label class="field-lbl">Search your watched dramas</label>
-      <input id="aiSimilarSourceSearch" placeholder="Search to filter the list below..." oninput="renderAiSimilarSourcePicker()">
+      <input id="aiSimilarSourceSearch" placeholder="Search to filter the list below..." oninput="debouncedRenderAiSimilarSourcePicker()">
       <div id="aiSimilarSourceGrid" class="cast-select-grid" style="max-height:280px;overflow-y:auto;margin-bottom:0.5rem;"></div>
       <p style="font-size:0.65rem;color:#8b8797;margin-bottom:1rem;font-style:italic;">Tap one or more dramas to base the search on.</p>
 
@@ -1045,7 +1055,7 @@
     <label class="field-lbl">Drama Poster</label>
     <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.25rem;">
       <img id="posterPrev" class="prev-img" style="width:56px;height:80px;border-radius:8px;">
-      <input id="mPoster" placeholder="Paste poster URL or auto-filled from TMDB" style="margin:0;" oninput="prevImg('mPoster','posterPrev')">
+      <input id="mPoster" placeholder="Paste poster URL or auto-filled from TMDB" style="margin:0;" oninput="debouncedPrevImg('mPoster','posterPrev')">
     </div>
 
     <div style="height:1px;background:#2a2432;margin:1rem 0;"></div>
@@ -1296,6 +1306,35 @@ function setSyncBadge(visible) {
   var b1 = document.getElementById('setBadge'); if (b1) b1.style.display = visible ? 'inline-block' : 'none';
   var b2 = document.getElementById('setBadgeAi'); if (b2) b2.style.display = visible ? 'inline-block' : 'none';
 }
+
+// --- Debounce ---
+// Small utility so typing in a search box doesn't re-render/re-filter on every single keystroke -
+// waits until typing pauses briefly first. Used below for every search/filter input in the app.
+function debounce(fn, wait) {
+  var t;
+  return function() {
+    var args = arguments, ctx = this;
+    clearTimeout(t);
+    t = setTimeout(function() { fn.apply(ctx, args); }, wait);
+  };
+}
+// Debounced versions of every local (non-network) search/filter re-render, used by the
+// corresponding search input's oninput handler further down. Function declarations are hoisted,
+// so it's safe to wrap them here even though most are defined later in the file.
+var debouncedRender = debounce(function() { render(); }, 200);
+var debouncedRenderWatchlist = debounce(function() { renderWatchlist(); }, 200);
+var debouncedRenderSkippedShowsPage = debounce(function() { renderSkippedShowsPage(); }, 200);
+var debouncedRenderDir = debounce(function() { renderDir(); }, 200);
+var debouncedRenderCrewDir = debounce(function() { renderCrewDir(); }, 200);
+var debouncedRenderExcludeGrid = debounce(function() { renderExcludeGrid(); }, 200);
+var debouncedRenderSimilarSourcePicker = debounce(function() { renderSimilarSourcePicker(); }, 200);
+var debouncedRenderLookupActorGrid = debounce(function() { renderLookupActorGrid(); }, 200);
+var debouncedRenderLookupCrewGrid = debounce(function() { renderLookupCrewGrid(); }, 200);
+var debouncedRenderAiSimilarSourcePicker = debounce(function() { renderAiSimilarSourcePicker(); }, 200);
+var debouncedChkCastAC = debounce(function(el) { chkCastAC(el); }, 150);
+var debouncedChkCrewAC = debounce(function(el) { chkCrewAC(el); }, 150);
+var debouncedActorFilterAC = debounce(function(el) { actorFilterAC(el); }, 150);
+var debouncedPrevImg = debounce(function(a, b) { prevImg(a, b); }, 200);
 
 // --- Banner ---
 function showBanner(msg, color, bg) {
@@ -1979,6 +2018,33 @@ async function renderProfileManageList() {
     row.appendChild(input); row.appendChild(saveBtn); row.appendChild(delBtn);
     wrap.appendChild(row);
 
+    // Change Password: toggles a small inline form (new password + confirm) below the row.
+    // No need to enter the current password first - this is a "keep things separate on a shared
+    // device" password, not real account security (same reason Delete/Rename above don't ask for
+    // it either), and requiring the old one would block the common case of someone forgetting it.
+    var pwToggleBtn = document.createElement('button');
+    pwToggleBtn.className = 'btn-sm'; pwToggleBtn.textContent = 'Change Password';
+    pwToggleBtn.style.cssText = 'width:auto;margin-top:0.4rem;margin-right:0.4rem;font-size:0.68rem;';
+    var pwForm = document.createElement('div');
+    pwForm.className = 'hidden';
+    pwForm.style.cssText = 'margin-top:0.5rem;padding:0.6rem;background:#0f0d15;border-radius:8px;';
+    var pwNew = document.createElement('input');
+    pwNew.type = 'password'; pwNew.placeholder = 'New password (4+ characters)'; pwNew.style.cssText = 'margin-bottom:0.4rem;';
+    var pwConfirm = document.createElement('input');
+    pwConfirm.type = 'password'; pwConfirm.placeholder = 'Confirm new password'; pwConfirm.style.cssText = 'margin-bottom:0.4rem;';
+    var pwRow = document.createElement('div'); pwRow.style.cssText = 'display:flex;gap:0.5rem;';
+    var pwSaveBtn = document.createElement('button');
+    pwSaveBtn.className = 'btn-sm'; pwSaveBtn.textContent = 'Save New Password'; pwSaveBtn.style.cssText = 'width:auto;margin:0;';
+    pwSaveBtn.onclick = function() { changeProfilePassword(p.id, p.name, pwNew.value, pwConfirm.value); };
+    var pwCancelBtn = document.createElement('button');
+    pwCancelBtn.className = 'btn-sm'; pwCancelBtn.textContent = 'Cancel'; pwCancelBtn.style.cssText = 'width:auto;margin:0;';
+    pwCancelBtn.onclick = function() { pwForm.classList.add('hidden'); pwNew.value = ''; pwConfirm.value = ''; };
+    pwRow.appendChild(pwSaveBtn); pwRow.appendChild(pwCancelBtn);
+    pwForm.appendChild(pwNew); pwForm.appendChild(pwConfirm); pwForm.appendChild(pwRow);
+    pwToggleBtn.onclick = function() { pwForm.classList.toggle('hidden'); };
+    wrap.appendChild(pwToggleBtn);
+    wrap.appendChild(pwForm);
+
     // Lets you fix an already-created, still-empty profile without deleting and recreating it -
     // copies Shaffick's current library (dramas, watchlist, favorite actors, skipped shows) into it.
     if (shaffickProfile && p.id !== shaffickProfile.id) {
@@ -2038,6 +2104,20 @@ function renameProfile(id, newName) {
     if (nameEl) nameEl.textContent = newName;
   }
   showBanner('Renamed to ' + newName, '#4fae85', 'rgba(79,174,133,0.1)');
+}
+function changeProfilePassword(id, name, newPin, confirmPin) {
+  newPin = (newPin || '').trim();
+  confirmPin = (confirmPin || '').trim();
+  if (newPin.length < 4) { notify('Password should be at least 4 characters.'); return; }
+  if (newPin !== confirmPin) { notify('Passwords do not match.'); return; }
+  var profiles = getProfiles();
+  var p = profiles.find(function(x) { return x.id === id; });
+  if (!p) return;
+  p.pinHash = simpleHash(newPin);
+  saveProfiles(profiles);
+  pushGist(); // profiles (including pinHash) are part of the synced settings payload
+  showBanner('Password changed for ' + name + '.', '#4fae85', 'rgba(79,174,133,0.1)');
+  renderProfileManageList();
 }
 function deleteProfile(id, name) {
   customConfirm('Delete "' + name + '"? This removes their My Dramas, Watchlist, and Favorite Actors from this device - you\'ll have a few seconds to undo right after.', { okText: 'Delete', danger: true }).then(function(ok) {
@@ -2184,6 +2264,39 @@ function setFavOnlyOn(on) {
   try { localStorage.setItem('kdc_fav_only_' + pid, on ? '1' : '0'); } catch(e) {}
 }
 var FAV_ONLY_TOGGLE_IDS = ['recFavOnlyToggle', 'similarFavOnlyToggle', 'moodFavOnlyToggle', 'airecFavOnlyToggle', 'aisimilarFavOnlyToggle', 'lookupFavOnlyToggle'];
+
+// --- What's New banner ---
+// Bump WHATS_NEW_VERSION and replace the WHATS_NEW list any time a deploy has changes worth a
+// user actually seeing (new tab, new toggle, behavior change) - not for invisible bug fixes.
+// Shown once per device (stored in plain localStorage, not per-profile - it's about whether this
+// browser has seen the update, not which profile is active) the first time the app loads after a
+// version bump, then dismissed permanently until the next bump.
+var WHATS_NEW_VERSION = '2026-08-23';
+var WHATS_NEW = [
+  'New "By Actor/Writer" tab - pick actors, directors, or writers and see every unwatched Korean drama of theirs, with green/red for last-10 conflicts.',
+  'Adding a drama with no cast found no longer blocks you - it just asks to confirm first.',
+  'Excluded actors in Recommendations are now remembered per profile instead of per device.',
+  'Smoother scrolling on iPhone - modals no longer let the page behind them scroll/jump.',
+  'Gemini AI features now automatically retry and fall back to a backup model if the main one is busy or over its free daily limit.'
+];
+function checkWhatsNew() {
+  try {
+    if (localStorage.getItem('kdc_whats_new_seen') === WHATS_NEW_VERSION) return;
+  } catch(e) { return; }
+  var list = document.getElementById('whatsNewList');
+  list.innerHTML = '';
+  WHATS_NEW.forEach(function(item) {
+    var li = document.createElement('li');
+    li.style.marginBottom = '0.25rem';
+    li.textContent = item;
+    list.appendChild(li);
+  });
+  document.getElementById('whatsNewBanner').classList.remove('hidden');
+}
+function dismissWhatsNew() {
+  try { localStorage.setItem('kdc_whats_new_seen', WHATS_NEW_VERSION); } catch(e) {}
+  document.getElementById('whatsNewBanner').classList.add('hidden');
+}
 function syncFavOnlyToggles() {
   var on = getFavOnlyOn();
   FAV_ONLY_TOGGLE_IDS.forEach(function(id) { var el = document.getElementById(id); if (el) el.checked = on; });
@@ -3847,6 +3960,7 @@ async function initApp() {
   migrateExcludedActorsToProfile(activeProfile.id);
   syncFavOnlyToggles();
   renderTurnWidget();
+  checkWhatsNew();
 
   showBanner('Loading...', '#e6a842', 'rgba(230,168,66,0.1)');
   openTab('dramas');
@@ -4134,6 +4248,38 @@ function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
 // Renders text into a container, wrapping any substring that matches a known actor's name
 // with a hover tooltip showing their photo - so you don't need to remember every name.
+// Builds the little "photo + name + drama list" popover card used by every actor/crew hover
+// tooltip in the app (an .actor-tip wrapper is expected to contain this as its only child).
+function makeTipCard(person) {
+  var tipCard = document.createElement('span');
+  tipCard.className = 'tip-card';
+  var img = document.createElement('img');
+  img.className = 'tip-photo';
+  img.src = ph(person.name, person.photo);
+  img.onerror = function() { this.src = ph(person.name, ''); };
+  var infoBox = document.createElement('span');
+  infoBox.className = 'tip-info';
+  var nameEl = document.createElement('span');
+  nameEl.className = 'tip-name';
+  nameEl.textContent = person.name;
+  var dramasEl = document.createElement('span');
+  dramasEl.className = 'tip-dramas';
+  var titles = person.dramas || [];
+  dramasEl.textContent = titles.length ? ('Watched in: ' + titles.slice(0, 3).join(', ') + (titles.length > 3 ? ' +' + (titles.length - 3) + ' more' : '')) : 'No dramas logged yet';
+  infoBox.appendChild(nameEl); infoBox.appendChild(dramasEl);
+  tipCard.appendChild(img); tipCard.appendChild(infoBox);
+  return tipCard;
+}
+// Tap-to-open support for .actor-tip popovers (iOS/touch has no real :hover state - a tap-and-
+// hold "peek" is unreliable and inconsistent across iOS versions). Tapping a tip opens it via
+// the .tip-open class (which the CSS treats the same as :hover); tapping anywhere else, or a
+// second tap on the same tip, closes it. Desktop hover keeps working exactly as before.
+document.addEventListener('click', function(e) {
+  var tip = e.target.closest ? e.target.closest('.actor-tip') : null;
+  document.querySelectorAll('.actor-tip.tip-open').forEach(function(el) { if (el !== tip) el.classList.remove('tip-open'); });
+  if (tip) { e.stopPropagation(); tip.classList.toggle('tip-open'); }
+});
+
 function renderTextWithActorTooltips(container, text) {
   container.textContent = '';
   if (!text) return;
@@ -4153,26 +4299,7 @@ function renderTextWithActorTooltips(container, text) {
     var span = document.createElement('span');
     span.className = 'actor-tip';
     span.textContent = matchedText;
-    if (actor) {
-      var tipCard = document.createElement('span');
-      tipCard.className = 'tip-card';
-      var img = document.createElement('img');
-      img.className = 'tip-photo';
-      img.src = ph(actor.name, actor.photo);
-      img.onerror = function() { this.src = ph(actor.name, ''); };
-      var infoBox = document.createElement('span');
-      infoBox.className = 'tip-info';
-      var nameEl = document.createElement('span');
-      nameEl.className = 'tip-name';
-      nameEl.textContent = actor.name;
-      var dramasEl = document.createElement('span');
-      dramasEl.className = 'tip-dramas';
-      var titles = actor.dramas || [];
-      dramasEl.textContent = titles.length ? ('Watched in: ' + titles.slice(0, 3).join(', ') + (titles.length > 3 ? ' +' + (titles.length - 3) + ' more' : '')) : 'No dramas logged yet';
-      infoBox.appendChild(nameEl); infoBox.appendChild(dramasEl);
-      tipCard.appendChild(img); tipCard.appendChild(infoBox);
-      span.appendChild(tipCard);
-    }
+    if (actor) span.appendChild(makeTipCard(actor));
     container.appendChild(span);
     lastIndex = re.lastIndex;
     if (match.index === re.lastIndex) re.lastIndex++; // guard against zero-length matches
@@ -4502,7 +4629,10 @@ function renderDir() {
     if (isFavoriteActor(a.name)) card.style.boxShadow = '0 0 0 2px #dc5678';
     var img = document.createElement('img'); img.className = 'dir-photo'; img.src = ph(a.name, a.photo); img.alt = a.name;
     img.onerror = function() { this.src = ph(a.name, ''); };
-    var name = document.createElement('div'); name.className = 'dir-name'; name.textContent = a.name;
+    var name = document.createElement('div'); name.className = 'dir-name';
+    var nameTip = document.createElement('span'); nameTip.className = 'actor-tip'; nameTip.textContent = a.name;
+    nameTip.appendChild(makeTipCard(a));
+    name.appendChild(nameTip);
     var status = document.createElement('div'); status.className = 'dir-status-pill'; status.textContent = label;
     var count = document.createElement('div'); count.style.cssText = 'font-size:0.62rem;color:#8b8797;margin-top:0.3rem;'; count.textContent = a.dramas.length + ' drama' + (a.dramas.length > 1 ? 's' : '');
     card.appendChild(img); card.appendChild(name); card.appendChild(status); card.appendChild(count); card.appendChild(makeFavActorBtn(a.name));
@@ -4545,7 +4675,10 @@ function renderCrewDir() {
     var card = document.createElement('div'); card.className = 'dir-card ' + (c.inRecent10 ? 'bad' : 'good');
     var img = document.createElement('img'); img.className = 'dir-photo'; img.src = ph(c.name, c.photo); img.alt = c.name;
     img.onerror = function() { this.src = ph(c.name, ''); };
-    var name = document.createElement('div'); name.className = 'dir-name'; name.textContent = c.name;
+    var name = document.createElement('div'); name.className = 'dir-name';
+    var nameTip = document.createElement('span'); nameTip.className = 'actor-tip'; nameTip.textContent = c.name;
+    nameTip.appendChild(makeTipCard(c));
+    name.appendChild(nameTip);
     var roleTag = document.createElement('div');
     roleTag.style.cssText = 'font-size:0.6rem;padding:0.05rem 0.3rem;border-radius:999px;display:inline-block;margin-bottom:0.2rem;' + (c.role === 'Director' ? 'background:rgba(224,96,90,0.12);color:#d97d89;' : 'background:rgba(79,168,212,0.12);color:#4fa8d4;');
     roleTag.textContent = c.role;
@@ -5237,10 +5370,15 @@ async function callGemini(promptText, _modelIdx, _attempt) {
     var data = await res.json();
     var text = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) ? data.candidates[0].content.parts[0].text : null;
     if (!text) return { ok: false, error: 'empty' };
-    return { ok: true, text: text };
+    return { ok: true, text: text, modelUsed: model, usedFallback: _modelIdx > 0 };
   } catch(e) {
     return { ok: false, error: 'network', detail: e.message };
   }
+}
+// Small "used a backup AI model" notice, shown when callGemini had to fall back off the primary
+// model. Returns '' (nothing) when no fallback happened.
+function geminiFallbackNoteHtml(usedFallback) {
+  return usedFallback ? '<p style="font-size:0.7rem;color:#4fa8d4;margin-bottom:0.5rem;">\u2139\ufe0f The primary AI model was busy, so this used a backup Gemini model instead - results should be just as good.</p>' : '';
 }
 
 function parseGeminiJsonArray(text) {
@@ -5284,6 +5422,7 @@ async function runMoodSearch() {
     '\nRespond with ONLY a raw JSON array (no markdown, no code fences, no extra text) of exactly ' + howMany + ' objects, each with exactly these fields: "title" (the official English or romanized title as listed on TMDB), "year" (release year as a number, or null if unsure), "reason" (one short sentence, under 20 words, explaining why it fits the mood). Example format:\n[{"title":"Show Name","year":2021,"reason":"..."}]';
 
   var res = await callGemini(prompt);
+  var moodFallbackNote = geminiFallbackNoteHtml(res.usedFallback);
   if (!res.ok) {
     var msg = 'Something went wrong talking to Gemini. Please try again.';
     if (res.error === 'quota') msg = 'You have hit today\'s free Gemini request limit. Everything else on this site still works normally - try AI Mood Search again tomorrow, or check your usage at aistudio.google.com.';
@@ -5360,13 +5499,13 @@ async function runMoodSearch() {
     if (moodFullCastOn) noMoodFilters.push('"Check full cast for last-10 overlap" is on - some may have been excluded for a hidden co-star');
     if (moodFavOnlyOn) noMoodFilters.push('"Only my favorite actors" is on - some may have been excluded for not featuring one of your favorites');
     if (moodSkippedCount) noMoodFilters.push('You previously skipped ' + moodSkippedCount + ' of the shows Gemini suggested this time');
-    container.innerHTML = explainEmptyResults(noMoodFilters) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try rephrasing your mood description, or try again - Gemini\'s wording can vary between attempts.</p>';
+    container.innerHTML = moodFallbackNote + explainEmptyResults(noMoodFilters) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try rephrasing your mood description, or try again - Gemini\'s wording can vary between attempts.</p>';
     btn.textContent = 'Find Shows for This Mood'; btn.disabled = false;
     return;
   }
 
   var fullCastNote3 = moodFullCastOn ? ', full cast checked for hidden last-10 overlaps' : '';
-  container.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">Found ' + verified.length + ' verified show' + (verified.length > 1 ? 's' : '') + ' matching your mood' + fullCastNote3 + '. Click a drama to add it to My Dramas.</p>';
+  container.innerHTML = moodFallbackNote + '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">Found ' + verified.length + ' verified show' + (verified.length > 1 ? 's' : '') + ' matching your mood' + fullCastNote3 + '. Click a drama to add it to My Dramas.</p>';
   var grid = document.createElement('div'); grid.className = 'rec-grid';
   verified.forEach(function(rec) {
     var card = document.createElement('div'); card.className = 'rec-card';
@@ -5420,8 +5559,8 @@ async function runMoodSearch() {
 }
 
 // --- Shared renderer for AI-verified show cards (AI Picks, AI Similar Shows) ---
-function renderAiRecCards(container, verified, introText) {
-  container.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">' + introText + '</p>';
+function renderAiRecCards(container, verified, introText, fallbackNoteHtml) {
+  container.innerHTML = (fallbackNoteHtml || '') + '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">' + introText + '</p>';
   var grid = document.createElement('div'); grid.className = 'rec-grid';
   verified.forEach(function(rec) {
     var card = document.createElement('div'); card.className = 'rec-card';
@@ -5560,6 +5699,7 @@ async function runAiPicks() {
     'Respond with ONLY a raw JSON array (no markdown, no code fences, no extra text) of exactly ' + howMany + ' objects, each with fields "title", "year" (number or null), and "reason" (one short sentence under 20 words, ideally naming which actor or genre motivated the pick). Example: [{"title":"Show Name","year":2021,"reason":"..."}]';
 
   var res = await callGemini(prompt);
+  var airecFallbackNote = geminiFallbackNoteHtml(res.usedFallback);
   if (!res.ok) {
     container.innerHTML = '<p style="color:#f59e0b;">' + geminiErrorMessage(res) + '</p>';
     btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
@@ -5567,14 +5707,14 @@ async function runAiPicks() {
   }
   var suggestions = parseGeminiJsonArray(res.text);
   if (!suggestions || !suggestions.length) {
-    container.innerHTML = '<p style="color:#8b8797;">Gemini did not return usable suggestions. Please try again.</p>';
+    container.innerHTML = airecFallbackNote + '<p style="color:#8b8797;">Gemini did not return usable suggestions. Please try again.</p>';
     btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
     return;
   }
   btn.textContent = 'Verifying on TMDB...';
   var verified = await verifyGeminiSuggestions(suggestions);
   if (!verified.length) {
-    container.innerHTML = explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again - Gemini\'s wording can vary between attempts.</p>';
+    container.innerHTML = airecFallbackNote + explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again - Gemini\'s wording can vary between attempts.</p>';
     btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
     return;
   }
@@ -5582,7 +5722,7 @@ async function runAiPicks() {
     btn.textContent = 'Checking favorite actors...';
     verified = await filterToFavoriteActorsOnly(verified, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
     if (!verified.length) {
-      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - Gemini\'s suggestions did not actually feature one of your favorites this time']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again - Gemini sometimes drifts from the instruction.</p>';
+      container.innerHTML = airecFallbackNote + explainEmptyResults(['"Only my favorite actors" is on - Gemini\'s suggestions did not actually feature one of your favorites this time']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again - Gemini sometimes drifts from the instruction.</p>';
       btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
       return;
     }
@@ -5592,11 +5732,11 @@ async function runAiPicks() {
   airecSkippedCount -= verified.length;
   if (!verified.length) {
     var noAirecFilters = ['Gemini suggested ' + suggestions.length + ' show(s), but you previously skipped all of them'];
-    container.innerHTML = explainEmptyResults(noAirecFilters);
+    container.innerHTML = airecFallbackNote + explainEmptyResults(noAirecFilters);
     btn.textContent = 'Let AI Pick My Next Shows'; btn.disabled = false;
     return;
   }
-  renderAiRecCards(container, verified, 'Found ' + verified.length + ' AI-picked show' + (verified.length > 1 ? 's' : '') + ', verified on TMDB. Click a drama to add it to My Dramas.');
+  renderAiRecCards(container, verified, 'Found ' + verified.length + ' AI-picked show' + (verified.length > 1 ? 's' : '') + ', verified on TMDB. Click a drama to add it to My Dramas.', airecFallbackNote);
   btn.textContent = 'Refresh AI Picks'; btn.disabled = false;
 }
 
@@ -5658,6 +5798,7 @@ async function runAiSimilar() {
     '\nRespond with ONLY a raw JSON array (no markdown, no code fences, no extra text) of objects with fields "title", "year" (number or null), and "reason" (one short sentence under 20 words explaining the similarity). Example: [{"title":"Show Name","year":2021,"reason":"..."}]';
 
   var res = await callGemini(prompt);
+  var aisimilarFallbackNote = geminiFallbackNoteHtml(res.usedFallback);
   if (!res.ok) {
     container.innerHTML = '<p style="color:#f59e0b;">' + geminiErrorMessage(res) + '</p>';
     btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
@@ -5665,14 +5806,14 @@ async function runAiSimilar() {
   }
   var suggestions = parseGeminiJsonArray(res.text);
   if (!suggestions || !suggestions.length) {
-    container.innerHTML = '<p style="color:#8b8797;">Gemini did not return usable suggestions. Please try again.</p>';
+    container.innerHTML = aisimilarFallbackNote + '<p style="color:#8b8797;">Gemini did not return usable suggestions. Please try again.</p>';
     btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
     return;
   }
   btn.textContent = 'Verifying on TMDB...';
   var verified = await verifyGeminiSuggestions(suggestions);
   if (!verified.length) {
-    container.innerHTML = explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try selecting different source dramas, or try again.</p>';
+    container.innerHTML = aisimilarFallbackNote + explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try selecting different source dramas, or try again.</p>';
     btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
     return;
   }
@@ -5680,7 +5821,7 @@ async function runAiSimilar() {
     btn.textContent = 'Checking favorite actors...';
     verified = await filterToFavoriteActorsOnly(verified, function(done, total) { btn.textContent = 'Checking favorite actors (' + done + '/' + total + ')...'; });
     if (!verified.length) {
-      container.innerHTML = explainEmptyResults(['"Only my favorite actors" is on - Gemini\'s suggestions did not actually feature one of your favorites this time']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again, or try different source dramas.</p>';
+      container.innerHTML = aisimilarFallbackNote + explainEmptyResults(['"Only my favorite actors" is on - Gemini\'s suggestions did not actually feature one of your favorites this time']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again, or try different source dramas.</p>';
       btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
       return;
     }
@@ -5689,11 +5830,11 @@ async function runAiSimilar() {
   verified = filterOutSkipped(verified);
   aisimilarSkippedCount -= verified.length;
   if (!verified.length) {
-    container.innerHTML = explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but you previously skipped all of them']);
+    container.innerHTML = aisimilarFallbackNote + explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but you previously skipped all of them']);
     btn.textContent = 'Find Similar Dramas with AI'; btn.disabled = false;
     return;
   }
-  renderAiRecCards(container, verified, 'Found ' + verified.length + ' similar show' + (verified.length > 1 ? 's' : '') + ', verified on TMDB. Click a drama to add it to My Dramas.');
+  renderAiRecCards(container, verified, 'Found ' + verified.length + ' similar show' + (verified.length > 1 ? 's' : '') + ', verified on TMDB. Click a drama to add it to My Dramas.', aisimilarFallbackNote);
   btn.textContent = 'Refresh Similar Dramas'; btn.disabled = false;
 }
 
@@ -5751,8 +5892,8 @@ function computeOverlapForFixedOrder(candidates, useCrew) {
   return order;
 }
 
-function renderAiOrderResults(container, order, introText) {
-  container.innerHTML = '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">' + introText + '</p>';
+function renderAiOrderResults(container, order, introText, fallbackNoteHtml) {
+  container.innerHTML = (fallbackNoteHtml || '') + '<p style="font-size:0.75rem;color:#8b8797;margin-bottom:0.75rem;">' + introText + '</p>';
   order.forEach(function(entry, i) {
     var card = document.createElement('div');
     card.style.cssText = 'display:flex;gap:0.85rem;align-items:center;background:#16131f;border:1px solid rgba(79,168,212,0.25);border-radius:12px;padding:0.85rem;margin-bottom:0.75rem;';
@@ -5817,6 +5958,7 @@ async function runAiWatchPlanner() {
     'Respond with ONLY a raw JSON array (no markdown, no code fences) of exactly ' + howMany + ' objects in watch order, each with fields "title", "year" (number or null), and "reason" (one short sentence under 20 words explaining why it is placed at that point in the sequence). Example: [{"title":"Show Name","year":2021,"reason":"..."}]';
 
   var res = await callGemini(prompt);
+  var aioptFallbackNote = geminiFallbackNoteHtml(res.usedFallback);
   if (!res.ok) {
     container.innerHTML = '<p style="color:#f59e0b;">' + geminiErrorMessage(res) + '</p>';
     btn.textContent = 'Let AI Plan My Next Shows'; btn.disabled = false;
@@ -5824,7 +5966,7 @@ async function runAiWatchPlanner() {
   }
   var suggestions = parseGeminiJsonArray(res.text);
   if (!suggestions || !suggestions.length) {
-    container.innerHTML = '<p style="color:#8b8797;">Gemini did not return a usable plan. Please try again.</p>';
+    container.innerHTML = aioptFallbackNote + '<p style="color:#8b8797;">Gemini did not return a usable plan. Please try again.</p>';
     btn.textContent = 'Let AI Plan My Next Shows'; btn.disabled = false;
     return;
   }
@@ -5832,7 +5974,7 @@ async function runAiWatchPlanner() {
   btn.textContent = 'Verifying on TMDB...';
   var verified = await verifyGeminiSuggestions(suggestions); // preserves Gemini's order since it processes suggestions sequentially
   if (!verified.length) {
-    container.innerHTML = explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again - Gemini\'s wording can vary between attempts.</p>';
+    container.innerHTML = aioptFallbackNote + explainEmptyResults(['Gemini suggested ' + suggestions.length + ' show(s), but none could be matched to a real TMDB Korean drama entry - titles may be mistranslated or slightly off']) + '<p style="font-size:0.75rem;color:#8b8797;margin-top:0.5rem;">Try again - Gemini\'s wording can vary between attempts.</p>';
     btn.textContent = 'Let AI Plan My Next Shows'; btn.disabled = false;
     return;
   }
@@ -5853,7 +5995,7 @@ async function runAiWatchPlanner() {
 
   var order = computeOverlapForFixedOrder(candidates, useCrew);
   var intro = 'Gemini\'s planned watch order for your next ' + order.length + ' show' + (order.length > 1 ? 's' : '') + ' (actor/crew overlap independently verified against your real last 10):';
-  renderAiOrderResults(container, order, intro);
+  renderAiOrderResults(container, order, intro, aioptFallbackNote);
 
   btn.textContent = 'Refresh AI Plan'; btn.disabled = false;
 }
